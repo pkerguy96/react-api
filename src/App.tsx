@@ -3,12 +3,12 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
+
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -26,7 +26,7 @@ function Copyright(props: any) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://github.com/pkerguy96">
         ELKOR
       </Link>{" "}
       {new Date().getFullYear()}
@@ -50,14 +50,12 @@ interface ApiResponse {
   data: any; // Change 'any' to the actual data type you expect in the 'data' field
 }
 export default function SignIn() {
+  const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
   const user = localStorage.getItem("user_login");
-  if (user) {
-    useEffect(() => {
-      navigate("/dashboard");
-    }, []);
-    return <div>redirecting...</div>;
-  }
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  }, [loggedIn]);
   const [userdata, setUserData] = useState<UserData>({
     email: "",
     password: "",
@@ -77,7 +75,15 @@ export default function SignIn() {
       .then((res: AxiosResponse<ApiResponse>) => {
         if (res.status === 200) {
           localStorage.setItem("user_login", JSON.stringify(res.data.data));
-          navigate("/dashboard");
+          setLoggedIn(true);
+
+          // Wait for 5 seconds before redirecting
+          const timeout = setTimeout(() => {
+            navigate("/dashboard");
+          }, 5000);
+
+          // Clear the timeout when the component unmounts or when the redirect occurs
+          return () => clearTimeout(timeout);
         }
       })
       .catch((err) => {
@@ -97,10 +103,27 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
+          {loggedIn ? (
+            <Avatar
+              sx={{
+                m: 1,
+                bgcolor: "success.main",
+                animation: "bounce 2s ease-in-out",
+              }}
+            >
+              <LockOpenOutlinedIcon />
+            </Avatar>
+          ) : (
+            <Avatar
+              sx={{
+                m: 1,
+                bgcolor: "secondary.main",
+              }}
+            >
+              <LockOutlinedIcon />
+            </Avatar>
+          )}
+          <Typography component="h1" variant="h5" className="text-xl ">
             Sign in
           </Typography>
           <Box
@@ -135,7 +158,7 @@ export default function SignIn() {
             />
             {error && (
               <Alert variant="filled" severity="error">
-                This is an error alert — check it out!
+                Les identifiants ne correspondent pas. Réessayez.
               </Alert>
             )}
             <Button

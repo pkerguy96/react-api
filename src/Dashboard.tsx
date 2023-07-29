@@ -31,7 +31,7 @@ function Copyright(props: any) {
     >
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        Elkor
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -178,11 +178,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8} lg={9}>
-                {Props.children}
-              </Grid>
-            </Grid>
+            {Props.children}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>

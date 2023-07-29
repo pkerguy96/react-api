@@ -4,6 +4,9 @@ import App from "./App.tsx";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./Dashboard.tsx";
 import "./index.css";
+import DataTable from "./components/DataTable.tsx";
+import AddButton from "./components/AddButton.tsx";
+import AddPatient from "./components/AddPatient.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -19,10 +22,19 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           }
         />
         <Route
-          path="/orders"
+          path="/Patients"
           element={
             <Dashboard>
-              <h1>sex</h1>
+              <AddButton />
+              <DataTable />
+            </Dashboard>
+          }
+        />
+        <Route
+          path="/AddPatient"
+          element={
+            <Dashboard>
+              <AddPatient />
             </Dashboard>
           }
         />
