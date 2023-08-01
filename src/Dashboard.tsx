@@ -11,8 +11,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
+
 import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -20,6 +19,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems, secondaryListItems } from "./ListItems";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+
+import AdminProfile from "./components/AdminProfile";
 
 function Copyright(props: any) {
   return (
@@ -142,6 +143,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            <AdminProfile />
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
