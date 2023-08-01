@@ -1,18 +1,16 @@
 import { AccountCircle } from "@mui/icons-material";
-import { Avatar, Box, Button, IconButton, Menu, MenuItem } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+
 import React, { useState } from "react";
 
 const AdminProfile = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+
   // Handle menu open
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+
   // Handle menu close
   const handleClose = () => {
     setAnchorEl(null);
