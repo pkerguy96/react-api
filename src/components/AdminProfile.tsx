@@ -1,10 +1,15 @@
 import { AccountCircle } from "@mui/icons-material";
-import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+import { Avatar, Box, IconButton, Menu, MenuItem } from "@mui/material";
 
 import React, { useState } from "react";
 
 const AdminProfile = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const storedUserData = localStorage.getItem("user_login");
+  const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+  const userProfilePicture = parsedUserData
+    ? parsedUserData.profile || null
+    : null;
 
   // Handle menu open
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -15,6 +20,7 @@ const AdminProfile = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  console.log(userProfilePicture);
   return (
     <Box className="">
       <IconButton
@@ -25,7 +31,11 @@ const AdminProfile = () => {
         onClick={handleMenu}
         color="inherit"
       >
-        <AccountCircle />
+        {userProfilePicture ? (
+          <Avatar src={userProfilePicture} sx={{ width: 30, height: 30 }} />
+        ) : (
+          <AccountCircle />
+        )}
       </IconButton>
       <Menu
         id="menu-appbar"

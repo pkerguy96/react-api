@@ -49,13 +49,34 @@ interface ApiResponse {
   message: string;
   data: any; // Change 'any' to the actual data type you expect in the 'data' field
 }
+
+function notLogedin(navigate: Function) {
+  var user = localStorage.getItem("user_login");
+  if (user) {
+    var token = JSON.parse(user).token;
+    if (!token) navigate("/");
+    axios
+      .get("http://127.0.0.1:8000/api/v1/verify-token", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate("/dashboard");
+      })
+      .catch(() => {
+        localStorage.removeItem("user_token");
+        navigate("/");
+      });
+  } else navigate("/");
+}
+
 export default function SignIn() {
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-  const user = localStorage.getItem("user_login");
   useEffect(() => {
-    if (user) navigate("/dashboard");
-  }, [loggedIn]);
+    notLogedin(navigate);
+  }, []);
   const [userdata, setUserData] = useState<UserData>({
     email: "",
     password: "",
@@ -78,12 +99,10 @@ export default function SignIn() {
           setLoggedIn(true);
 
           // Wait for 5 seconds before redirecting
-          const timeout = setTimeout(() => {
-            navigate("/dashboard");
-          }, 5000);
+
+          navigate("/dashboard");
 
           // Clear the timeout when the component unmounts or when the redirect occurs
-          return () => clearTimeout(timeout);
         }
       })
       .catch((err) => {
