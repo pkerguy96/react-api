@@ -94,6 +94,8 @@ export default function SignIn() {
     axios
       .post("http://127.0.0.1:8000/api/v1/login", userdata)
       .then((res: AxiosResponse<ApiResponse>) => {
+        console.log(res);
+
         if (res.status === 200) {
           localStorage.setItem("user_login", JSON.stringify(res.data.data));
           setLoggedIn(true);
@@ -107,6 +109,7 @@ export default function SignIn() {
       })
       .catch((err) => {
         setError(true);
+        console.log(err);
       });
   };
 
