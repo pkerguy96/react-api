@@ -7,6 +7,7 @@ import "./index.css";
 import DataTable from "./components/DataTable.tsx";
 import AddButton from "./components/AddButton.tsx";
 import AddPatient from "./components/AddPatient.tsx";
+import AdminProfile from "./components/AdminProfile.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -35,6 +36,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           element={
             <Dashboard>
               <AddPatient />
+            </Dashboard>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Dashboard>
+              <AdminProfile />
             </Dashboard>
           }
         />

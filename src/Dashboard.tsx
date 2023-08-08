@@ -20,7 +20,7 @@ import { mainListItems, secondaryListItems } from "./ListItems";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
-import AdminProfile from "./components/AdminProfile";
+import DashboardMenu from "./components/DashboardMenu";
 import axios from "axios";
 
 function Copyright(props: any) {
@@ -102,9 +102,7 @@ function notLogedin(navigate: Function) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        navigate("/dashboard");
-      })
+      .then((res) => {})
       .catch(() => {
         localStorage.removeItem("user_token");
         navigate("/");
@@ -161,7 +159,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <AdminProfile />
+            <DashboardMenu />
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

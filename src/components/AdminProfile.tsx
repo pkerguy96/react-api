@@ -1,61 +1,180 @@
-import { AccountCircle } from "@mui/icons-material";
-import { Avatar, Box, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  FormControl,
+  Input,
+  Paper,
+  TextField,
+} from "@mui/material";
+import { useState } from "react";
 
-import React, { useState } from "react";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import axiosInstance from "../Http";
+interface Props {
+  name: string;
+  email: string;
+  picture: File | null;
+}
 
 const AdminProfile = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const storedUserData = localStorage.getItem("user_login");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   const userProfilePicture = parsedUserData
     ? parsedUserData.profile || null
     : null;
-
-  // Handle menu open
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const userData = parsedUserData.user;
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    console.log(imageFile);
   };
-
-  // Handle menu close
-  const handleClose = () => {
-    setAnchorEl(null);
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { errors },
+  } = useForm<Props>({
+    defaultValues: {
+      name: userData?.name || "",
+      email: userData?.email || "",
+    },
+  });
+  const customErrorMessages = {
+    name: {
+      required: "Le champ Nom est requis.",
+    },
+    email: {
+      required: "Le champ Email est requis.",
+    },
   };
-  console.log(userProfilePicture);
+  const onSubmit: SubmitHandler<Props> = async (data) => {
+    try {
+      var form = new FormData();
+      for (let field in data) {
+        form.append(field, data[field]);
+      }
+
+      const response = await axiosInstance.post(
+        "http://127.0.0.1:8000/api/v1/Admin/update/profile",
+        form,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
+          },
+        }
+      );
+      if (response.status === 200) {
+        console.log(response);
+        const user = JSON.parse(localStorage.getItem("user_login"));
+        user.user = response.data.data;
+        user.profile = response.data.profile;
+        localStorage.setItem("user_login", JSON.stringify(user));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <Box className="">
-      <IconButton
-        size="large"
-        aria-label="account of current user"
-        aria-controls="menu-appbar"
-        aria-haspopup="true"
-        onClick={handleMenu}
-        color="inherit"
+    <Paper className="p-4" elevation={12}>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        className="w-full flex flex-col gap-2"
+        onSubmit={handleSubmit(onSubmit)}
       >
-        {userProfilePicture ? (
-          <Avatar src={userProfilePicture} sx={{ width: 30, height: 30 }} />
-        ) : (
-          <AccountCircle />
-        )}
-      </IconButton>
-      <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "bottom", // Adjust the vertical position to bottom
-          horizontal: "right",
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: "top", // Adjust the vertical position to top
-          horizontal: "right",
-        }}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
-      </Menu>
-    </Box>
+        <Box className="w-full flex flex-col gap-2 items-center justify-center	">
+          <Avatar
+            alt="Remy Sharp"
+            src={
+              imageFile ? URL.createObjectURL(imageFile) : userProfilePicture
+            }
+            sx={{ width: 120, height: 120 }}
+          />
+          <Button variant="contained" component="label">
+            Upload Image
+            <Controller
+              control={control}
+              name={"picture"}
+              render={({ field: { value, onChange, ...field } }) => {
+                return (
+                  <Input
+                    {...field}
+                    value={value?.fileName}
+                    onChange={(event) => {
+                      onChange(event.target.files[0]);
+                      setImageFile(event.target.files[0]);
+                    }}
+                    type="file"
+                    inputProps={{
+                      accept: "image/*",
+                    }}
+                    id="picture"
+                    style={{ display: "none" }}
+                  />
+                );
+              }}
+            />
+          </Button>
+        </Box>
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+          <label htmlFor="name" className="w-full md:w-[160px]">
+            Nom:
+          </label>
+          <FormControl className="w-full md:flex-1">
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: customErrorMessages.name.required }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="name"
+                  label="name"
+                  size="small"
+                  error={!!errors.name} // Add error prop based on whether the field has an error
+                  helperText={errors.name?.message} // Display the error message for the field
+                />
+              )}
+            />
+          </FormControl>
+        </Box>
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+          <label htmlFor="name" className="w-full md:w-[160px]">
+            Email:
+          </label>
+          <FormControl className="w-full md:flex-1">
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: customErrorMessages.email.required }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="email"
+                  label="email"
+                  size="small"
+                  error={!!errors.email} // Add error prop based on whether the field has an error
+                  helperText={errors.email?.message} // Display the error message for the field
+                />
+              )}
+            />
+          </FormControl>
+        </Box>
+        <Box sx={{ marginTop: 5 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ borderRadius: 16 }}
+            fullWidth={true}
+          >
+            Enregistrer
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 

@@ -79,7 +79,6 @@ const AddPatient = () => {
   };
   const onSubmit: SubmitHandler<Props> = async (data) => {
     try {
-      console.log(data);
       // Send the form data to the API endpoint using Axios
       const response = await axiosInstance.post(
         "http://127.0.0.1:8000/api/v1/Patient",
