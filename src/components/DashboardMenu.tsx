@@ -2,8 +2,10 @@ import { AccountCircle } from "@mui/icons-material";
 import { Avatar, Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+import ModalComponent from "./ModalComponent";
 
 const AdminProfile = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const storedUserData = localStorage.getItem("user_login");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -19,6 +21,10 @@ const AdminProfile = () => {
   // Handle menu close
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const HandleLogout = () => {
+    setIsModalOpen(true);
+    handleClose();
   };
 
   return (
@@ -55,8 +61,14 @@ const AdminProfile = () => {
         <MenuItem component={Link} to="/profile" onClick={handleClose}>
           Profile
         </MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem onClick={HandleLogout}>Logout</MenuItem>
       </Menu>
+      {isModalOpen && (
+        <ModalComponent
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };

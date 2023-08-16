@@ -5,9 +5,11 @@ import {
   FormControl,
   Input,
   Paper,
+  Snackbar,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
+import MuiAlert from "@mui/material/Alert";
 
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import axiosInstance from "../Http";
@@ -18,6 +20,11 @@ interface Props {
 }
 
 const AdminProfile = () => {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "warning" | "info" | undefined
+  >(undefined);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const storedUserData = localStorage.getItem("user_login");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -25,15 +32,10 @@ const AdminProfile = () => {
     ? parsedUserData.profile || null
     : null;
   const userData = parsedUserData.user;
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setImageFile(file);
-    console.log(imageFile);
-  };
+
   const {
     handleSubmit,
     control,
-    register,
     formState: { errors },
   } = useForm<Props>({
     defaultValues: {
@@ -52,8 +54,10 @@ const AdminProfile = () => {
   const onSubmit: SubmitHandler<Props> = async (data) => {
     try {
       var form = new FormData();
-      for (let field in data) {
-        form.append(field, data[field]);
+      form.append("name", data.name);
+      form.append("email", data.email);
+      if (data.picture) {
+        form.append("picture", data.picture);
       }
 
       const response = await axiosInstance.post(
@@ -66,14 +70,18 @@ const AdminProfile = () => {
         }
       );
       if (response.status === 200) {
-        console.log(response);
-        const user = JSON.parse(localStorage.getItem("user_login"));
+        const user = JSON.parse(localStorage.getItem("user_login") || "{}");
         user.user = response.data.data;
         user.profile = response.data.profile;
         localStorage.setItem("user_login", JSON.stringify(user));
+        setSnackbarOpen(true);
+        setSnackbarMessage("Admin modified successfully");
+        setSnackbarSeverity("success");
       }
     } catch (error) {
-      console.log(error);
+      setSnackbarOpen(false);
+      setSnackbarMessage("Oops something went wrong please try again");
+      setSnackbarSeverity("error");
     }
   };
   return (
@@ -103,8 +111,9 @@ const AdminProfile = () => {
                   <Input
                     {...field}
                     value={value?.fileName}
-                    onChange={(event) => {
-                      onChange(event.target.files[0]);
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      onChange(event.target.files?.[0]);
+
                       setImageFile(event.target.files[0]);
                     }}
                     type="file"
@@ -174,6 +183,24 @@ const AdminProfile = () => {
           </Button>
         </Box>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        autoHideDuration={6000}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </Paper>
   );
 };

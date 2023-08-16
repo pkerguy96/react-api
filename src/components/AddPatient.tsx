@@ -376,9 +376,3 @@ const AddPatient = () => {
 };
 
 export default AddPatient;
-function watch(arg0: string) {
-  throw new Error("Function not implemented.");
-}
-function setValue(arg0: string, arg1: string) {
-  throw new Error("Function not implemented.");
-}
