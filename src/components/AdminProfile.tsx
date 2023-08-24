@@ -12,7 +12,7 @@ import { useState } from "react";
 import MuiAlert from "@mui/material/Alert";
 
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import axiosInstance from "../Http";
+import axiosInstance from "../services/Http";
 interface Props {
   name: string;
   email: string;

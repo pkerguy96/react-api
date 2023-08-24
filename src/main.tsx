@@ -6,7 +6,7 @@ import Dashboard from "./Dashboard.tsx";
 import "./index.css";
 import DataTable from "./components/DataTable.tsx";
 import AddButton from "./components/AddButton.tsx";
-import AddPatient from "./components/AddPatient.tsx";
+import AddPatient from "./components/PatientForm.tsx";
 import AdminProfile from "./components/AdminProfile.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

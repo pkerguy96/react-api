@@ -105,7 +105,7 @@ function notLogedin(navigate: Function) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {})
+      .then(() => {})
       .catch(() => {
         localStorage.removeItem("user_token");
         navigate("/");
@@ -155,7 +155,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              tableau de bord
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">

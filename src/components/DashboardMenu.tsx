@@ -59,9 +59,9 @@ const AdminProfile = () => {
         onClose={handleClose}
       >
         <MenuItem component={Link} to="/profile" onClick={handleClose}>
-          Profile
+          Profil
         </MenuItem>
-        <MenuItem onClick={HandleLogout}>Logout</MenuItem>
+        <MenuItem onClick={HandleLogout}>déconnecter</MenuItem>
       </Menu>
       {isModalOpen && (
         <ModalComponent
