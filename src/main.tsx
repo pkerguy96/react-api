@@ -8,47 +8,52 @@ import DataTable from "./components/DataTable.tsx";
 import AddButton from "./components/AddButton.tsx";
 import AddPatient from "./components/PatientForm.tsx";
 import AdminProfile from "./components/AdminProfile.tsx";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route
-          path="/Dashboard"
-          element={
-            <Dashboard>
-              <h1>home page</h1>
-            </Dashboard>
-          }
-        />
-        <Route
-          path="/Patients"
-          element={
-            <Dashboard>
-              <AddButton />
-              <DataTable />
-            </Dashboard>
-          }
-        />
-        <Route
-          path="/AddPatient"
-          element={
-            <Dashboard>
-              <AddPatient />
-            </Dashboard>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <Dashboard>
-              <AdminProfile />
-            </Dashboard>
-          }
-        />
-        <Route path="*" element={<h1>404</h1>} />
-      </Routes>
-    </Router>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <React.StrictMode>
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route
+            path="/Dashboard"
+            element={
+              <Dashboard>
+                <h1>home page</h1>
+              </Dashboard>
+            }
+          />
+          <Route
+            path="/Patients"
+            element={
+              <Dashboard>
+                <AddButton />
+                <DataTable />
+              </Dashboard>
+            }
+          />
+          <Route
+            path="/AddPatient"
+            element={
+              <Dashboard>
+                <AddPatient />
+              </Dashboard>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Dashboard>
+                <AdminProfile />
+              </Dashboard>
+            }
+          />
+          <Route path="*" element={<h1>404</h1>} />
+        </Routes>
+      </Router>
+    </React.StrictMode>
+    <ReactQueryDevtools />
+  </QueryClientProvider>
 );

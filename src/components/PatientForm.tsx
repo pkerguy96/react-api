@@ -13,10 +13,11 @@ import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { onSubmitHandler } from "../hooks/addPatient";
+import { useAddPatientMutation } from "../hooks/addPatient";
+
 import { calculateAge } from "../utils/dateUtils";
 
-export interface Props {
+export interface Patient {
   nom: string;
   prenom: string;
   cin: string;
@@ -66,8 +67,9 @@ const AddPatient = () => {
     handleSubmit,
     control,
     register,
+    reset,
     formState: { errors },
-  } = useForm<Props>({
+  } = useForm<Patient>({
     defaultValues: {
       nom: "",
       prenom: "",
@@ -79,26 +81,34 @@ const AddPatient = () => {
       mutuelle: "",
       agecalc: "",
     },
-  }); // Specify Props as the generic type for useForm
-
-  const onSubmit: SubmitHandler<Props> = async (data) => {
+  }); // Specify Patient as the generic type for useForm
+  const addPatientMutation = useAddPatientMutation(() => {
+    reset({
+      nom: "",
+      prenom: "",
+      cin: "",
+      date: "",
+      sex: "",
+      address: "",
+      phoneNumber: "",
+      mutuelle: "",
+      agecalc: "",
+    });
+  });
+  const onSubmit: SubmitHandler<Patient> = async (data) => {
     try {
-      await onSubmitHandler(
-        data,
-        {
-          setSnackbarOpen,
-          setSnackbarMessage,
-          setSnackbarSeverity: (severity) => {
-            // Set the severity to "success" specifically
-            setSnackbarSeverity(severity);
-          },
-        },
-        "success"
-      );
-      setTimeout(() => {
-        navigate("/Patients");
-      }, 1000);
+      const result = await addPatientMutation.mutateAsync(data);
+      console.log(result);
+
+      if (result) {
+        setSnackbarOpen(true);
+        setSnackbarMessage("patient added successfuly");
+        setSnackbarSeverity("success");
+      }
     } catch (error) {
+      setSnackbarOpen(true);
+      setSnackbarMessage("Oops something went wrong");
+      setSnackbarSeverity("error");
       console.log(error);
     }
   };

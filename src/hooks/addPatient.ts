@@ -1,31 +1,43 @@
 import { APIClient } from "../services/Http";
-const apiclient = new APIClient<Props>("/Patient");
-import { Props } from "../components/PatientForm";
-// Define a type for snackbar functions
-type SnackbarFunctions = {
-  setSnackbarOpen: (value: boolean) => void;
-  setSnackbarMessage: (message: string) => void;
-  setSnackbarSeverity: (
-    severity: "success" | "error" | "warning" | "info" | undefined
-  ) => void;
-};
+import { Patient } from "../components/PatientForm";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+const apiclient = new APIClient<Patient>("/Patient");
 
-export const onSubmitHandler = async (
-  data: Props,
-  snackbarFunctions: SnackbarFunctions,
-  severity: "success" | "error" | "warning" | "info" | undefined
-) => {
-  try {
-    // Send the form data to the API endpoint using apiclient
-    await apiclient.Postall(data);
-
-    // Update the Snackbar using the provided functions
-    snackbarFunctions.setSnackbarOpen(true);
-    snackbarFunctions.setSnackbarMessage("Patient added successfully");
-    snackbarFunctions.setSnackbarSeverity(severity);
-  } catch (error) {
-    snackbarFunctions.setSnackbarOpen(true);
-    snackbarFunctions.setSnackbarMessage("Oops something went wrong");
-    snackbarFunctions.setSnackbarSeverity("error");
-  }
+interface Patientscontext {
+  previousPatients: Patient[];
+}
+const CACHE_KEY_PATIENTS = ["patients"];
+export const useAddPatientMutation = (onAdd: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation<Patient, Error, Patient, Patientscontext>({
+    mutationFn: async (data: Patient) => {
+      apiclient.Postall(data);
+      return data;
+    },
+    onMutate: async (newPatient: Patient) => {
+      const previousPatients =
+        queryClient.getQueryData<Patient[]>(CACHE_KEY_PATIENTS) || [];
+      queryClient.setQueryData<Patient[]>(
+        CACHE_KEY_PATIENTS,
+        (patients = []) => [newPatient, ...patients]
+      );
+      onAdd();
+      return { previousPatients };
+    },
+    // old patients we get from backend , newpartient is the client side
+    onSuccess: (oldpatients, newPatient) => {
+      queryClient.setQueryData<Patient[]>(CACHE_KEY_PATIENTS, (patients) =>
+        patients?.map((patient) =>
+          patient === newPatient ? oldpatients : patient
+        )
+      );
+    },
+    onError: (error, newPatient, context) => {
+      if (!context) return;
+      queryClient.setQueryData<Patient[]>(
+        CACHE_KEY_PATIENTS,
+        context.previousPatients
+      );
+    },
+  });
 };
