@@ -15,49 +15,11 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import axiosInstance from "../services/Http";
-
-interface Data {
-  nom: string;
-  prenom: string;
-  cin: string;
-  date: string;
-  address: string;
-  sex: string;
-  phoneNumber: string;
-  mutuelle: string;
-}
-
-function createData(
-  nom: string,
-  prenom: string,
-  cin: string,
-  date: string,
-  address: string,
-  sex: string,
-  phoneNumber: string,
-  mutuelle: string
-): Data {
-  return {
-    nom,
-    prenom,
-    cin,
-    date,
-    address,
-    sex,
-    phoneNumber,
-    mutuelle,
-  };
-}
-
-const rows = [
-  createData("aymen", "elkor", "305", "3.7", "67", "4.3", "dddd", "dddd"),
-];
+import getPatients, { Data } from "../hooks/getPatients";
+import { TextField } from "@mui/material";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -83,10 +45,6 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort<T>(
   array: readonly T[],
   comparator: (a: T, b: T) => number
@@ -289,21 +247,18 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rows, setRows] = React.useState<Data[]>([]); // Store the patient data here
-
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const { data: patientslist } = getPatients();
+  console.log(patientslist);
   React.useEffect(() => {
     // Fetch all patients from the API
-    axiosInstance
-      .get("http://127.0.0.1:8000/api/v1/Patient")
-      .then((response) => {
-        // Set the fetched patient data to the state
-        setRows(response.data.data);
-        setRowsPerPage(5);
-      })
-      .catch((error) => {
-        console.error("Error fetching patients:", error);
-      });
-  }, []);
+    if (!patientslist) return;
+    setRows(patientslist);
+    setRowsPerPage(5);
+  }, [patientslist]);
+
+  const [searchValue, setSearchValue] = React.useState(""); // Added state for search value
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Data
@@ -359,91 +314,109 @@ export default function EnhancedTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
+  const filteredRows = rows.filter((row) =>
+    Object.values(row).some(
+      (value) =>
+        typeof value === "string" &&
+        value.toLowerCase().includes(searchValue.toLowerCase())
+    )
   );
 
+  const sortedFilteredRows = stableSort(
+    filteredRows,
+    getComparator(order, orderBy)
+  ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.nom);
-                const labelId = `enhanced-table-checkbox-${index}`;
-
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.nom)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.nom + index}
-                    selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          "aria-labelledby": labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.nom}
-                    </TableCell>
-
-                    <TableCell align="right">{row.prenom}</TableCell>
-                    <TableCell align="right">{row.cin}</TableCell>
-                    <TableCell align="right">{row.date}</TableCell>
-                    <TableCell align="right">{row.address}</TableCell>
-                    <TableCell align="right">{row.sex}</TableCell>
-                    <TableCell align="right">{row.phoneNumber}</TableCell>
-                    <TableCell align="right">{row.mutuelle}</TableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length || 0}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+    <>
+      <Box className="mb-4">
+        <TextField
+          fullWidth
+          label="Recherche"
+          id="fullWidth"
+          size="small"
+          color="primary"
+          sx={{ backgroundColor: "white" }}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
         />
-      </Paper>
-    </Box>
+      </Box>
+      <Box sx={{ width: "100%" }}>
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <EnhancedTableToolbar numSelected={selected.length} />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+                {sortedFilteredRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.nom);
+                  const labelId = `enhanced-table-checkbox-${index}`;
+
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, row.nom)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.nom + index}
+                      selected={isItemSelected}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          inputProps={{
+                            "aria-labelledby": labelId,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                        {row.nom}
+                      </TableCell>
+
+                      <TableCell align="right">{row.prenom}</TableCell>
+                      <TableCell align="right">{row.cin}</TableCell>
+                      <TableCell align="right">{row.date}</TableCell>
+                      <TableCell align="right">{row.address}</TableCell>
+                      <TableCell align="right">{row.sex}</TableCell>
+                      <TableCell align="right">{row.phoneNumber}</TableCell>
+                      <TableCell align="right">{row.mutuelle}</TableCell>
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length || 0}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </Box>
+    </>
   );
 }

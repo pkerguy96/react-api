@@ -1,4 +1,8 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1",
@@ -6,7 +10,9 @@ const axiosInstance: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+interface ApiResponse<T> {
+  data: T[];
+}
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const user = localStorage.getItem("user_login");
@@ -25,8 +31,17 @@ export class APIClient<T> {
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }
+  sex = (): Promise<T[]> => {
+    return axiosInstance
+      .get<ApiResponse<T>>(this.endpoint)
+      .then((res: AxiosResponse<ApiResponse<T>>) => {
+        return res.data.data; // Access the data property
+      });
+  };
   getall = () => {
-    axiosInstance.get<T>(this.endpoint).then((res) => res.data);
+    return axiosInstance
+      .get<ApiResponse<T>>(this.endpoint)
+      .then((res) => res.data.data);
   };
   Postall = (data: T) => {
     axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
