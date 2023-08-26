@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
@@ -97,8 +97,7 @@ const AddPatient = () => {
   });
   const onSubmit: SubmitHandler<Patient> = async (data) => {
     try {
-      const result = await addPatientMutation.mutateAsync(data);
-      console.log("results", result);
+      await addPatientMutation.mutateAsync(data);
 
       setSnackbarOpen(true);
       setSnackbarMessage("patient added successfuly");
@@ -107,10 +106,17 @@ const AddPatient = () => {
       setSnackbarOpen(true);
       setSnackbarMessage("Oops something went wrong");
       setSnackbarSeverity("error");
-      console.log(error);
     }
   };
-
+  useEffect(() => {
+    if (snackbarSeverity === "success") {
+      const intervalId = setInterval(() => {
+        // Perform your navigation here
+        navigate("/Patients"); // Change "/some-route" to your desired route
+        clearInterval(intervalId); // Clear the interval after navigation
+      }, 1500); // Adjust the interval duration (in milliseconds) as needed
+    }
+  }, [snackbarSeverity, navigate]);
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {
     onChange: (e) => {
@@ -314,7 +320,7 @@ const AddPatient = () => {
           </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
+          <label htmlFor="phoneNumber" className="w-full md:w-[160px]">
             Telephone:
           </label>
           <FormControl className="w-full md:flex-1">
@@ -337,7 +343,7 @@ const AddPatient = () => {
           </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
+          <label htmlFor="mutuelle" className="w-full md:w-[160px]">
             Mutuelle:
           </label>
           <FormControl className="w-full md:flex-1" size="small">
@@ -354,12 +360,20 @@ const AddPatient = () => {
                   label="mutuelle"
                   error={!!errors.mutuelle}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
+                  <MenuItem value="none">
+                    <em>Aucune</em>
                   </MenuItem>
-                  <MenuItem value="Ten">Ten</MenuItem>
-                  <MenuItem value="Twenty">Twenty</MenuItem>
-                  <MenuItem value="Thirty">Thirty</MenuItem>
+                  <MenuItem value="Mamdat">Mamdat</MenuItem>
+                  <MenuItem value="CNIA SAADA">CNIA SAADA</MenuItem>
+                  <MenuItem value="CNOPS">CNOPS</MenuItem>
+                  <MenuItem value="GENERAL">GENERAL</MenuItem>
+                  <MenuItem value="CNSS">CNSS</MenuItem>
+                  <MenuItem value="MFAR">MFAR</MenuItem>
+                  <MenuItem value="WATANIA">WATANIA</MenuItem>
+                  <MenuItem value="ZURICH">ZURICH</MenuItem>
+                  <MenuItem value="ATLANTA">ATLANTA</MenuItem>
+                  <MenuItem value="AXA">AXA</MenuItem>
+                  <MenuItem value="WAFA ASURANCE">WAFA ASURANCE</MenuItem>
                 </Select>
               )}
             />

@@ -1,12 +1,12 @@
 import { APIClient } from "../services/Http";
 import { Patient } from "../components/PatientForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CACHE_KEY_PATIENTS } from "../constants";
 const apiclient = new APIClient<Patient>("/Patient");
-
 interface Patientscontext {
   previousPatients: Patient[];
 }
-const CACHE_KEY_PATIENTS = ["patients"];
+
 export const useAddPatientMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Patient, Error, Patient, Patientscontext>({

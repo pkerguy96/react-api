@@ -24,7 +24,7 @@ const ModalComponent = ({ open, onClose }: ModalComponentProps) => {
   const navigate = useNavigate();
   const logOut = async () => {
     try {
-      const response = await axiosInstance.post(
+      const response = await axiosInstance.get(
         "http://127.0.0.1:8000/api/v1/Admin/logout"
       );
       if (response.status === 200) {

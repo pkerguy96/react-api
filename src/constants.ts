@@ -1,1 +1,1 @@
-export const CACHE_KEY_Patients = ["patients"];
+export const CACHE_KEY_PATIENTS = ["patients"];
