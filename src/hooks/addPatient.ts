@@ -11,8 +11,14 @@ export const useAddPatientMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Patient, Error, Patient, Patientscontext>({
     mutationFn: async (data: Patient) => {
-      apiclient.Postall(data);
-      return data;
+      try {
+        await apiclient.Postall(data);
+
+        return data;
+      } catch (error) {
+        // Handle API request error here
+        throw error;
+      }
     },
     onMutate: async (newPatient: Patient) => {
       const previousPatients =

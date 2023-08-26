@@ -44,7 +44,18 @@ export class APIClient<T> {
       .then((res) => res.data.data);
   };
   Postall = (data: T) => {
-    axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
+    return axiosInstance
+      .post<T>(this.endpoint, data)
+      .then((res) => {
+        return res.data; // Return the response data on success
+      })
+      .catch((error) => {
+        // Handle errors here
+        console.error("API request failed:", error);
+
+        // You can rethrow the error to propagate it further if needed
+        throw error;
+      });
   };
 }
 

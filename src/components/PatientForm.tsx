@@ -98,13 +98,11 @@ const AddPatient = () => {
   const onSubmit: SubmitHandler<Patient> = async (data) => {
     try {
       const result = await addPatientMutation.mutateAsync(data);
-      console.log(result);
+      console.log("results", result);
 
-      if (result) {
-        setSnackbarOpen(true);
-        setSnackbarMessage("patient added successfuly");
-        setSnackbarSeverity("success");
-      }
+      setSnackbarOpen(true);
+      setSnackbarMessage("patient added successfuly");
+      setSnackbarSeverity("success");
     } catch (error) {
       setSnackbarOpen(true);
       setSnackbarMessage("Oops something went wrong");
@@ -223,7 +221,17 @@ const AddPatient = () => {
               <Controller
                 name="date"
                 control={control}
-                rules={{ required: customErrorMessages.date.required }}
+                rules={{
+                  required: customErrorMessages.date.required,
+                  validate: (value) => {
+                    const selectedDate = new Date(value);
+                    const currentDate = new Date();
+                    return (
+                      selectedDate <= currentDate ||
+                      "La date ne peut pas être dans le futur."
+                    );
+                  },
+                }}
                 render={({ field }) => (
                   <TextField
                     type="date"
