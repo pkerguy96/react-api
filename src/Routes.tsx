@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./pages/Layout";
-import App from "./App";
+import App from "./pages/LoginPage";
 import Dashboard from "./Dashboard";
 import PrivateRoute from "./pages/PrivateRoute";
 import DataTable from "./components/DataTable";

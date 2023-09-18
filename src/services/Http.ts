@@ -31,31 +31,14 @@ export class APIClient<T> {
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }
-  sex = (): Promise<T[]> => {
-    return axiosInstance
-      .get<ApiResponse<T>>(this.endpoint)
-      .then((res: AxiosResponse<ApiResponse<T>>) => {
-        return res.data.data; // Access the data property
-      });
-  };
+
   getall = () => {
     return axiosInstance
       .get<ApiResponse<T>>(this.endpoint)
       .then((res) => res.data.data);
   };
   Postall = (data: T) => {
-    return axiosInstance
-      .post<T>(this.endpoint, data)
-      .then((res) => {
-        return res.data; // Return the response data on success
-      })
-      .catch((error) => {
-        // Handle errors here
-        console.error("API request failed:", error);
-
-        // You can rethrow the error to propagate it further if needed
-        throw error;
-      });
+    return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
   };
 }
 

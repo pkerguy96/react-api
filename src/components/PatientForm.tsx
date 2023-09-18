@@ -95,9 +95,9 @@ const AddPatient = () => {
       agecalc: "",
     });
   });
-  const onSubmit: SubmitHandler<Patient> = async (data) => {
+  const onSubmit: SubmitHandler<Patient> = (data) => {
     try {
-      await addPatientMutation.mutateAsync(data);
+      addPatientMutation.mutateAsync(data);
 
       setSnackbarOpen(true);
       setSnackbarMessage("patient added successfuly");
@@ -109,13 +109,18 @@ const AddPatient = () => {
     }
   };
   useEffect(() => {
+    let intervalId: number;
     if (snackbarSeverity === "success") {
-      const intervalId = setInterval(() => {
+      intervalId = setInterval(() => {
         // Perform your navigation here
         navigate("/Patients"); // Change "/some-route" to your desired route
-        clearInterval(intervalId); // Clear the interval after navigation
       }, 1500); // Adjust the interval duration (in milliseconds) as needed
     }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [snackbarSeverity, navigate]);
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {

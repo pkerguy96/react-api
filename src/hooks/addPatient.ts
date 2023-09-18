@@ -10,15 +10,8 @@ interface Patientscontext {
 export const useAddPatientMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Patient, Error, Patient, Patientscontext>({
-    mutationFn: async (data: Patient) => {
-      try {
-        await apiclient.Postall(data);
-
-        return data;
-      } catch (error) {
-        // Handle API request error here
-        throw error;
-      }
+    mutationFn: (data: Patient) => {
+      return apiclient.Postall(data);
     },
     onMutate: async (newPatient: Patient) => {
       const previousPatients =
@@ -30,11 +23,11 @@ export const useAddPatientMutation = (onAdd: () => void) => {
       onAdd();
       return { previousPatients };
     },
-    // old patients we get from backend , newpartient is the client side
-    onSuccess: (oldpatients, newPatient) => {
+    // savedPatient  we get from backend , oldPatients is the client side
+    onSuccess: (savedPatient, NewlyinsertedPatient) => {
       queryClient.setQueryData<Patient[]>(CACHE_KEY_PATIENTS, (patients) =>
         patients?.map((patient) =>
-          patient === newPatient ? oldpatients : patient
+          patient === NewlyinsertedPatient ? savedPatient : patient
         )
       );
     },
