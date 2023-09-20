@@ -1,14 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./pages/Layout";
 import App from "./pages/LoginPage";
-import Dashboard from "./Dashboard";
 import PrivateRoute from "./pages/PrivateRoute";
-import DataTable from "./components/DataTable";
+
 import AddPatient from "./components/PatientForm";
-import AddButton from "./components/AddButton";
+
 import AdminProfile from "./components/AdminProfile";
 import Errorpage from "./pages/Errorpage";
 import DashboardKpiPage from "./pages/DashboardKpiPage";
+import NursesPage from "./pages/NursesPage";
+import PatientsPage from "./pages/PatientsPage";
 
 const router = createBrowserRouter([
   {
@@ -31,12 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: "Patients",
-        element: (
-          <>
-            <AddButton />
-            <DataTable />
-          </>
-        ),
+        element: <PatientsPage />,
       },
       {
         path: "AddPatient",
@@ -45,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <AdminProfile />,
+      },
+      {
+        path: "sexybebe",
+        element: <NursesPage />,
       },
     ],
   },

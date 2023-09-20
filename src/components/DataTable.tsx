@@ -60,63 +60,12 @@ function stableSort<T>(
   return stabilizedThis.map((el) => el[0]);
 }
 
-interface HeadCell {
+export interface HeadCell {
   disablePadding: boolean;
   id: keyof Data;
   label: string;
   numeric: boolean;
 }
-
-const headCells: readonly HeadCell[] = [
-  {
-    id: "nom",
-    numeric: false,
-    disablePadding: true,
-    label: "Nom",
-  },
-  {
-    id: "prenom",
-    numeric: true,
-    disablePadding: false,
-    label: "Prenom",
-  },
-  {
-    id: "cin",
-    numeric: true,
-    disablePadding: false,
-    label: "Cin",
-  },
-  {
-    id: "date",
-    numeric: true,
-    disablePadding: false,
-    label: "Date",
-  },
-  {
-    id: "address",
-    numeric: true,
-    disablePadding: false,
-    label: "Address",
-  },
-  {
-    id: "sex",
-    numeric: true,
-    disablePadding: false,
-    label: "Sex",
-  },
-  {
-    id: "phoneNumber",
-    numeric: true,
-    disablePadding: false,
-    label: "Telephone",
-  },
-  {
-    id: "mutuelle",
-    numeric: true,
-    disablePadding: false,
-    label: "Mutuelle",
-  },
-];
 
 interface EnhancedTableProps {
   numSelected: number;
@@ -130,7 +79,9 @@ interface EnhancedTableProps {
   rowCount: number;
 }
 
-function EnhancedTableHead(props: EnhancedTableProps) {
+function EnhancedTableHead(
+  props: EnhancedTableProps & { headCells: HeadCell[] }
+) {
   const {
     onSelectAllClick,
     order,
@@ -138,6 +89,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     numSelected,
     rowCount,
     onRequestSort,
+    headCells, // Access headCells from props
   } = props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -241,21 +193,26 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
-export default function EnhancedTable() {
+export default function EnhancedTable({
+  data,
+  headCells,
+}: {
+  headCells: HeadCell[];
+  data: Data[];
+}) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data | null>(null);
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rows, setRows] = React.useState<Data[]>([]); // Store the patient data here
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
-  const { data: patientslist } = getPatients();
-  console.log(patientslist);
+
   React.useEffect(() => {
     // Fetch all patients from the API
-    if (!patientslist) return;
-    setRows(patientslist);
+    if (!data) return;
+    setRows(data);
     setRowsPerPage(5);
-  }, [patientslist]);
+  }, [data]);
 
   const [searchValue, setSearchValue] = React.useState(""); // Added state for search value
 
@@ -280,7 +237,6 @@ export default function EnhancedTable() {
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
-
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
@@ -353,12 +309,12 @@ export default function EnhancedTable() {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
+                headCells={headCells}
               />
               <TableBody>
                 {sortedFilteredRows.map((row, index) => {
                   const isItemSelected = isSelected(row.nom);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
                       hover
@@ -379,22 +335,15 @@ export default function EnhancedTable() {
                           }}
                         />
                       </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.nom}
-                      </TableCell>
-
-                      <TableCell align="right">{row.prenom}</TableCell>
-                      <TableCell align="right">{row.cin}</TableCell>
-                      <TableCell align="right">{row.date}</TableCell>
-                      <TableCell align="right">{row.address}</TableCell>
-                      <TableCell align="right">{row.sex}</TableCell>
-                      <TableCell align="right">{row.phoneNumber}</TableCell>
-                      <TableCell align="right">{row.mutuelle}</TableCell>
+                      {headCells.map((headCell) => (
+                        <TableCell
+                          key={headCell.id}
+                          align={headCell.numeric ? "right" : "left"}
+                        >
+                          {row[headCell.id]}
+                          {/* Use the id from headCell to access the data */}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   );
                 })}

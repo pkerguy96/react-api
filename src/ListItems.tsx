@@ -10,6 +10,13 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import LayersIcon from "@mui/icons-material/Layers";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { Link } from "react-router-dom";
+/* newly added  */
+import List from "@mui/material/List";
+import BadgeIcon from "@mui/icons-material/Badge";
+import Collapse from "@mui/material/Collapse";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 export const mainListItems = (
   <React.Fragment>
@@ -49,29 +56,58 @@ export const mainListItems = (
     </ListItemButton>
   </React.Fragment>
 );
-
-export const secondaryListItems = (
-  <React.Fragment>
-    <ListSubheader component="div" inset>
-      Saved reports
-    </ListSubheader>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Current month" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
-    </ListItemButton>
-  </React.Fragment>
-);
+interface Props {
+  toggle: boolean;
+  isSideBarOpen: boolean;
+  handleClick: () => void;
+}
+export function SecondaryListItems({
+  isSideBarOpen,
+  toggle,
+  handleClick,
+}: Props) {
+  return (
+    <React.Fragment>
+      <ListSubheader component="div" inset>
+        Gestion du médecin
+      </ListSubheader>
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <InboxIcon />
+        </ListItemIcon>
+        <ListItemText primary="Les infirmières" />
+        {toggle ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={toggle && isSideBarOpen} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <Link to="/sexybebe" className="no-underline">
+            <ListItemButton sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <BadgeIcon />
+              </ListItemIcon>
+              <ListItemText primary="gérer les infirmières" />
+            </ListItemButton>
+          </Link>
+        </List>
+      </Collapse>
+      <ListItemButton>
+        <ListItemIcon>
+          <AssignmentIcon />
+        </ListItemIcon>
+        <ListItemText primary="Current month" />
+      </ListItemButton>
+      <ListItemButton>
+        <ListItemIcon>
+          <AssignmentIcon />
+        </ListItemIcon>
+        <ListItemText primary="Last quarter" />
+      </ListItemButton>
+      <ListItemButton>
+        <ListItemIcon>
+          <AssignmentIcon />
+        </ListItemIcon>
+        <ListItemText primary="Year-end sale" />
+      </ListItemButton>
+    </React.Fragment>
+  );
+}

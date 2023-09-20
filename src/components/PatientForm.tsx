@@ -121,7 +121,7 @@ const AddPatient = () => {
         clearInterval(intervalId);
       }
     };
-  }, [snackbarSeverity, navigate]);
+  }, [snackbarSeverity]);
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {
     onChange: (e) => {

@@ -16,7 +16,7 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./ListItems";
+import { mainListItems, SecondaryListItems } from "./ListItems";
 
 import DashboardMenu from "./components/DashboardMenu";
 
@@ -41,7 +41,7 @@ function Copyright(props: any) {
   );
 }
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 280;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -93,6 +93,12 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Dashboard(Props: React.PropsWithChildren) {
   const [open, setOpen] = React.useState(true);
+  const [openListMenu, setOpenListMenu] = React.useState(false);
+
+  const toggleListMenu = () => {
+    setOpenListMenu(!openListMenu); // Fix the toggleListMenu function
+  };
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -152,7 +158,11 @@ export default function Dashboard(Props: React.PropsWithChildren) {
         <List component="nav">
           {mainListItems}
           <Divider sx={{ my: 1 }} />
-          {secondaryListItems}
+          <SecondaryListItems
+            toggle={openListMenu}
+            isSideBarOpen={open}
+            handleClick={toggleListMenu}
+          />
         </List>
       </Drawer>
       <Box
