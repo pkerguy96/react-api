@@ -3,7 +3,7 @@ import Layout from "./pages/Layout";
 import App from "./pages/LoginPage";
 import PrivateRoute from "./pages/PrivateRoute";
 
-import AddPatient from "./components/PatientForm";
+import AddPatient from "./pages/AddPatientForm";
 
 import AdminProfile from "./components/AdminProfile";
 import Errorpage from "./pages/Errorpage";

@@ -1,5 +1,5 @@
 import { APIClient } from "../services/Http";
-import { Patient } from "../components/PatientForm";
+import { Patient } from "../pages/AddPatientForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_PATIENTS } from "../constants";
 const apiclient = new APIClient<Patient>("/Patient");
@@ -10,8 +10,8 @@ interface Patientscontext {
 export const useAddPatientMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Patient, Error, Patient, Patientscontext>({
-    mutationFn: (data: Patient) => {
-      return apiclient.Postall(data);
+    mutationFn: async (data: Patient) => {
+      return await apiclient.Postall(data);
     },
     onMutate: async (newPatient: Patient) => {
       const previousPatients =
@@ -23,12 +23,13 @@ export const useAddPatientMutation = (onAdd: () => void) => {
       onAdd();
       return { previousPatients };
     },
-    // savedPatient  we get from backend , oldPatients is the client side
-    onSuccess: (savedPatient, NewlyinsertedPatient) => {
+    // apiPatient  we get from backend , formPatient is the client side
+    onSuccess: (apiPatient, formPatient) => {
       queryClient.setQueryData<Patient[]>(CACHE_KEY_PATIENTS, (patients) =>
-        patients?.map((patient) =>
-          patient === NewlyinsertedPatient ? savedPatient : patient
-        )
+        patients?.map((patient) => {
+          // @ts-ignore
+          return patient.cin === formPatient.cin ? apiPatient.data : patient;
+        })
       );
     },
     onError: (error, newPatient, context) => {

@@ -11,11 +11,12 @@ import {
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import { useAddPatientMutation } from "../hooks/addPatient";
 
 import { calculateAge } from "../utils/dateUtils";
+import { AxiosError } from "axios";
 
 export interface Patient {
   nom: string;
@@ -29,11 +30,12 @@ export interface Patient {
   agecalc: string;
 }
 const AddPatient = () => {
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<
-    "success" | "error" | "warning" | "info" | undefined
-  >(undefined);
+  const [snackBar, setSnackBar] = useState({
+    isopen: false,
+    message: "",
+    severity: "",
+  });
+
   const [age, setAge] = useState(0);
   const navigate = useNavigate();
   const customErrorMessages = {
@@ -95,25 +97,32 @@ const AddPatient = () => {
       agecalc: "",
     });
   });
-  const onSubmit: SubmitHandler<Patient> = (data) => {
+  const onSubmit: SubmitHandler<Patient> = async (data) => {
     try {
-      addPatientMutation.mutateAsync(data);
-
-      setSnackbarOpen(true);
-      setSnackbarMessage("patient added successfuly");
-      setSnackbarSeverity("success");
-    } catch (error) {
-      setSnackbarOpen(true);
-      setSnackbarMessage("Oops something went wrong");
-      setSnackbarSeverity("error");
+      await addPatientMutation.mutateAsync(data);
+      setSnackBar({
+        isopen: true,
+        message: "Patient added successfully",
+        severity: "success",
+      });
+    } catch (error: any) {
+      const message =
+        error instanceof AxiosError
+          ? error.response?.data?.message
+          : error.message;
+      setSnackBar({
+        isopen: true,
+        message: message,
+        severity: "error",
+      });
     }
   };
   useEffect(() => {
     let intervalId: number;
-    if (snackbarSeverity === "success") {
+    if (snackBar.severity === "success") {
       intervalId = setInterval(() => {
         // Perform your navigation here
-        navigate("/Patients"); // Change "/some-route" to your desired route
+        navigate("/Patients");
       }, 1500); // Adjust the interval duration (in milliseconds) as needed
     }
     return () => {
@@ -121,7 +130,7 @@ const AddPatient = () => {
         clearInterval(intervalId);
       }
     };
-  }, [snackbarSeverity]);
+  }, [snackBar.severity]);
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {
     onChange: (e) => {
@@ -133,9 +142,11 @@ const AddPatient = () => {
   return (
     <Paper className="p-4">
       <Snackbar
-        open={snackbarOpen}
+        open={snackBar.isopen}
         autoHideDuration={3000} // Adjust the duration for how long the snackbar should be displayed
-        onClose={() => setSnackbarOpen(false)}
+        onClose={() =>
+          setSnackBar((prevState) => ({ ...prevState, isopen: false }))
+        }
         anchorOrigin={{
           vertical: "top", // Set the vertical position to top
           horizontal: "right", // Set the horizontal position to right
@@ -144,10 +155,12 @@ const AddPatient = () => {
         <MuiAlert
           elevation={6}
           variant="filled"
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
+          onClose={() =>
+            setSnackBar((prevState) => ({ ...prevState, isopen: false }))
+          }
+          severity={snackBar.severity as AlertColor}
         >
-          {snackbarMessage}
+          {snackBar.message}
         </MuiAlert>
       </Snackbar>
       <Box
@@ -339,7 +352,6 @@ const AddPatient = () => {
                   id="outlined-required"
                   label="Phone Number"
                   size="small"
-                  type="number"
                   error={!!errors.phoneNumber}
                   helperText={errors.phoneNumber?.message}
                 />
