@@ -1,10 +1,12 @@
 import AddButton from "../components/AddButton";
 import Datatable, { HeadCell } from "../components/Datatable";
+import getNurses from "../hooks/getNurses";
 import getPatients, { Data } from "../hooks/getPatients";
 import { Box, CircularProgress } from "@mui/material";
+import { Nurse } from "./AddNurseForm";
 
 const PatientsPage = () => {
-  const { data } = getPatients();
+  const { data } = getNurses();
   if (!data)
     return (
       <Box sx={{ display: "flex" }}>
@@ -16,13 +18,13 @@ const PatientsPage = () => {
       id: "nom",
       numeric: false,
       disablePadding: true,
-      label: "bbo",
+      label: "Nom",
     },
     {
       id: "prenom",
       numeric: true,
       disablePadding: false,
-      label: "dd",
+      label: "Prenom",
     },
     {
       id: "cin",
@@ -54,17 +56,11 @@ const PatientsPage = () => {
       disablePadding: false,
       label: "Telephone",
     },
-    {
-      id: "mutuelle",
-      numeric: true,
-      disablePadding: false,
-      label: "Mutuelle",
-    },
   ];
   return (
     <>
-      <AddButton link="/AddPatient" PlaceHolder="Ajouter une infirmière" />
-      <Datatable data={data as Data[]} headCells={headCells} />
+      <AddButton link="/AddNurse" PlaceHolder="Ajouter une infirmière" />
+      <Datatable data={data as Nurse[]} headCells={headCells} />
     </>
   );
 };

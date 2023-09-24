@@ -10,6 +10,7 @@ import Errorpage from "./pages/Errorpage";
 import DashboardKpiPage from "./pages/DashboardKpiPage";
 import NursesPage from "./pages/NursesPage";
 import PatientsPage from "./pages/PatientsPage";
+import AddNurseForm from "./pages/AddNurseForm";
 
 const router = createBrowserRouter([
   {
@@ -43,8 +44,12 @@ const router = createBrowserRouter([
         element: <AdminProfile />,
       },
       {
-        path: "sexybebe",
+        path: "Nurses",
         element: <NursesPage />,
+      },
+      {
+        path: "AddNurse",
+        element: <AddNurseForm />,
       },
     ],
   },

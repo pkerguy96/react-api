@@ -80,7 +80,7 @@ export function SecondaryListItems({
       </ListItemButton>
       <Collapse in={toggle && isSideBarOpen} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <Link to="/sexybebe" className="no-underline">
+          <Link to="/Nurses" className="no-underline">
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemIcon>
                 <BadgeIcon />
