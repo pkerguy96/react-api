@@ -1,5 +1,5 @@
 import * as React from "react";
-import { alpha } from "@mui/material/styles";
+
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,9 +18,11 @@ import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import getPatients, { Data } from "../hooks/getPatients";
+import { Data } from "../hooks/getPatients";
 import { TextField } from "@mui/material";
 
+import { Link } from "react-router-dom";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -144,19 +146,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
 
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
-            ),
-        }),
-      }}
-    >
+    <Toolbar>
       {numSelected > 0 ? (
         <Typography
           sx={{ flex: "1 1 100%" }}
@@ -177,11 +167,21 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip title="Opérer">
+            {/* Add the new tooltip */}
+            <Link to="/Patients/Operate">
+              <IconButton>
+                <MedicalServicesIcon /> {/* Use your new icon */}
+              </IconButton>
+            </Link>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       ) : (
         <Tooltip title="Filter list">
           <IconButton>

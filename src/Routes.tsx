@@ -11,6 +11,7 @@ import DashboardKpiPage from "./pages/DashboardKpiPage";
 import NursesPage from "./pages/NursesPage";
 import PatientsPage from "./pages/PatientsPage";
 import AddNurseForm from "./pages/AddNurseForm";
+import PatientOperation from "./pages/PatientOperation";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,12 @@ const router = createBrowserRouter([
       {
         path: "Patients",
         element: <PatientsPage />,
+        children: [
+          {
+            path: "Operate",
+            element: <PatientOperation />,
+          },
+        ],
       },
       {
         path: "AddPatient",

@@ -3,8 +3,11 @@ import { Box, CircularProgress } from "@mui/material";
 import AddButton from "../components/AddButton";
 import Datatable, { HeadCell } from "../components/Datatable";
 import getPatients, { Data } from "../hooks/getPatients";
+import { Outlet, useLocation } from "react-router";
 
 const PatientsPage = () => {
+  const location = useLocation();
+  const isOperateRoute = location.pathname === "/Patients/Operate";
   const { data } = getPatients();
   if (!data)
     return (
@@ -65,8 +68,14 @@ const PatientsPage = () => {
 
   return (
     <>
-      <AddButton link="/AddPatient" PlaceHolder="Ajouter un patient" />
-      <Datatable data={data as Data[]} headCells={headCells} />
+      {isOperateRoute ? (
+        <Outlet /> // Render the Outlet only for "/patients/operate"
+      ) : (
+        <>
+          <AddButton link="/AddPatient" PlaceHolder="Ajouter un patient" />
+          <Datatable data={data as Data[]} headCells={headCells} />
+        </>
+      )}
     </>
   );
 };

@@ -175,7 +175,7 @@ const AddPatient = () => {
             Nom:
           </label>
           <FormControl className="w-full md:flex-1">
-            <Controller
+            <Controller 
               name="nom"
               control={control}
               rules={{ required: customErrorMessages.nom.required }}
