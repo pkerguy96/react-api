@@ -8,10 +8,11 @@ import AddPatient from "./pages/AddPatientForm";
 import AdminProfile from "./components/AdminProfile";
 import Errorpage from "./pages/Errorpage";
 import DashboardKpiPage from "./pages/DashboardKpiPage";
-import NursesPage from "./pages/NursesPage";
+
 import PatientsPage from "./pages/PatientsPage";
 import AddNurseForm from "./pages/AddNurseForm";
 import PatientOperation from "./pages/PatientOperation";
+import NursePage from "./pages/NursePage";
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
         element: <PatientsPage />,
         children: [
           {
-            path: "Operate",
+            path: "Operate/:id",
             element: <PatientOperation />,
           },
         ],
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: "Nurses",
-        element: <NursesPage />,
+        element: <NursePage />,
       },
       {
         path: "AddNurse",

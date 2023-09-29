@@ -31,3 +31,7 @@
         animation: slideInX 0.3s ease-in-out;
       }
   }
+
+  .MuiTableRow-hover {
+    cursor: pointer;
+}

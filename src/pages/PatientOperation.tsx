@@ -2,14 +2,22 @@ import {
   Alert,
   Box,
   Button,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import "../styles.css";
+import React from "react";
 
 const PatientOperation = () => {
+  const [selectedValue, setSelectedValue] = React.useState("");
   const [polygonColors, setPolygonColors] = useState(
     Array(19).fill("transparent")
   );
@@ -22,7 +30,9 @@ const PatientOperation = () => {
     setPolygonColors(updatedColors);
     setFormClass("animated-element");
   };
-
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setSelectedValue(event.target.value);
+  };
   useEffect(() => {
     const allTransparent = polygonColors.every(
       (color) => color === "transparent"
@@ -243,38 +253,38 @@ const PatientOperation = () => {
         >
           <Box className=" border-2 py-2    bg-[#4b9cec] overflow-hidden rounded-2xl"></Box>
           <Typography
-            className="text-2xl font-bold text-center text-[#1976d2]"
+            className="text-2xl font-bold text-center text-[#1976d2] "
             variant="h5"
           >
             Formulaire d'opération.
           </Typography>
-          <Box className=" sm:mt-4 sm:ml-4 w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center  justify-center">
-            <label
-              htmlFor="standard-basic"
-              className="w-full md:w-[160px] content-center text-center md:text-left"
-            >
-              Teeth selected:
-            </label>
-            <TextField id="nom" label="Nom" size="small" />
+          <Box className=" mt-4 mb-4 sm:mt-4 sm:mb-2 sm:ml-4 w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center  justify-center">
+            <FormControl>
+              <Box>
+                <InputLabel id="demo-simple-select-helper-label">
+                  Type
+                </InputLabel>
+              </Box>
+              <Box>
+                <Select
+                  labelId="demo-simple-select-helper-label"
+                  id="demo-simple-select-helper"
+                  label="operation"
+                  style={{ width: "100%" }}
+                  value={selectedValue}
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10}>Blanchiment </MenuItem>
+                  <MenuItem value={20}>Extraction </MenuItem>
+                  <MenuItem value={30}>Implantation </MenuItem>
+                  <MenuItem value={40}>Implantation </MenuItem>
+                  <MenuItem value={50}>l'Orthopedie </MenuItem>
+                </Select>
+                <FormHelperText>Veuillez sélectionner un type.</FormHelperText>
+              </Box>
+            </FormControl>
           </Box>
-          <Box className="w-full sm:ml-4  flex flex-col gap-2 md:flex-row md:flex-wrap items-center  justify-center">
-            <label
-              htmlFor="standard-basic"
-              className="w-full md:w-[160px] content-center text-center md:text-left"
-            >
-              Teeth selected:
-            </label>
-            <TextField id="nom" label="Nom" size="small" />
-          </Box>
-          <Box className="w-full sm:ml-4 flex flex-col gap-2 md:flex-row md:flex-wrap  justify-center items-center">
-            <label
-              htmlFor="standard-basic"
-              className="w-full md:w-[160px] content-center text-center md:text-left"
-            >
-              Teeth selected:
-            </label>
-            <TextField id="nom" label="Nom" size="small" />
-          </Box>
+
           <Box className="mt-2 mb-4 flex justify-center">
             <Button type="submit" variant="contained" sx={{ borderRadius: 16 }}>
               Enregistrer
