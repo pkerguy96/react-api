@@ -8,6 +8,7 @@ import PatientsTable from "../components/PatientsTable";
 const PatientsPage = () => {
   const location = useLocation();
   const isOperateRoute = location.pathname.startsWith("/Patients/Operate");
+  const isDetailsRoute = location.pathname.startsWith("/Patients/Details");
 
   const { isLoading } = getPatients();
 
@@ -19,7 +20,9 @@ const PatientsPage = () => {
     );
   }
 
-  return <>{isOperateRoute ? <Outlet /> : <PatientsTable />}</>;
+  return (
+    <>{isOperateRoute || isDetailsRoute ? <Outlet /> : <PatientsTable />}</>
+  );
 };
 
 export default PatientsPage;

@@ -4,13 +4,12 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+
 import PeopleIcon from "@mui/icons-material/People";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import LayersIcon from "@mui/icons-material/Layers";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+
 import { Link } from "react-router-dom";
 /* newly added  */
+import DateRangeSharpIcon from "@mui/icons-material/DateRangeSharp";
 import List from "@mui/material/List";
 import BadgeIcon from "@mui/icons-material/Badge";
 import Collapse from "@mui/material/Collapse";
@@ -26,6 +25,14 @@ export const mainListItems = (
           <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Dashboard" />
+      </ListItemButton>
+    </Link>
+    <Link to="/Appointments" className="no-underline">
+      <ListItemButton>
+        <ListItemIcon>
+          <DateRangeSharpIcon />
+        </ListItemIcon>
+        <ListItemText primary="Appointments" />
       </ListItemButton>
     </Link>
     <Link to="/Patients" className="no-underline">

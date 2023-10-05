@@ -13,6 +13,8 @@ import PatientsPage from "./pages/PatientsPage";
 import AddNurseForm from "./pages/AddNurseForm";
 import PatientOperation from "./pages/PatientOperation";
 import NursePage from "./pages/NursePage";
+import PatientDetails from "./pages/PatientDetails";
+import AppointmentPage from "./pages/AppointmentPage";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
         element: <DashboardKpiPage />,
       },
       {
+        path: "Appointments",
+        element: <AppointmentPage />,
+      },
+      {
         path: "Patients",
         element: <PatientsPage />,
         children: [
@@ -41,8 +47,13 @@ const router = createBrowserRouter([
             path: "Operate/:id",
             element: <PatientOperation />,
           },
+          {
+            path: "Details/:id",
+            element: <PatientDetails />,
+          },
         ],
       },
+
       {
         path: "AddPatient",
         element: <AddPatient />,
