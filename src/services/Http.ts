@@ -1,8 +1,4 @@
-import axios, {
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1",
@@ -37,8 +33,14 @@ export class APIClient<T> {
       .get<ApiResponse<T>>(this.endpoint)
       .then((res) => res.data.data);
   };
+
   Postall = (data: T) => {
     return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
+  };
+  DeleteOne = (id: Number) => {
+    return axiosInstance
+      .delete<T>(`${this.endpoint}/${id}`)
+      .then((res) => res.data);
   };
 }
 

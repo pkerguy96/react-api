@@ -7,17 +7,46 @@ import { Paper } from "@mui/material";
 import AppointmentModal from "./AppointmentModal";
 import { EventClickArg } from "@fullcalendar/core/index.js";
 import moment from "moment";
+import getAppointment from "../hooks/getAppointments";
+import AppointmentConfirmation from "./AppointmentConfirmation";
 const AppointmentsCalendar = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
   const [selectedDateStr, setSelectedDateStr] = useState(""); // Store the selected date
+  const [confirmationData, setConfirmationData] = useState({
+    id: 0,
+    doctor_id: 0, // Replace with an appropriate default value
+    patient_id: 0, // Replace with an appropriate default value
+    note: "",
+    title: "",
+    date: "",
+  });
+  const { data } = getAppointment();
 
+  const openAppointmentConfirmationModal = (data: any) => {
+    setConfirmationData(data);
+    setOpenModalConfirmation(true);
+  };
   const handleCloseModal = () => {
     setOpenModal(false);
+    setOpenModalConfirmation(false);
   };
   const handleEventClick = (info: EventClickArg) => {
-    console.log("eventClick :", info.event.startStr);
-    // Handle the click on a custom event
-    /*    console.log("Date clicked:", info.dateStr || info.event.startStr); */
+    const appointmentinfo = info.event.extendedProps;
+    const _def = info.event._def.title;
+    const date = info.event.startStr;
+    const id = info.event.id;
+
+    const data = {
+      id: id,
+      doctor_id: appointmentinfo.doctor_id,
+      patient_id: appointmentinfo.patient_id,
+      note: appointmentinfo.note,
+      title: _def,
+      date: date,
+    };
+
+    openAppointmentConfirmationModal(data);
   };
 
   const handleDateClick = (info: DateClickArg) => {
@@ -30,8 +59,6 @@ const AppointmentsCalendar = () => {
         "YYYY-MM-DD HH:mm:ss"
       );
       setSelectedDateStr(formattedDateStr);
-      // It's a datetime (has time component)
-      console.log("Datetime:", info.dateStr);
     } else {
       setOpenModal(true);
       const selecteddate = new Date(info.dateStr);
@@ -41,85 +68,33 @@ const AppointmentsCalendar = () => {
       setSelectedDateStr(formattedDateStr);
     }
   };
-  // Generate custom events for each date cell (e.g., for the entire month)
-  const customEvents = [
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 1",
-      start: "2023-10-01",
-    },
-    {
-      title: "Custom Event 2",
-      start: "2023-10-02T15:00:00",
-      end: "2023-10-02T15:10:00",
-      background: "blue",
-    },
-    // Add more custom events as needed
-  ];
 
   return (
-    <Paper className="p-4 " elevation={3}>
+    <Paper className="p-4" elevation={3}>
       <FullCalendar
         plugins={[interactionPlugin, dayGridPlugin, timeGridPlugin]}
         headerToolbar={{
           left: "title",
-          right: "prev,next,dayGridMonth,timeGridWeek,timeGridDay", // user can switch between the two
+          right: "prev,next,dayGridMonth,timeGridWeek,timeGridDay",
         }}
         initialView="dayGridMonth"
-        events={customEvents}
+        timeZone="GMT"
+        //@ts-ignore
+        events={data}
         eventClick={handleEventClick}
         dateClick={handleDateClick}
         slotDuration="00:30:00"
+      />
+      <AppointmentConfirmation
+        data={confirmationData}
+        open={openModalConfirmation}
+        onClose={handleCloseModal}
       />
       <AppointmentModal
         dateTime={selectedDateStr}
         open={openModal}
         onClose={handleCloseModal}
       />
-      ;
     </Paper>
   );
 };

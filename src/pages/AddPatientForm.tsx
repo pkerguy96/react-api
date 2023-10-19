@@ -19,6 +19,7 @@ import { calculateAge } from "../utils/dateUtils";
 import { AxiosError } from "axios";
 
 export interface Patient {
+  id?: number;
   nom: string;
   prenom: string;
   cin: string;
