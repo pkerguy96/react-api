@@ -84,6 +84,8 @@ const AppointmentsCalendar = () => {
         eventClick={handleEventClick}
         dateClick={handleDateClick}
         slotDuration="00:30:00"
+        slotMinTime="08:00:00"
+        allDaySlot={false}
       />
       <AppointmentConfirmation
         data={confirmationData}

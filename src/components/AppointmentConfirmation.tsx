@@ -14,6 +14,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { APIClient } from "../services/Http";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
+
+import { CACHE_KEY_APPOINTMENTS } from "../constants";
+import { useQueryClient } from "@tanstack/react-query";
+
 interface ModalComponentProps {
   open: boolean;
   onClose: () => void;
@@ -31,6 +35,8 @@ const AppointmentConfirmation = ({
   onClose,
   data,
 }: ModalComponentProps) => {
+  const queryClient = useQueryClient();
+
   const [snackBar, setSnackBar] = useState({
     isopen: false,
     message: "",
@@ -42,6 +48,7 @@ const AppointmentConfirmation = ({
     try {
       const apiclient = new APIClient("Appointment");
       await apiclient.DeleteOne(data?.id);
+      queryClient.invalidateQueries(CACHE_KEY_APPOINTMENTS);
       setSnackBar({
         isopen: true,
         message: "Le rendez-vous est supprimé",
@@ -137,7 +144,7 @@ const AppointmentConfirmation = ({
             id="large-text"
             label="Note"
             multiline
-            value={data?.note}
+            value={data?.note ?? ""}
             rows={4}
             variant="outlined"
             disabled

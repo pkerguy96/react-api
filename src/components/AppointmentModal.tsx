@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Box,
@@ -33,7 +33,7 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
   const [snackBar, setSnackBar] = useState({
     isopen: false,
     message: "",
-    severity: "warning",
+    severity: "info",
   });
   const dateTimeMoment = moment(dateTime);
   const [patient, setPatient] = useState<Patient>();
@@ -88,6 +88,11 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
       const apiclient = new APIClient<Appointments>("/Appointment");
       const response = await apiclient.Postall(formData);
       /* THIS NEEDS TO CLOSE THE MODAL AND GIVE A POPER MSG  */
+      setSnackBar({
+        isopen: true,
+        message: "Le rendez-vous a été créé",
+        severity: "success",
+      });
       console.log(response);
       console.log(formData);
     } catch (error: any) {
@@ -95,9 +100,27 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
         error instanceof AxiosError
           ? error.response?.data?.message
           : error.message;
-      console.log(message);
+      console.log(error);
+      setSnackBar({
+        isopen: true,
+        message: message,
+        severity: "error",
+      });
     }
   };
+  useEffect(() => {
+    let intervalId: number;
+    if (snackBar.severity === "success") {
+      intervalId = setInterval(() => {
+        onClose(); // Corrected to use the correct function name
+      }, 1500);
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [snackBar.severity]);
   return (
     <>
       <Snackbar

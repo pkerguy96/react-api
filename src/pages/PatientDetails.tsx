@@ -7,11 +7,20 @@ import {
 } from "react-vertical-timeline-component";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import "react-vertical-timeline-component/style.min.css";
+import { useQuery } from "@tanstack/react-query";
+import getPatients from "../hooks/getPatients";
+
 const PatientDetails = () => {
   const [activeBtn, setActiveBtn] = useState("one");
   const handleBtnClick = (ButtonName: string) => {
     setActiveBtn(ButtonName);
   };
+  const { data } = getPatients();
+  console.log(data);
+  const filteredPatient = data.find((patient) => patient.id === 60);
+
+  console.log("hahowa", filteredPatient);
+
   return (
     <>
       <Box className="parent w-full flex flex-col gap-4">
