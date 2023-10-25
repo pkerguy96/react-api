@@ -1,26 +1,38 @@
-//@ts-nocheck
-import { Box, Button, ButtonGroup, Divider, Paper } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Divider } from "@mui/material";
+import { useState } from "react";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
+  //@ts-ignore
 } from "react-vertical-timeline-component";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import "react-vertical-timeline-component/style.min.css";
-import { useQuery } from "@tanstack/react-query";
+
 import getPatients from "../hooks/getPatients";
+import { useParams } from "react-router";
+import { Patient } from "./AddPatientForm";
 
 const PatientDetails = () => {
   const [activeBtn, setActiveBtn] = useState("one");
   const handleBtnClick = (ButtonName: string) => {
     setActiveBtn(ButtonName);
   };
+  //get cached patients
   const { data } = getPatients();
-  console.log(data);
-  const filteredPatient = data.find((patient) => patient.id === 60);
+  //get id in the url
+  const { id } = useParams();
+  // filter the patient stored in cache
+  if (!id) {
+    return <div>No ID specified.</div>;
+  }
+  const filteredPatient = (data as Patient[]).find(
+    (patient: Patient) => patient.id === parseInt(id)
+  );
+  if (!filteredPatient) {
+    return <div>Patient not found for ID: {id}</div>;
+  }
 
-  console.log("hahowa", filteredPatient);
-
+  const appointments = filteredPatient.appointments;
   return (
     <>
       <Box className="parent w-full flex flex-col gap-4">
@@ -29,10 +41,12 @@ const PatientDetails = () => {
             <Box className="w-full flex lg:flex-[1] flex-col bg-[#ffff] p-4 rounded-lg gap-4">
               <Box className="w-full flex flex-col">
                 <p className="text-2xl font-mono font-bold  text-center">
-                  Aymen Elkor
+                  {filteredPatient.nom} {filteredPatient.prenom}
                 </p>
                 <p className="text-md font-light tracking-wider text-center text-[#b9bec5]">
-                  0693954343.
+                  {filteredPatient.phoneNumber
+                    ? filteredPatient.phoneNumber
+                    : "N/A"}
                 </p>
               </Box>
               <Box className="w-full flex gap-4">
@@ -177,55 +191,20 @@ const PatientDetails = () => {
           </Box>
 
           <VerticalTimeline className="bg-[#f5f5f5] max-h-[500px] overflow-auto !w-full !m-0 !p-4 !rounded-md">
-            <VerticalTimelineElement
-              className="vertical-timeline-element--work"
-              contentStyle={{
-                background: "rgb(33, 150, 243)",
-                color: "#fff",
-              }}
-              contentArrowStyle={{
-                borderRight: "7px solid  rgb(33, 150, 243)",
-              }}
-              date="2011 - present"
-              iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
-              icon={<AccessibilityIcon />}
-            >
-              <h3 className="vertical-timeline-element-title">
-                Creative Director
-              </h3>
-              <h4 className="vertical-timeline-element-subtitle">Miami, FL</h4>
-              <p>
-                Creative Direction, User Experience, Visual Design, Project
-                Management, Team Leading
-              </p>
-            </VerticalTimelineElement>
-            <VerticalTimelineElement
-              className="vertical-timeline-element--work"
-              date="2010 - 2011"
-              iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
-              icon={<AccessibilityIcon />}
-            >
-              <h3 className="vertical-timeline-element-title">Art Director</h3>
-              <h4 className="vertical-timeline-element-subtitle">
-                San Francisco, CA
-              </h4>
-              <p>
-                Creative Direction, User Experience, Visual Design, SEO, Online
-                Marketing
-              </p>
-            </VerticalTimelineElement>
-            <VerticalTimelineElement
-              className="vertical-timeline-element--work"
-              date="2008 - 2010"
-              iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
-              icon={<AccessibilityIcon />}
-            >
-              <h3 className="vertical-timeline-element-title">Web Designer</h3>
-              <h4 className="vertical-timeline-element-subtitle">
-                Los Angeles, CA
-              </h4>
-              <p>User Experience, Visual Design</p>
-            </VerticalTimelineElement>
+            {Object.values(appointments).map((appointment: any, index) => (
+              <VerticalTimelineElement
+                key={index}
+                className="vertical-timeline-element--work"
+                date={appointment.date}
+                iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
+                icon={<AccessibilityIcon />}
+              >
+                <h4 className="vertical-timeline-element-subtitle">
+                  {appointment.title}{" "}
+                </h4>
+                {appointment.note ? <p>{appointment.note}</p> : null}
+              </VerticalTimelineElement>
+            ))}
           </VerticalTimeline>
         </Box>
       </Box>

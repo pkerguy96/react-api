@@ -28,6 +28,11 @@ export interface Patient {
   address: string;
   phoneNumber?: string;
   mutuelle: string;
+  appointments: {
+    title: string;
+    date: string;
+    note?: string;
+  };
   agecalc: string;
 }
 const AddPatient = () => {
