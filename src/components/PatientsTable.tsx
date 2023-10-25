@@ -5,10 +5,13 @@ import { useNavigate } from "react-router";
 import getPatients from "../hooks/getPatients";
 import Tooltip from "@mui/material/Tooltip";
 import { IconButton } from "@mui/material";
+import LoadingSpinner from "./LoadingSpinner";
 const PatientsTable = () => {
-  const { data } = getPatients();
-
+  const { data, isLoading } = getPatients();
   const navigate = useNavigate();
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
   const columns = [
     {
       name: "id",

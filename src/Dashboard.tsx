@@ -92,13 +92,16 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Dashboard(Props: React.PropsWithChildren) {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [openListMenu, setOpenListMenu] = React.useState(false);
 
   const toggleListMenu = () => {
     setOpenListMenu(!openListMenu); // Fix the toggleListMenu function
   };
-
+  // onmouse actions for drawer to be opened
+  const openDrawerOnmouse = (value: boolean) => {
+    setOpen(value);
+  };
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -141,7 +144,12 @@ export default function Dashboard(Props: React.PropsWithChildren) {
           <DashboardMenu />
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
+      <Drawer
+        variant="permanent"
+        open={open}
+        onMouseEnter={() => openDrawerOnmouse(true)}
+        onMouseLeave={() => openDrawerOnmouse(false)}
+      >
         <Toolbar
           sx={{
             display: "flex",

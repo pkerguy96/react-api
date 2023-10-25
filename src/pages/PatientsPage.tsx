@@ -10,7 +10,7 @@ const PatientsPage = () => {
   const isOperateRoute = location.pathname.startsWith("/Patients/Operate");
   const isDetailsRoute = location.pathname.startsWith("/Patients/Details");
 
-  const { isLoading } = getPatients();
+  /* const { isLoading } = getPatients();
 
   if (isLoading) {
     return (
@@ -18,7 +18,7 @@ const PatientsPage = () => {
         <CircularProgress />
       </Box>
     );
-  }
+  } */
 
   return (
     <>{isOperateRoute || isDetailsRoute ? <Outlet /> : <PatientsTable />}</>

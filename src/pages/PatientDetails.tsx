@@ -11,16 +11,23 @@ import "react-vertical-timeline-component/style.min.css";
 import getPatients from "../hooks/getPatients";
 import { useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const PatientDetails = () => {
+  //get id in the url
+  const { id } = useParams();
+  //get cached patients
+  const { data, isLoading } = getPatients();
   const [activeBtn, setActiveBtn] = useState("one");
   const handleBtnClick = (ButtonName: string) => {
     setActiveBtn(ButtonName);
   };
-  //get cached patients
-  const { data } = getPatients();
-  //get id in the url
-  const { id } = useParams();
+
+  // Check if `data` is loaded
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   // filter the patient stored in cache
   if (!id) {
     return <div>No ID specified.</div>;
@@ -71,19 +78,21 @@ const PatientDetails = () => {
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
                     Gender
                   </p>
-                  <p className="text-md text-center">Female</p>
+                  <p className="text-md text-center">{filteredPatient.sex}</p>
                 </Box>
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
                     Birthday
                   </p>
-                  <p className="text-md text-center">Feb 24th,1997</p>
+                  <p className="text-md text-center">{filteredPatient.date}</p>
                 </Box>
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
                     Phone Number
                   </p>
-                  <p className="text-md text-center">0693954343</p>
+                  <p className="text-md text-center">
+                    {filteredPatient.phoneNumber}
+                  </p>
                 </Box>
               </Box>
               <Divider orientation="horizontal" flexItem />
@@ -97,20 +106,8 @@ const PatientDetails = () => {
                     className="text-md text-center"
                     style={{ wordWrap: "break-word" }}
                   >
-                    rue alfred bouge quartier mohammadie n7
+                    {filteredPatient.address}
                   </p>
-                </Box>
-                <Box className="flex-1 flex flex-col gap-1">
-                  <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    City
-                  </p>
-                  <p className="text-md text-center">Youssoufia</p>
-                </Box>
-                <Box className="flex-1 flex flex-col gap-1">
-                  <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Zip Code
-                  </p>
-                  <p className="text-md text-center">46300</p>
                 </Box>
               </Box>
 
@@ -121,19 +118,17 @@ const PatientDetails = () => {
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
                     Cin
                   </p>
-                  <p className="text-md text-center">HA1995</p>
+                  <p className="text-md text-center"> {filteredPatient.cin}</p>
                 </Box>
-                <Box className="flex-1 flex flex-col gap-1">
-                  <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Sex
-                  </p>
-                  <p className="text-md text-center">Male</p>
-                </Box>
+
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
                     Mutuelle
                   </p>
-                  <p className="text-md text-center">CNSS</p>
+                  <p className="text-md text-center">
+                    {" "}
+                    {filteredPatient.mutuelle}
+                  </p>
                 </Box>
               </Box>
             </Box>
@@ -146,18 +141,11 @@ const PatientDetails = () => {
               </p>
             </Box>
             <Box className="w-full bg-[#eff1f7] p-4">
-              <p className="">im diabetic</p>
               <p
                 className=""
                 style={{ maxWidth: "100%", overflowWrap: "break-word" }}
               >
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              </p>
-              <p
-                className=""
-                style={{ maxWidth: "100%", overflowWrap: "break-word" }}
-              >
-                Lorem ipsum dolor sit amet
+                {filteredPatient.note}
               </p>
             </Box>
           </Box>
@@ -189,23 +177,28 @@ const PatientDetails = () => {
               Records
             </Box>
           </Box>
-
-          <VerticalTimeline className="bg-[#f5f5f5] max-h-[500px] overflow-auto !w-full !m-0 !p-4 !rounded-md">
-            {Object.values(appointments).map((appointment: any, index) => (
-              <VerticalTimelineElement
-                key={index}
-                className="vertical-timeline-element--work"
-                date={appointment.date}
-                iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
-                icon={<AccessibilityIcon />}
-              >
-                <h4 className="vertical-timeline-element-subtitle">
-                  {appointment.title}{" "}
-                </h4>
-                {appointment.note ? <p>{appointment.note}</p> : null}
-              </VerticalTimelineElement>
-            ))}
-          </VerticalTimeline>
+          {Object.values(appointments).length === 0 ? (
+            <p className=" flex  justify-center font-bold">
+              Aucun rendez-vous enregistré pour ce patient.
+            </p>
+          ) : (
+            <VerticalTimeline className="bg-[#f5f5f5] max-h-[500px] overflow-auto !w-full !m-0 !p-4 !rounded-md">
+              {Object.values(appointments).map((appointment: any, index) => (
+                <VerticalTimelineElement
+                  key={index}
+                  className="vertical-timeline-element--work"
+                  date={appointment.date}
+                  iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
+                  icon={<AccessibilityIcon />}
+                >
+                  <h4 className="vertical-timeline-element-subtitle">
+                    {appointment.title}
+                  </h4>
+                  {appointment.note ? <p>{appointment.note}</p> : null}
+                </VerticalTimelineElement>
+              ))}
+            </VerticalTimeline>
+          )}
         </Box>
       </Box>
     </>

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -28,6 +29,7 @@ export interface Patient {
   address: string;
   phoneNumber?: string;
   mutuelle: string;
+  note?: string;
   appointments: {
     title: string;
     date: string;
@@ -46,30 +48,32 @@ const AddPatient = () => {
   const navigate = useNavigate();
   const customErrorMessages = {
     nom: {
-      required: "Le champ Nom est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Nom est requis.",
     },
     prenom: {
-      required: "Le champ Prenom est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Prenom est requis.",
     },
     cin: {
-      required: "Le champ Cin est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Cin est requis.",
     },
     date: {
-      required: "Le champ Date est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Date est requis.",
     },
     sex: {
-      required: "Le champ Sex est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Sex est requis.",
     },
     address: {
-      required: "Le champ Address est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Address est requis.",
     },
     phoneNumber: {
-      required: "Le champ Telephone est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Telephone est requis.",
     },
     mutuelle: {
-      required: "Le champ Mutuelle est requis.", // Customize the required error message for "nom" field
+      required: "Le champ Mutuelle est requis.",
     },
-    // Add more custom error messages for other fields as needed
+    note: {
+      required: "Le champ Note est requis.",
+    },
   };
   const {
     handleSubmit,
@@ -88,6 +92,7 @@ const AddPatient = () => {
       phoneNumber: "",
       mutuelle: "",
       agecalc: "",
+      note: "",
     },
   }); // Specify Patient as the generic type for useForm
   const addPatientMutation = useAddPatientMutation(() => {
@@ -101,6 +106,7 @@ const AddPatient = () => {
       phoneNumber: "",
       mutuelle: "",
       agecalc: "",
+      note: "",
     });
   });
   const onSubmit: SubmitHandler<Patient> = async (data) => {
@@ -176,7 +182,16 @@ const AddPatient = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full flex flex-col gap-2"
       >
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+        <Box className="flex justify-center  text-lg  text-gray-400 uppercase">
+          <span>Ajouter un patient</span>
+        </Box>
+        <Divider
+          orientation="horizontal"
+          flexItem
+          className="gap-2 mb-4"
+          variant="middle"
+        />
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Nom:
           </label>
@@ -398,6 +413,29 @@ const AddPatient = () => {
                   <MenuItem value="AXA">AXA</MenuItem>
                   <MenuItem value="WAFA ASURANCE">WAFA ASURANCE</MenuItem>
                 </Select>
+              )}
+            />
+          </FormControl>
+        </Box>
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+          <label htmlFor="note" className="w-full md:w-[160px]">
+            Note:
+          </label>
+          <FormControl className="w-full md:flex-1">
+            <Controller
+              name="note"
+              control={control}
+              rules={{ required: customErrorMessages.note.required }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="outlined-required"
+                  multiline
+                  rows={3}
+                  label="Note"
+                  error={!!errors.note}
+                  helperText={errors.note?.message}
+                />
               )}
             />
           </FormControl>
