@@ -70,6 +70,9 @@ const AppointmentConfirmation = ({
     let intervalId: number;
     if (snackBar.severity === "warning") {
       intervalId = setInterval(() => {
+        setSnackBar({
+          severity: "success",
+        });
         onClose(); // Corrected to use the correct function name
       }, 1500);
     }

@@ -1,11 +1,14 @@
 //@ts-nocheck
 import MUIDataTable from "mui-datatables-mara";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate } from "react-router";
+import { redirect, useNavigate } from "react-router";
 import getPatients from "../hooks/getPatients";
 import Tooltip from "@mui/material/Tooltip";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
+import { Link } from "react-router-dom";
+import FolderCopyOutlinedIcon from "@mui/icons-material/FolderCopyOutlined";
+
 const PatientsTable = () => {
   const { data, isLoading } = getPatients();
   const navigate = useNavigate();
@@ -87,6 +90,22 @@ const PatientsTable = () => {
         sort: false,
       },
     },
+    {
+      name: "PatientDetails",
+      label: "Details",
+      options: {
+        filter: true,
+        sort: false,
+        customBodyRender: (value, tableMeta, updateValue) => (
+          <button className="ay-zoki text-gray-950 hover:text-blue-700 cursor-pointer">
+            <FolderCopyOutlinedIcon
+              className="pointer-events-none"
+              fill="currentColor"
+            />
+          </button>
+        ),
+      },
+    },
   ];
 
   const options = {
@@ -109,8 +128,28 @@ const PatientsTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s) => {
-      navigate(`Operate/${s[0]}`);
+    onRowClick: (s, m, e) => {
+      /* const firstChild = e.target.querySelector(".zbikbir"); */
+      console.log();
+      if (
+        e.target.querySelector(".ay-zoki") ||
+        e.target.classList.contains("ay-zoki")
+      ) {
+        navigate(`/Patients/Details/${s[0]}`);
+      } else {
+        navigate(`Operate/${s[0]}`);
+      }
+
+      /* if (6666
+        firstChild ||
+        (firstChild && firstChild.classList.contains("zbikbir"))
+      ) {
+        console.log(true);
+      } else {
+        console.log(false);
+      } */
+      /*
+       */
     },
   };
 

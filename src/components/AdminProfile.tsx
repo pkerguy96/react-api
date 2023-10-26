@@ -102,7 +102,7 @@ const AdminProfile = () => {
             sx={{ width: 120, height: 120 }}
           />
           <Button variant="contained" component="label">
-            Upload Image
+            Importer l'image
             <Controller
               control={control}
               name={"picture"}

@@ -15,6 +15,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment"; // Import moment library
 import getPatients from "../hooks/getPatients";
 import { Patient } from "../pages/AddPatientForm";
+import { useQueryClient } from "@tanstack/react-query";
+import { CACHE_KEY_APPOINTMENTS } from "../constants";
 
 import { AxiosError } from "axios";
 import { APIClient } from "../services/Http";
@@ -35,6 +37,7 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
     message: "",
     severity: "info",
   });
+  const queryClient = useQueryClient();
   const dateTimeMoment = moment(dateTime);
   const [patient, setPatient] = useState<Patient>();
   const [title, setTitle] = useState("");
@@ -87,20 +90,19 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
     try {
       const apiclient = new APIClient<Appointments>("/Appointment");
       const response = await apiclient.Postall(formData);
-      /* THIS NEEDS TO CLOSE THE MODAL AND GIVE A POPER MSG  */
+
       setSnackBar({
         isopen: true,
         message: "Le rendez-vous a été créé",
         severity: "success",
       });
-      console.log(response);
-      console.log(formData);
+      queryClient.invalidateQueries(CACHE_KEY_APPOINTMENTS);
     } catch (error: any) {
       const message =
         error instanceof AxiosError
           ? error.response?.data?.message
           : error.message;
-      console.log(error);
+
       setSnackBar({
         isopen: true,
         message: message,
@@ -108,11 +110,16 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
       });
     }
   };
+
   useEffect(() => {
     let intervalId: number;
     if (snackBar.severity === "success") {
       intervalId = setInterval(() => {
-        onClose(); // Corrected to use the correct function name
+        setSnackBar({
+          severity: "info",
+        });
+
+        onClose();
       }, 1500);
     }
     return () => {

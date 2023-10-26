@@ -36,3 +36,19 @@
     cursor: pointer;
 }
 
+.fc-header-toolbar {
+  flex-direction: column;
+}
+.custom-date-color{
+  color: black;
+}
+.fc-header-toolbar button {
+  background-color: #1976d2 !important;
+  border-color: #1976d2 !important;
+}
+
+@media (min-width: 1024px) {
+  .fc-header-toolbar {
+    flex-direction: row;
+  } 
+}

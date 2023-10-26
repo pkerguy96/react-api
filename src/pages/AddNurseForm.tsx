@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   Button,
+  Divider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
@@ -162,7 +163,16 @@ const AddNurseForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full flex flex-col gap-2"
       >
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+        <Box className="flex justify-center  text-lg  text-gray-400 uppercase">
+          <span>Ajouter une infirmière</span>
+        </Box>
+        <Divider
+          orientation="horizontal"
+          flexItem
+          className="gap-2 mb-4"
+          variant="middle"
+        />
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Nom:
           </label>

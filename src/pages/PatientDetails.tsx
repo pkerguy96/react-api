@@ -5,13 +5,14 @@ import {
   VerticalTimelineElement,
   //@ts-ignore
 } from "react-vertical-timeline-component";
-import AccessibilityIcon from "@mui/icons-material/Accessibility";
+
 import "react-vertical-timeline-component/style.min.css";
 
 import getPatients from "../hooks/getPatients";
 import { useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
 import LoadingSpinner from "../components/LoadingSpinner";
+import HealthAndSafetyOutlinedIcon from "@mui/icons-material/HealthAndSafetyOutlined";
 
 const PatientDetails = () => {
   //get id in the url
@@ -47,7 +48,7 @@ const PatientDetails = () => {
           <Box className="flex gap-4 w-full lg:flex-[2] flex-col lg:flex-row">
             <Box className="w-full flex lg:flex-[1] flex-col bg-[#ffff] p-4 rounded-lg gap-4">
               <Box className="w-full flex flex-col">
-                <p className="text-2xl font-mono font-bold  text-center">
+                <p className="text-2xl font-mono font-bold  text-center uppercase">
                   {filteredPatient.nom} {filteredPatient.prenom}
                 </p>
                 <p className="text-md font-light tracking-wider text-center text-[#b9bec5]">
@@ -76,19 +77,19 @@ const PatientDetails = () => {
               <Box className="flex gap-4">
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Gender
+                    Genre
                   </p>
                   <p className="text-md text-center">{filteredPatient.sex}</p>
                 </Box>
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Birthday
+                    Naissance
                   </p>
                   <p className="text-md text-center">{filteredPatient.date}</p>
                 </Box>
                 <Box className="flex-1 flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Phone Number
+                    Téléphone
                   </p>
                   <p className="text-md text-center">
                     {filteredPatient.phoneNumber}
@@ -100,7 +101,7 @@ const PatientDetails = () => {
               <Box className="flex gap-4 flex-wrap">
                 <Box className="w-full flex flex-col gap-1">
                   <p className="text-md font-mono font-bold text-center text-[#b9bec5]">
-                    Address
+                    Addresse
                   </p>
                   <p
                     className="text-md text-center"
@@ -126,7 +127,6 @@ const PatientDetails = () => {
                     Mutuelle
                   </p>
                   <p className="text-md text-center">
-                    {" "}
                     {filteredPatient.mutuelle}
                   </p>
                 </Box>
@@ -137,15 +137,17 @@ const PatientDetails = () => {
             <Box className="w-full flex justify-between">
               <p className="text-md font-mono font-bold">Notes</p>
               <p className="text-md font-mono font-bold text-[#1976d2] cursor-pointer">
-                See all
+                Voir tout
               </p>
             </Box>
             <Box className="w-full bg-[#eff1f7] p-4">
               <p
-                className=""
+                className="text-gray-500"
                 style={{ maxWidth: "100%", overflowWrap: "break-word" }}
               >
-                {filteredPatient.note}
+                {!filteredPatient.note
+                  ? "Aucune note disponible."
+                  : filteredPatient.note}
               </p>
             </Box>
           </Box>
@@ -162,7 +164,7 @@ const PatientDetails = () => {
               }}
               onClick={() => handleBtnClick("one")}
             >
-              Appointments
+              Rendez-vous
             </Box>
             <Box
               component={"button"}
@@ -174,7 +176,7 @@ const PatientDetails = () => {
               }}
               onClick={() => handleBtnClick("three")}
             >
-              Records
+              Opérations
             </Box>
           </Box>
           {Object.values(appointments).length === 0 ? (
@@ -188,12 +190,20 @@ const PatientDetails = () => {
                   key={index}
                   className="vertical-timeline-element--work"
                   date={appointment.date}
+                  contentStyle={{
+                    background: "rgb(33, 150, 243)",
+                    color: "#fff",
+                  }}
+                  dateClassName="custom-date-color"
+                  contentArrowStyle={{
+                    borderRight: "8px solid  rgb(33, 150, 243)",
+                  }}
                   iconStyle={{ background: "rgb(33, 150, 243)", color: "#fff" }}
-                  icon={<AccessibilityIcon />}
+                  icon={<HealthAndSafetyOutlinedIcon />}
                 >
-                  <h4 className="vertical-timeline-element-subtitle">
+                  <h3 className="vertical-timeline-element-title uppercase">
                     {appointment.title}
-                  </h4>
+                  </h3>
                   {appointment.note ? <p>{appointment.note}</p> : null}
                 </VerticalTimelineElement>
               ))}
