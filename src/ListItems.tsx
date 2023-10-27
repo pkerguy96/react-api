@@ -63,7 +63,7 @@ export function SecondaryListItems({}: Props) {
 
       <Divider />
 
-      <Link to="/Patients" className="no-underline">
+      <Link to="/Stock" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
             <Inventory2OutlinedIcon />

@@ -15,6 +15,7 @@ import PatientOperation from "./pages/PatientOperation";
 import NursePage from "./pages/NursePage";
 import PatientDetails from "./pages/PatientDetails";
 import AppointmentPage from "./pages/AppointmentPage";
+import StockPage from "./pages/StockPage";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
       {
         path: "AddNurse",
         element: <AddNurseForm />,
+      },
+      {
+        path: "Stock",
+        element: <StockPage />,
       },
     ],
   },

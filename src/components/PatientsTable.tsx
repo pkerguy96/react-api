@@ -97,7 +97,7 @@ const PatientsTable = () => {
         filter: true,
         sort: false,
         customBodyRender: (value, tableMeta, updateValue) => (
-          <button className="ay-zoki text-gray-950 hover:text-blue-700 cursor-pointer">
+          <button className="btn-patient-info text-gray-950 hover:text-blue-700 cursor-pointer">
             <FolderCopyOutlinedIcon
               className="pointer-events-none"
               fill="currentColor"
@@ -129,27 +129,14 @@ const PatientsTable = () => {
     ),
     selectableRowsHideCheckboxes: true,
     onRowClick: (s, m, e) => {
-      /* const firstChild = e.target.querySelector(".zbikbir"); */
-      console.log();
       if (
-        e.target.querySelector(".ay-zoki") ||
-        e.target.classList.contains("ay-zoki")
+        e.target.querySelector(".btn-patient-info") ||
+        e.target.classList.contains("btn-patient-info")
       ) {
         navigate(`/Patients/Details/${s[0]}`);
       } else {
         navigate(`Operate/${s[0]}`);
       }
-
-      /* if (6666
-        firstChild ||
-        (firstChild && firstChild.classList.contains("zbikbir"))
-      ) {
-        console.log(true);
-      } else {
-        console.log(false);
-      } */
-      /*
-       */
     },
   };
 
