@@ -196,6 +196,7 @@ const AddOrdonance = () => {
                 label="Uncontrolled picker"
                 defaultValue={selectedDate}
                 onChange={handleDateChange}
+                sx={{ width: "100%" }}
               />
             </LocalizationProvider>
           </Box>
