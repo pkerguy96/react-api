@@ -228,12 +228,12 @@ const AddOrdonance = () => {
             endIcon={<AddIcon />}
             onClick={handleMedicineSelection}
           >
-            Ajoutee
+            Ajouter
           </Button>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">
-            Selectionee
+            Sélectionné:
           </label>
           <Box className="w-full md:flex-1 flex-wrap  ">
             {selectedMedicines.map((item, index) => (
