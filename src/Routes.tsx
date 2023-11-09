@@ -16,6 +16,10 @@ import NursePage from "./pages/NursePage";
 import PatientDetails from "./pages/PatientDetails";
 import AppointmentPage from "./pages/AppointmentPage";
 import StockPage from "./pages/StockPage";
+import OrdonnancePage from "./pages/OrdonnancePage";
+import PrintableComponant from "./components/PrintableComponant";
+import AddOrdonance from "./pages/AddOrdonance";
+import DicomPageViewer from "./pages/DicomPageViewer";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +60,18 @@ const router = createBrowserRouter([
       },
 
       {
+        path: "Ordonnance",
+        element: <OrdonnancePage />,
+      },
+      {
+        path: "AddOrdonance",
+        element: <AddOrdonance />,
+      },
+      {
+        path: "printable",
+        element: <PrintableComponant />,
+      },
+      {
         path: "AddPatient",
         element: <AddPatient />,
       },
@@ -70,6 +86,10 @@ const router = createBrowserRouter([
       {
         path: "AddNurse",
         element: <AddNurseForm />,
+      },
+      {
+        path: "Dicom",
+        element: <DicomPageViewer />,
       },
       {
         path: "Stock",

@@ -2,7 +2,7 @@ import * as React from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-
+import MedicationLiquidOutlinedIcon from "@mui/icons-material/MedicationLiquidOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
 import PeopleIcon from "@mui/icons-material/People";
@@ -42,6 +42,14 @@ export const mainListItems = (
         <ListItemText primary="Patients" />
       </ListItemButton>
     </Link>
+    <Link to="/Ordonnance" className="no-underline">
+      <ListItemButton>
+        <ListItemIcon>
+          <MedicationLiquidOutlinedIcon />
+        </ListItemIcon>
+        <ListItemText primary="Ordonnance" />
+      </ListItemButton>
+    </Link>
   </React.Fragment>
 );
 interface Props {
@@ -63,6 +71,14 @@ export function SecondaryListItems({}: Props) {
 
       <Divider />
 
+      <Link to="/dicom" className="no-underline">
+        <ListItemButton>
+          <ListItemIcon>
+            <Inventory2OutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary="dicom" />
+        </ListItemButton>
+      </Link>
       <Link to="/Stock" className="no-underline">
         <ListItemButton>
           <ListItemIcon>

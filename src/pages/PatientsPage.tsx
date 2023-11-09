@@ -1,6 +1,3 @@
-import { Box, CircularProgress } from "@mui/material";
-
-import getPatients from "../hooks/getPatients";
 import { Outlet, useLocation } from "react-router";
 
 import PatientsTable from "../components/PatientsTable";

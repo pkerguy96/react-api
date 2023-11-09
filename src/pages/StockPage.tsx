@@ -1,6 +1,11 @@
 import StockTable from "../components/StockTable";
+
 const StockPage = () => {
-  return <StockTable />;
+  return (
+    <>
+      <StockTable />
+    </>
+  );
 };
 
 export default StockPage;
