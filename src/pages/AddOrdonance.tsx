@@ -21,13 +21,16 @@ import { useEffect, useState } from "react";
 import { items } from "../services/Medicines.json";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
+import addOrdonance from "../hooks/addOrdonance";
+import OrdonanceService from "../services/OrdonanceService";
+import { AxiosError } from "axios";
 
 const AddOrdonance = () => {
   const today = moment();
   const { data: patientsData } = getPatients();
   const [patient, setPatient] = useState<Patient>();
   const [selectedMedicines, setSelectedMedicines] = useState<
-    { medicine: string; note: string }[]
+    { medicine_name: string; note: string }[]
   >([]);
   const [modalMedicineName, setModalMedicineName] = useState("");
   const [noteValue, setNoteValue] = useState("");
@@ -62,16 +65,13 @@ const AddOrdonance = () => {
   const handleDateChange = (date: any) => {
     setSelectedDate(date);
   };
-  useEffect(() => {
-    // Access the latest value of selectedMedicines and log it
-    console.log(patient);
-  }, [patient]);
+
   const handleMedicineSelection = () => {
     if (
       medicineValue &&
-      !selectedMedicines.some((item) => item.medicine === medicineValue)
+      !selectedMedicines.some((item) => item.medicine_name === medicineValue)
     ) {
-      const newMedicine = { medicine: medicineValue, note: "" };
+      const newMedicine = { medicine_name: medicineValue, note: "" };
       setSelectedMedicines([...selectedMedicines, newMedicine]);
 
       setMedicineValue("");
@@ -88,7 +88,7 @@ const AddOrdonance = () => {
     if (selectedMedicineIndex !== -1) {
       const updatedMedicines = [...selectedMedicines];
       updatedMedicines[selectedMedicineIndex] = {
-        medicine: updatedMedicines[selectedMedicineIndex].medicine,
+        medicine_name: updatedMedicines[selectedMedicineIndex].medicine_name,
         note: noteValue,
       };
       setSelectedMedicines(updatedMedicines);
@@ -119,11 +119,22 @@ const AddOrdonance = () => {
       return;
     }
     const formData = {
-      id: patient?.id,
+      patient_id: patient?.id,
       medicine: selectedMedicines,
       date: selectedDate.format("YYYY-MM-DD"),
     };
-    console.log(formData);
+
+    try {
+      // Assuming addOrdonance returns a Promise
+      const response = await OrdonanceService.Postall(formData);
+      console.log("Success:", response);
+    } catch (error: any) {
+      const message =
+        error instanceof AxiosError
+          ? error.response?.data?.message
+          : error.message;
+      console.log(message);
+    }
   };
 
   const onClose = () => setOpen(false);
@@ -239,10 +250,10 @@ const AddOrdonance = () => {
             {selectedMedicines.map((item, index) => (
               <Chip
                 key={index}
-                label={item.medicine}
+                label={item.medicine_name}
                 variant="outlined"
                 className="!mr-1 !my-1"
-                onClick={() => handleOpenModal(item.medicine, index)}
+                onClick={() => handleOpenModal(item.medicine_name, index)}
                 onDelete={() => handleDelete(index)}
               />
             ))}
