@@ -1,11 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import OrdonanceService, { Ordonance } from "../services/OrdonanceService";
 import { CACHE_KEY_Ordonance } from "../constants";
 
-const addOrdonance = (data: Ordonance) => {
-  useQuery<Ordonance, Error>({
-    queryKey: [CACHE_KEY_Ordonance],
-    queryFn: OrdonanceService.Postall(data),
-  });
+const addOrdonance = () => {
+  const mutation = useMutation((data: Ordonance) =>
+    OrdonanceService.Postall(data)
+  );
+
+  return mutation;
 };
 export default addOrdonance;

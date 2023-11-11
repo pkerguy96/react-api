@@ -24,8 +24,16 @@ import moment from "moment";
 import addOrdonance from "../hooks/addOrdonance";
 import OrdonanceService from "../services/OrdonanceService";
 import { AxiosError } from "axios";
+import SnackbarComponent from "../components/SnackbarComponent";
+import { useNavigate } from "react-router";
 
 const AddOrdonance = () => {
+  const navigate = useNavigate();
+  const [snackBar, setSnackBar] = useState({
+    isOpen: false,
+    message: "",
+    severity: "info",
+  });
   const today = moment();
   const { data: patientsData } = getPatients();
   const [patient, setPatient] = useState<Patient>();
@@ -38,7 +46,7 @@ const AddOrdonance = () => {
   const [open, setOpen] = useState(false);
   const [selectedMedicineIndex, setSelectedMedicineIndex] = useState(-1);
   const [selectedDate, setSelectedDate] = useState(today);
-
+  const mutation = addOrdonance();
   let dataArray: Patient[] = [];
   if (
     patientsData &&
@@ -102,17 +110,9 @@ const AddOrdonance = () => {
     e.preventDefault();
     // Adjust the locale as needed
     // Check if patient is undefined or null
-    if (!patient) {
-      console.error("Patient information is missing.");
+    if (!patient || !selectedDate) {
       return;
     }
-
-    // Check if selectedDate is undefined
-    if (!selectedDate) {
-      console.error("Selected date is missing.");
-      return;
-    }
-
     // Check if selectedMedicines is undefined or empty
     if (!selectedMedicines || selectedMedicines.length === 0) {
       console.error("No selected medicines.");
@@ -123,46 +123,64 @@ const AddOrdonance = () => {
       medicine: selectedMedicines,
       date: selectedDate.format("YYYY-MM-DD"),
     };
-
     try {
-      // Assuming addOrdonance returns a Promise
-      const response = await OrdonanceService.Postall(formData);
-      console.log("Success:", response);
+      mutation.mutateAsync(formData, {
+        onSuccess: () => {
+          setSnackBar({
+            isOpen: true,
+            message: "Ordonnance créée avec succès",
+            severity: "success",
+          });
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+
+          setSnackBar({
+            isOpen: true,
+            message: message,
+            severity: "warning",
+          });
+        },
+      });
     } catch (error: any) {
       const message =
         error instanceof AxiosError
           ? error.response?.data?.message
           : error.message;
-      console.log(message);
+      setSnackBar({
+        isOpen: true,
+        message: message,
+        severity: "warning",
+      });
     }
   };
+  useEffect(() => {
+    let timerId: number;
+    if (snackBar.isOpen) {
+      timerId = setTimeout(() => {
+        navigate("/Ordonnance");
+      }, 2000); // 2 seconds
 
+      return () => {
+        clearTimeout(timerId);
+      };
+    }
+  }, [snackBar.isOpen]);
   const onClose = () => setOpen(false);
-  const customErrorMessages = {
-    nom: {
-      required: "Le champ Nom est requis.", // Customize the required error message for "nom" field
-    },
-    prenom: {
-      required: "Le champ Prenom est requis.", // Customize the required error message for "nom" field
-    },
-    cin: {
-      required: "Le champ Cin est requis.", // Customize the required error message for "nom" field
-    },
-    date: {
-      required: "Le champ Date est requis.", // Customize the required error message for "nom" field
-    },
-    sex: {
-      required: "Le champ Sex est requis.", // Customize the required error message for "nom" field
-    },
-    address: {
-      required: "Le champ Address est requis.", // Customize the required error message for "nom" field
-    },
-    phoneNumber: {
-      required: "Le champ Telephone est requis.", // Customize the required error message for "nom" field
-    },
-  };
+
   return (
     <Paper className="p-4">
+      <SnackbarComponent
+        isOpen={snackBar.isOpen}
+        message={snackBar.message}
+        severity={snackBar.severity}
+        onClose={() =>
+          setSnackBar((prevState) => ({ ...prevState, isOpen: false }))
+        }
+      />
       <Box
         component="form"
         noValidate
@@ -204,7 +222,7 @@ const AddOrdonance = () => {
           <Box className="w-full md:flex-1">
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DatePicker
-                label="Uncontrolled picker"
+                label="Date"
                 defaultValue={selectedDate}
                 onChange={handleDateChange}
                 sx={{ width: "100%" }}
@@ -235,6 +253,7 @@ const AddOrdonance = () => {
             </datalist>
           </Box>
           <Button
+            sx={{ borderRadius: 16 }}
             variant="outlined"
             endIcon={<AddIcon />}
             onClick={handleMedicineSelection}
