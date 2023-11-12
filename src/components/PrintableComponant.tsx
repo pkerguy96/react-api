@@ -43,6 +43,7 @@ function Print(target: any) {
   };
 }
 const PrintableComponant = () => {
+  //TODO: UPDATE BUTTONS
   const { id } = useParams();
   if (!id) {
     return <div>No ID specified.</div>;

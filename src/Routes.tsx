@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         element: <PatientsPage />,
         children: [
           {
-            path: "Operate/:id",
+            path: "Operate/:id/:age?",
             element: <PatientOperation />,
           },
           {

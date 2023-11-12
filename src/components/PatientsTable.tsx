@@ -93,7 +93,7 @@ const PatientsTable = () => {
     {
       name: "PatientDetails",
       label: "Details",
-      options: { 
+      options: {
         filter: true,
         sort: false,
         customBodyRender: (value, tableMeta, updateValue) => (
@@ -126,7 +126,7 @@ const PatientsTable = () => {
           <AddIcon />
         </IconButton>
       </Tooltip>
-    ), 
+    ),
     selectableRowsHideCheckboxes: true,
     onRowClick: (s, m, e) => {
       if (
@@ -135,7 +135,9 @@ const PatientsTable = () => {
       ) {
         navigate(`/Patients/Details/${s[0]}`);
       } else {
-        navigate(`Operate/${s[0]}`);
+        const formatedDate = s[3].split("-");
+
+        navigate(`Operate/${s[0]}/${formatedDate[0]}`);
       }
     },
   };
