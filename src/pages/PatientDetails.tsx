@@ -2,7 +2,7 @@ import { Box, Divider } from "@mui/material";
 import { useState } from "react";
 import {
   VerticalTimeline,
-  VerticalTimelineElement,
+  VerticalTimelineElement, 
   //@ts-ignore
 } from "react-vertical-timeline-component";
 

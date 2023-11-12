@@ -1,7 +1,8 @@
 //@ts-nocheck
 import { Box, Button, Paper } from "@mui/material";
 import React, { useEffect } from "react";
-import rasszb from "/MRBRAIN.DCM?url";
+import rasszb from "/case1/case1_008.dcm?url";
+import rasszb1 from "/case1/case1_010.dcm?url";
 
 const app = new dwv.App();
 const tools = {
@@ -63,6 +64,38 @@ const actions = {
 };
 
 const DicomPageViewer = () => {
+  const CANVAS = document.createElement("canvas");
+  const CONTEXT = CANVAS.getContext("2d");
+
+  function download() {
+    CANVAS.height = 800;
+    CANVAS.width = 1400;
+    const DOWNLOAD = document.querySelector("#download");
+    const wrap = document.querySelector("#Dicom");
+    CONTEXT.clearRect(0, 0, CANVAS.width, CANVAS.height);
+    const canvases = wrap.querySelectorAll("canvas");
+    if (canvases.length) {
+      canvases.forEach((canvas) => {
+        const factor = Math.min(
+          CANVAS.width / canvas.width,
+          CANVAS.height / canvas.height
+        );
+
+        CONTEXT.drawImage(
+          canvas,
+          CANVAS.width / 2 - (canvas.width * factor) / 2,
+          CANVAS.height / 2 - (canvas.height * factor) / 2,
+          canvas.width * factor,
+          canvas.height * factor
+        );
+      });
+    }
+    44;
+
+    DOWNLOAD.href = CANVAS.toDataURL("image/png");
+    DOWNLOAD.click();
+  }
+
   useEffect(() => {
     const wrap = document.querySelector("#Dicom");
     if (!wrap.dataset.t) {
@@ -78,7 +111,7 @@ const DicomPageViewer = () => {
         tools: tools,
       });
 
-      app.loadURLs([rasszb]);
+      app.loadURLs([rasszb, rasszb1]);
 
       window.addEventListener("resize", () => {
         app.onResize();
@@ -93,6 +126,7 @@ const DicomPageViewer = () => {
   return (
     <Paper>
       <Box className="flex">
+        <a id="download" href="" download></a>
         <Button variant="outlined" onClick={() => actions["WindowLevel"]()}>
           WindowLevel
         </Button>
@@ -119,6 +153,9 @@ const DicomPageViewer = () => {
         </Button>
         <Button variant="outlined" onClick={() => actions["Reset"]()}>
           Reset
+        </Button>
+        <Button variant="outlined" onClick={download}>
+          download
         </Button>
         <Button
           variant="outlined"

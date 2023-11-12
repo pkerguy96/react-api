@@ -93,7 +93,7 @@ const PatientsTable = () => {
     {
       name: "PatientDetails",
       label: "Details",
-      options: {
+      options: { 
         filter: true,
         sort: false,
         customBodyRender: (value, tableMeta, updateValue) => (
@@ -126,7 +126,7 @@ const PatientsTable = () => {
           <AddIcon />
         </IconButton>
       </Tooltip>
-    ),
+    ), 
     selectableRowsHideCheckboxes: true,
     onRowClick: (s, m, e) => {
       if (

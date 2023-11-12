@@ -5,7 +5,7 @@ import { Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
-
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import getOrdonance from "../hooks/getOrdonance";
 const OrdonanceTable = () => {
   const { data, isLoading } = getOrdonance();
@@ -23,12 +23,9 @@ const OrdonanceTable = () => {
   const columns = [
     {
       name: "id",
-      label: "Id",
-      options: {
-        display: false,
-        //customBodyRender: (v) => <button>{v}</button>,
-      },
+      label: "#",
     },
+
     {
       name: "nom",
       label: "Nom",
@@ -43,6 +40,22 @@ const OrdonanceTable = () => {
       options: {
         filter: true,
         sort: true,
+      },
+    },
+    {
+      name: "Actions",
+      label: "Actions",
+      options: {
+        filter: true,
+        sort: true,
+        customBodyRender: (value, tableMeta, updateValue) => (
+          <button className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer">
+            <DeleteOutlineIcon
+              className="pointer-events-none"
+              fill="currentColor"
+            />
+          </button>
+        ),
       },
     },
   ];
@@ -67,7 +80,16 @@ const OrdonanceTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s, m, e) => {},
+    onRowClick: (s, m, e) => {
+      if (
+        e.target.querySelector(".btn-ordonance-delete") ||
+        e.target.classList.contains("btn-ordonance-delete")
+      ) {
+        console.log("delete");
+      } else {
+        navigate(`/OrdonanceDetails/${s[0]}`);
+      }
+    },
   };
   return (
     <MUIDataTable

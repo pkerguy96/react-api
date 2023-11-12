@@ -22,18 +22,14 @@ import { items } from "../services/Medicines.json";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
 import addOrdonance from "../hooks/addOrdonance";
-import OrdonanceService from "../services/OrdonanceService";
+
 import { AxiosError } from "axios";
 import SnackbarComponent from "../components/SnackbarComponent";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import getOrdonance from "../hooks/getOrdonance";
+import { Ordonance } from "../services/OrdonanceService";
 
 const AddOrdonance = () => {
-  const navigate = useNavigate();
-  const [snackBar, setSnackBar] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info",
-  });
   const today = moment();
   const { data: patientsData } = getPatients();
   const [patient, setPatient] = useState<Patient>();
@@ -47,7 +43,16 @@ const AddOrdonance = () => {
   const [selectedMedicineIndex, setSelectedMedicineIndex] = useState(-1);
   const [selectedDate, setSelectedDate] = useState(today);
   const mutation = addOrdonance();
+
+  const navigate = useNavigate();
+  const [snackBar, setSnackBar] = useState({
+    isOpen: false,
+    message: "",
+    severity: "info",
+  });
+  // adding patient if existed
   let dataArray: Patient[] = [];
+
   if (
     patientsData &&
     typeof patientsData === "object" &&

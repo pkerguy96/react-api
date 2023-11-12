@@ -64,11 +64,11 @@ const router = createBrowserRouter([
         element: <OrdonnancePage />,
       },
       {
-        path: "AddOrdonance",
+        path: "AddOrdonance/:id?",
         element: <AddOrdonance />,
       },
       {
-        path: "printable",
+        path: "OrdonanceDetails/:id",
         element: <PrintableComponant />,
       },
       {
