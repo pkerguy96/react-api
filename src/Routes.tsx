@@ -20,6 +20,7 @@ import OrdonnancePage from "./pages/OrdonnancePage";
 import PrintableComponant from "./components/PrintableComponant";
 import AddOrdonance from "./pages/AddOrdonance";
 import DicomPageViewer from "./pages/DicomPageViewer";
+import AddOrdonanceUpdated from "./pages/AddOrdonanceUpdated";
 
 const router = createBrowserRouter([
   {
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
       },
       {
         path: "AddOrdonance/:id?",
-        element: <AddOrdonance />,
+        element: <AddOrdonanceUpdated />,
       },
       {
         path: "OrdonanceDetails/:id",

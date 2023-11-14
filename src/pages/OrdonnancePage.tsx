@@ -1,4 +1,3 @@
-import React from "react";
 import OrdonanceTable from "../components/OrdonanceTable";
 
 const OrdonnancePage = () => {
