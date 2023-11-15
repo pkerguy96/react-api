@@ -14,7 +14,7 @@ export interface Data {
 
 const apiclient = new APIClient<Data[]>("/Patient");
 const getPatients = () => {
-  return useQuery<Data[], Error>({
+  return useQuery<Data[], Error, any, any>({
     queryKey: CACHE_KEY_PATIENTS,
     queryFn: apiclient.getall,
     staleTime: 600000, //10 minutes

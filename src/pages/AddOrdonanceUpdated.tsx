@@ -10,6 +10,7 @@ import {
   Modal,
   IconButton,
   Typography,
+  FormControl,
 } from "@mui/material";
 import { items } from "../services/Medicines.json";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -17,18 +18,45 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import getPatients from "../hooks/getPatients";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Patient } from "./AddPatientForm";
+import { useParams } from "react-router";
+
 const AddOrdonanceUpdated = () => {
   const { data: patientsData, isLoading } = getPatients();
+  const { id } = useParams();
+  const isAddMode = !id;
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
   const [name, setName] = useState("");
+  const [optionsArray, setOptionsArray] = useState(null); // Initialize with an empty array
 
   const onClose = () => setDrug({});
+
+  let dataArray: Patient[] = [];
+  let specifiedPatient;
+  let newOptionsArray;
+  if (
+    patientsData &&
+    typeof patientsData === "object" &&
+    Object.keys(patientsData).length > 0
+  ) {
+    dataArray = Object.values(patientsData);
+  }
+  useEffect(() => {
+    if (!isAddMode) {
+      specifiedPatient = patientsData?.find(
+        (patients) => patients.id === parseInt(id)
+      );
+      if (specifiedPatient) {
+        setOptionsArray(specifiedPatient);
+        setValue("patient", specifiedPatient);
+      }
+    }
+  }, [patientsData, id]);
 
   const {
     handleSubmit,
@@ -37,26 +65,23 @@ const AddOrdonanceUpdated = () => {
     control,
     reset,
     formState: { errors },
-  } = useForm();
-
+  } = useForm({
+    defaultValues: {
+      date: new Date().toISOString().split("T")[0],
+    },
+  });
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  let dataArray: Patient[] = [];
-  if (
-    patientsData &&
-    typeof patientsData === "object" &&
-    Object.keys(patientsData).length > 0
-  ) {
-    dataArray = Object.values(patientsData);
-  }
+
   const onSubmit = (data) => {
     data.drugs = drugs;
     console.log(data);
   };
 
+  const createUser = () => {};
+  const editUser = () => {};
   const handleOpenModal = (index: number) => {
-    console.log(drugs);
     const current = drugs[index];
     setDrug({
       id: current.id,
@@ -94,18 +119,18 @@ const AddOrdonanceUpdated = () => {
               render={({ field }) => (
                 <Autocomplete
                   {...field}
-                  disablePortal
                   id="combo-box-demo"
+                  value={optionsArray || field.value || null}
                   options={dataArray}
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  value={field.value || null}
                   getOptionLabel={(option) => `${option.nom} ${option.prenom}`}
                   renderInput={(params) => (
                     <TextField {...params} label="Patient" />
                   )}
                   onChange={(e, data) => {
+                    optionsArray && setOptionsArray(data);
                     setValue("patient", data); // Set the entire patient object as the value
                   }}
                 />
@@ -117,11 +142,30 @@ const AddOrdonanceUpdated = () => {
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Date:
           </label>
-          <Box className="w-full md:flex-1">
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DatePicker label="Date" sx={{ width: "100%" }} />
-            </LocalizationProvider>
-          </Box>
+          <FormControl className="w-full md:flex-1">
+            <Controller
+              name="date"
+              control={control}
+              rules={{
+                validate: (value) => {
+                  const selectedDate = new Date(value);
+                  const currentDate = new Date();
+                  return (
+                    selectedDate <= currentDate ||
+                    "La date ne peut pas être dans le futur."
+                  );
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  type="date"
+                  {...field}
+                  id="outlined-required"
+                  size="large"
+                />
+              )}
+            />
+          </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">

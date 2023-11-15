@@ -150,7 +150,7 @@ const AddPatient = () => {
       setAge(age); // Set the 'age' field in the form with the calculated age
     },
   });
-
+  //TODO: dir bhal had form fk olchi
   return (
     <Paper className="p-4">
       <Snackbar
@@ -191,264 +191,259 @@ const AddPatient = () => {
           className="gap-2 mb-4"
           variant="middle"
         />
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Nom:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="nom"
-              control={control}
-              rules={{ required: customErrorMessages.nom.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="nom"
-                  label="Nom"
-                  size="small"
-                  error={!!errors.nom} // Add error prop based on whether the field has an error
-                  helperText={errors.nom?.message} // Display the error message for the field
-                />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Prenom:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="prenom"
-              control={control}
-              rules={{ required: customErrorMessages.prenom.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="outlined-required"
-                  label="Prenom"
-                  size="small"
-                  error={!!errors.prenom}
-                  helperText={errors.prenom?.message}
-                />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Cin:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="cin"
-              control={control}
-              rules={{ required: customErrorMessages.cin.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="outlined-required"
-                  label="Cin"
-                  size="small"
-                  error={!!errors.cin}
-                  helperText={errors.cin?.message}
-                />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+        <Box className="w-full flex flex-col gap-4">
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
             <label htmlFor="nom" className="w-full md:w-[160px]">
-              Date de naissance:
+              Nom:
             </label>
             <FormControl className="w-full md:flex-1">
               <Controller
-                name="date"
+                name="nom"
                 control={control}
-                rules={{
-                  required: customErrorMessages.date.required,
-                  validate: (value) => {
-                    const selectedDate = new Date(value);
-                    const currentDate = new Date();
-                    return (
-                      selectedDate <= currentDate ||
-                      "La date ne peut pas être dans le futur."
-                    );
-                  },
-                }}
+                rules={{ required: customErrorMessages.nom.required }}
                 render={({ field }) => (
                   <TextField
-                    type="date"
                     {...field}
-                    id="outlined-required"
-                    size="small"
-                    error={!!errors.date}
-                    helperText={errors.date?.message}
+                    id="nom"
+                    label="Nom"
+                    error={!!errors.nom} // Add error prop based on whether the field has an error
+                    helperText={errors.nom?.message} // Display the error message for the field
                   />
                 )}
               />
             </FormControl>
           </Box>
-          <Box className="w-full md:w-[300px] flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
             <label htmlFor="nom" className="w-full md:w-[160px]">
-              age calcule:
+              Prenom:
             </label>
             <FormControl className="w-full md:flex-1">
               <Controller
-                name="agecalc"
+                name="prenom"
                 control={control}
+                rules={{ required: customErrorMessages.prenom.required }}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     id="outlined-required"
-                    disabled
-                    size="small"
-                    value={age}
+                    label="Prenom"
+                    error={!!errors.prenom}
+                    helperText={errors.prenom?.message}
                   />
                 )}
               />
             </FormControl>
           </Box>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Sex:
-          </label>
-          <FormControl className="w-full md:flex-1" size="small">
-            <InputLabel id="demo-select-small-label">Sex</InputLabel>
-            <Controller
-              name="sex"
-              control={control}
-              rules={{ required: customErrorMessages.sex.required }} // Add any validation rules as needed
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  label="sex"
-                  error={!!errors.sex}
-                >
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Adresse:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="address"
-              control={control}
-              rules={{ required: customErrorMessages.address.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="outlined-required"
-                  label="Adresse"
-                  size="small"
-                  error={!!errors.address}
-                  helperText={errors.address?.message}
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Cin:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="cin"
+                control={control}
+                rules={{ required: customErrorMessages.cin.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="outlined-required"
+                    label="Cin"
+                    error={!!errors.cin}
+                    helperText={errors.cin?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+              <label htmlFor="nom" className="w-full md:w-[160px]">
+                Date de naissance:
+              </label>
+              <FormControl className="w-full md:flex-1">
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{
+                    required: customErrorMessages.date.required,
+                    validate: (value) => {
+                      const selectedDate = new Date(value);
+                      const currentDate = new Date();
+                      return (
+                        selectedDate <= currentDate ||
+                        "La date ne peut pas être dans le futur."
+                      );
+                    },
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      type="date"
+                      {...field}
+                      label="Date de naissance"
+                      id="outlined-required"
+                      error={!!errors.date}
+                      helperText={errors.date?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="phoneNumber" className="w-full md:w-[160px]">
-            Telephone:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="phoneNumber"
-              control={control}
-              rules={{ required: customErrorMessages.phoneNumber.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="outlined-required"
-                  label="Phone Number"
-                  size="small"
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber?.message}
+              </FormControl>
+            </Box>
+            <Box className="w-full md:w-[300px] flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+              <label htmlFor="nom" className="w-full md:w-[160px]">
+                age calcule:
+              </label>
+              <FormControl className="w-full md:flex-1">
+                <Controller
+                  name="agecalc"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      id="outlined-required"
+                      disabled
+                      value={age}
+                    />
+                  )}
                 />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="mutuelle" className="w-full md:w-[160px]">
-            Mutuelle:
-          </label>
-          <FormControl className="w-full md:flex-1" size="small">
-            <InputLabel id="demo-select-small-label">Mutuelle</InputLabel>
-            <Controller
-              name="mutuelle"
-              control={control}
-              rules={{ required: customErrorMessages.mutuelle.required }} // Add any validation rules as needed
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  label="mutuelle"
-                  error={!!errors.mutuelle}
-                >
-                  <MenuItem value="none">
-                    <em>Aucune</em>
-                  </MenuItem>
-                  <MenuItem value="Mamdat">Mamdat</MenuItem>
-                  <MenuItem value="CNIA SAADA">CNIA SAADA</MenuItem>
-                  <MenuItem value="CNOPS">CNOPS</MenuItem>
-                  <MenuItem value="GENERAL">GENERAL</MenuItem>
-                  <MenuItem value="CNSS">CNSS</MenuItem>
-                  <MenuItem value="MFAR">MFAR</MenuItem>
-                  <MenuItem value="WATANIA">WATANIA</MenuItem>
-                  <MenuItem value="ZURICH">ZURICH</MenuItem>
-                  <MenuItem value="ATLANTA">ATLANTA</MenuItem>
-                  <MenuItem value="AXA">AXA</MenuItem>
-                  <MenuItem value="WAFA ASURANCE">WAFA ASURANCE</MenuItem>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-          <label htmlFor="note" className="w-full md:w-[160px]">
-            Note:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="note"
-              control={control}
-              rules={{ required: customErrorMessages.note.required }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="outlined-required"
-                  multiline
-                  rows={3}
-                  label="Note"
-                  error={!!errors.note}
-                  helperText={errors.note?.message}
-                />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box sx={{ marginTop: 5 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ borderRadius: 16 }}
-            fullWidth={true}
-          >
-            Enregistrer
-          </Button>
+              </FormControl>
+            </Box>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Sex:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <InputLabel id="demo-select-small-label">Sex</InputLabel>
+              <Controller
+                name="sex"
+                control={control}
+                rules={{ required: customErrorMessages.sex.required }} // Add any validation rules as needed
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="sex"
+                    error={!!errors.sex}
+                  >
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                  </Select>
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Adresse:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="address"
+                control={control}
+                rules={{ required: customErrorMessages.address.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="outlined-required"
+                    label="Adresse"
+                    error={!!errors.address}
+                    helperText={errors.address?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="phoneNumber" className="w-full md:w-[160px]">
+              Telephone:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="phoneNumber"
+                control={control}
+                rules={{ required: customErrorMessages.phoneNumber.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="outlined-required"
+                    label="Phone Number"
+                    error={!!errors.phoneNumber}
+                    helperText={errors.phoneNumber?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="mutuelle" className="w-full md:w-[160px]">
+              Mutuelle:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <InputLabel id="demo-select-small-label">Mutuelle</InputLabel>
+              <Controller
+                name="mutuelle"
+                control={control}
+                rules={{ required: customErrorMessages.mutuelle.required }} // Add any validation rules as needed
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    label="mutuelle"
+                    error={!!errors.mutuelle}
+                  >
+                    <MenuItem value="none">
+                      <em>Aucune</em>
+                    </MenuItem>
+                    <MenuItem value="Mamdat">Mamdat</MenuItem>
+                    <MenuItem value="CNIA SAADA">CNIA SAADA</MenuItem>
+                    <MenuItem value="CNOPS">CNOPS</MenuItem>
+                    <MenuItem value="GENERAL">GENERAL</MenuItem>
+                    <MenuItem value="CNSS">CNSS</MenuItem>
+                    <MenuItem value="MFAR">MFAR</MenuItem>
+                    <MenuItem value="WATANIA">WATANIA</MenuItem>
+                    <MenuItem value="ZURICH">ZURICH</MenuItem>
+                    <MenuItem value="ATLANTA">ATLANTA</MenuItem>
+                    <MenuItem value="AXA">AXA</MenuItem>
+                    <MenuItem value="WAFA ASURANCE">WAFA ASURANCE</MenuItem>
+                  </Select>
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="note" className="w-full md:w-[160px]">
+              Note:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="note"
+                control={control}
+                rules={{ required: customErrorMessages.note.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="outlined-required"
+                    multiline
+                    rows={3}
+                    label="Note"
+                    error={!!errors.note}
+                    helperText={errors.note?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="flex mt-4">
+            <Button
+              type="submit"
+              variant="contained"
+              className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
+            >
+              Enregistrer
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Paper>

@@ -109,6 +109,7 @@ const PatientsTable = () => {
   ];
 
   const options = {
+    searchOpen: true,
     filterType: "dropdown",
     searchPlaceholder: "Rechercher un patient",
     textLabels: {

@@ -80,6 +80,7 @@ const NursesTable = () => {
   ];
 
   const options = {
+    searchOpen: true,
     filterType: "dropdown",
     searchPlaceholder: "Rechercher un infirmière",
     textLabels: {

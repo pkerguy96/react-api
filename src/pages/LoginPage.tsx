@@ -18,7 +18,7 @@ import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
 import isUserLoggedIn from "../utils/loginChecker";
 import { FormHelperText } from "@mui/material";
-
+import img from "../assets/logo.png";
 function Copyright(props: any) {
   return (
     <Typography
@@ -70,6 +70,7 @@ export default function SignIn() {
       [name]: value,
     }));
   };
+  // TODO : cancel axios request  show error msg in the inputs
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newErrors = {
@@ -103,29 +104,8 @@ export default function SignIn() {
           alignItems: "center",
         }}
       >
-        {loggedIn ? (
-          <Avatar
-            sx={{
-              m: 1,
-              bgcolor: "success.main",
-              animation: "bounce 2s ease-in-out",
-            }}
-          >
-            <LockOpenOutlinedIcon />
-          </Avatar>
-        ) : (
-          <Avatar
-            sx={{
-              m: 1,
-              bgcolor: "secondary.main",
-            }}
-          >
-            <LockOutlinedIcon />
-          </Avatar>
-        )}
-        <Typography component="h1" variant="h5" className="text-xl ">
-          Sign in
-        </Typography>
+        <img src={img} />
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             error={errors.email}
@@ -133,13 +113,14 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Address Email"
             name="email"
             autoComplete="email"
             autoFocus
             onChange={handleChange}
             value={userdata.email}
           />
+
           {errors.email && (
             <FormHelperText id="email-error-text" style={{ color: "red" }}>
               Le champ adresse email est obligatoire.
@@ -163,7 +144,6 @@ export default function SignIn() {
               Le champ mot de pass est obligatoire.
             </FormHelperText>
           )}
-
           <Button
             type="submit"
             fullWidth
@@ -180,7 +160,7 @@ export default function SignIn() {
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot password?
+                Mot de passe oublié ?
               </Link>
             </Grid>
           </Grid>

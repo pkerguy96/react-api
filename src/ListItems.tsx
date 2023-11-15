@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import DateRangeSharpIcon from "@mui/icons-material/DateRangeSharp";
 
 import BadgeIcon from "@mui/icons-material/Badge";
-
+import ContentPasteSearchOutlinedIcon from "@mui/icons-material/ContentPasteSearchOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { Divider } from "@mui/material";
 
@@ -74,9 +74,9 @@ export function SecondaryListItems({}: Props) {
       <Link to="/dicom" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
-            <Inventory2OutlinedIcon />
+            <ContentPasteSearchOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary="dicom" />
+          <ListItemText primary="Xray" />
         </ListItemButton>
       </Link>
       <Link to="/Stock" className="no-underline">

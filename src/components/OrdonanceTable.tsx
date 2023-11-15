@@ -61,6 +61,7 @@ const OrdonanceTable = () => {
   ];
 
   const options = {
+    searchOpen: true,
     filterType: "dropdown",
     searchPlaceholder: "Rechercher une ordonance",
     textLabels: {
