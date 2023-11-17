@@ -11,6 +11,8 @@ import FolderCopyOutlinedIcon from "@mui/icons-material/FolderCopyOutlined";
 
 const PatientsTable = () => {
   const { data, isLoading } = getPatients();
+  console.log(data);
+
   const navigate = useNavigate();
   if (isLoading) {
     return <LoadingSpinner />;

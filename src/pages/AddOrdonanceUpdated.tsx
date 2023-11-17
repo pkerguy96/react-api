@@ -24,10 +24,14 @@ import getPatients from "../hooks/getPatients";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Patient } from "./AddPatientForm";
 import { useParams } from "react-router";
+import updateOrdonance from "../hooks/updateOrdonance";
+import { AxiosError } from "axios";
 
 const AddOrdonanceUpdated = () => {
+  const mutation = updateOrdonance();
   const { data: patientsData, isLoading } = getPatients();
-  const { id } = useParams();
+  const { id, ordonance: ordonanceID } = useParams();
+
   const isAddMode = !id;
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
@@ -54,6 +58,24 @@ const AddOrdonanceUpdated = () => {
       if (specifiedPatient) {
         setOptionsArray(specifiedPatient);
         setValue("patient", specifiedPatient);
+        setValue("date", specifiedPatient.date);
+        console.log("specifiedpatient", specifiedPatient);
+
+        const SpecifiedOrdonance = specifiedPatient.ordonances.find(
+          (ordonance) => ordonance.id === parseInt(ordonanceID)
+        );
+        console.log(SpecifiedOrdonance);
+
+        const DrugsDetails = SpecifiedOrdonance.ordonance_details;
+
+        const extractedDetails = DrugsDetails.map((item) => {
+          return {
+            medicine_name: item.medicine_name,
+            note: item.note,
+          };
+        });
+        setDrugs(extractedDetails);
+        console.log(extractedDetails);
       }
     }
   }, [patientsData, id]);
@@ -76,7 +98,34 @@ const AddOrdonanceUpdated = () => {
 
   const onSubmit = (data) => {
     data.drugs = drugs;
-    console.log(data);
+
+    // Creating a new formatted data array
+    const formData = {
+      patient_id: data?.patient.id,
+      medicine: data.drugs,
+      date: data.date,
+    };
+    /*    const formData = {
+      patient_id: patient?.id,
+      medicine: selectedMedicines,
+      date: selectedDate.format("YYYY-MM-DD"),
+    }; */
+    console.log(formData);
+
+    mutation.mutateAsync(
+      { data: formData, id: ordonanceID },
+      {
+        onSuccess: (response) => {
+          console.log("Update successful:", response);
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+        },
+      }
+    );
   };
 
   const createUser = () => {};
@@ -195,12 +244,12 @@ const AddOrdonanceUpdated = () => {
             endIcon={<AddIcon />}
             onClick={() => {
               const valid = !drugs.some(
-                (e) => e.name.toUpperCase() === name.toUpperCase()
+                (e) => e.medicine_name.toUpperCase() === name.toUpperCase()
               );
               if (valid) {
                 setDrugs([
                   ...drugs,
-                  { name: name, note: "", id: drugs.length },
+                  { medicine_name: name, note: "", id: drugs.length },
                 ]);
               }
               setName("");
@@ -219,7 +268,7 @@ const AddOrdonanceUpdated = () => {
                 variant="outlined"
                 key={i}
                 className="!mr-1 !my-1"
-                label={e.name}
+                label={e.medicine_name}
                 onDelete={() => setDrugs(drugs.filter((e, j) => j !== i))}
                 onClick={() => handleOpenModal(i)}
               />
@@ -234,7 +283,7 @@ const AddOrdonanceUpdated = () => {
             sx={{ borderRadius: 16 }}
             fullWidth={true}
           >
-            Enregistrer
+            {!isAddMode ? "Misajour" : "Enregistrer"}
           </Button>
         </Box>
       </Box>

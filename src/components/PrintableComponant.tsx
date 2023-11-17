@@ -54,7 +54,7 @@ const PrintableComponant = () => {
   const filteredOrdonance = data?.find(
     (ordonance) => ordonance.id === parseInt(id)
   );
-  console.log(filteredOrdonance);
+
   const FormattedDate = filteredOrdonance?.date.split("-");
 
   return (

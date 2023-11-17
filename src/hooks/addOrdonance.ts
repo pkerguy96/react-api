@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import OrdonanceService, { Ordonance } from "../services/OrdonanceService";
-import { CACHE_KEY_Ordonance } from "../constants";
 
 const addOrdonance = () => {
   const mutation = useMutation((data: Ordonance) =>

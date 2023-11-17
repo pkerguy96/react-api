@@ -65,7 +65,7 @@ const router = createBrowserRouter([
         element: <OrdonnancePage />,
       },
       {
-        path: "AddOrdonance/:id?",
+        path: "AddOrdonance/:id?/:ordonance?",
         element: <AddOrdonanceUpdated />,
       },
       {

@@ -8,3 +8,7 @@ export interface Ordonance {
   }[];
 }
 export default new APIClient<Ordonance>("/Ordonance");
+/* export const ApiclientOrdonanceUpdate = new APIClient<Ordonance>(
+  "/CustomOrdonance/:id"
+);
+ */
