@@ -4,7 +4,7 @@ import OrdonanceService, { Ordonance } from "../services/OrdonanceService";
 
 const getOrdonance = () => {
   return useQuery<Ordonance[], Error>({
-    queryKey: [CACHE_KEY_Ordonance],
+    queryKey: CACHE_KEY_Ordonance,
     queryFn: OrdonanceService.getall,
   });
 };

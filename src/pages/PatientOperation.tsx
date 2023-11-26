@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Checkbox,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -19,7 +20,11 @@ import { useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
 import getPatients from "../hooks/getPatients";
 import LoadingSpinner from "../components/LoadingSpinner";
-
+import { Controller, useForm } from "react-hook-form";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import { CheckBox } from "@mui/icons-material";
 const PatientOperation = () => {
   const { data, isLoading } = getPatients();
   const { id, age } = useParams();
@@ -32,15 +37,33 @@ const PatientOperation = () => {
   );
   const [clientage, setClientAge] = useState("");
 
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({});
+  const isFullyPaid = watch("fullyPaid");
+  const validatePrix = (value: number) => {
+    const prix = getValues("prix");
+
+    if (value > prix) {
+      console.log("Prix should not exceed Paid Amount");
+      return "Prix should not exceed Paid Amount"; // Log the message and return it
+    }
+
+    return true; // Validation passed
+  };
   const toggleStrokeColor = (index: number) => {
     const updatedColors = [...polygonColors];
     updatedColors[index] =
       updatedColors[index] === "blue" ? "transparent" : "blue";
     setPolygonColors(updatedColors);
   };
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setSelectedValue(event.target.value);
-  };
+
   const resetTeethSelection = () => {
     setPolygonColors([]);
   };
@@ -52,7 +75,6 @@ const PatientOperation = () => {
       if (foundPatient) {
         setSpecificPatient(foundPatient);
         const currentYear = new Date().getFullYear();
-        console.log(typeof currentYear);
 
         const patientAge = currentYear - parseInt(age);
 
@@ -68,6 +90,9 @@ const PatientOperation = () => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
   return (
     <Paper>
       <Box className="flex flex-col justify-center gap-4">
@@ -235,6 +260,7 @@ const PatientOperation = () => {
           component="form"
           boxShadow={5}
           className={`  rounded-2xl w-full h-full flex flex-col gap-2 border-2 md:w-[600px] animated-element`}
+          onSubmit={handleSubmit(onSubmit)}
         >
           <Box className=" border-2 py-2    bg-[#4b9cec] overflow-hidden rounded-2xl"></Box>
           <Typography
@@ -251,46 +277,119 @@ const PatientOperation = () => {
                 </InputLabel>
               </Box>
               <Box>
-                <Select
-                  labelId="demo-simple-select-helper-label"
-                  id="demo-simple-select-helper"
-                  label="operation"
-                  style={{ width: "100%" }}
-                  value={selectedValue}
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Blanchiment </MenuItem>
-                  <MenuItem value={20}>Extraction </MenuItem>
-                  <MenuItem value={30}>Implantation </MenuItem>
-                  <MenuItem value={50}>l'Orthopedie </MenuItem>
-                  <MenuItem value={90}>
-                    Traitement carie superficielle{" "}
-                  </MenuItem>
-                  <MenuItem value={40}>Traitement carie moyenne </MenuItem>
-                  <MenuItem value={410}>Soigner une carie profonde </MenuItem>
-                  <MenuItem value={50}>
-                    Traitement endodontique racine 2 racines{" "}
-                  </MenuItem>
-                  <MenuItem value={60}>
-                    traitement endodontique 3 racines{" "}
-                  </MenuItem>
-                  <MenuItem value={70}>
-                    traitement endodontique 4 racines{" "}
-                  </MenuItem>
-                  <MenuItem value={80}>
-                    traitement endodontique 5 racines{" "}
-                  </MenuItem>
-                </Select>
-                <FormHelperText>Veuillez sélectionner un type.</FormHelperText>
+                <Controller
+                  name="operation"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Select
+                        {...field}
+                        labelId="demo-simple-select-helper-label"
+                        id="demo-simple-select-helper"
+                        label="Operation"
+                        style={{ width: "100%" }}
+                      >
+                        <MenuItem value={10}>Blanchiment </MenuItem>
+                        <MenuItem value={20}>Extraction </MenuItem>
+                        <MenuItem value={30}>Implantation </MenuItem>
+                        <MenuItem value={50}>l'Orthopedie </MenuItem>
+                        <MenuItem value={90}>
+                          Traitement carie superficielle{" "}
+                        </MenuItem>
+                        <MenuItem value={40}>
+                          Traitement carie moyenne{" "}
+                        </MenuItem>
+                        <MenuItem value={410}>
+                          Soigner une carie profonde{" "}
+                        </MenuItem>
+                        <MenuItem value={50}>
+                          Traitement endodontique racine 2 racines{" "}
+                        </MenuItem>
+                        <MenuItem value={60}>
+                          traitement endodontique 3 racines{" "}
+                        </MenuItem>
+                        <MenuItem value={70}>
+                          traitement endodontique 4 racines{" "}
+                        </MenuItem>
+                        <MenuItem value={80}>
+                          traitement endodontique 5 racines{" "}
+                        </MenuItem>
+                      </Select>
+                      <FormHelperText>
+                        Veuillez sélectionner un type.
+                      </FormHelperText>
+                    </>
+                  )}
+                />
               </Box>
               <Box>
-                <TextField
-                  id="large-text"
-                  label="Note"
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  fullWidth
+                <Controller
+                  name="prix"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      id="outlined-basic"
+                      label="Prix"
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Box>
+              <Box className="flex flex-col sm:flex-row gap-4 ">
+                <Controller
+                  name="paidAmount"
+                  control={control}
+                  rules={{ validate: validatePrix }}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      disabled={isFullyPaid}
+                      id="paidAmount"
+                      label="Paid Amount"
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                    />
+                  )}
+                />
+                <Controller
+                  name="fullyPaid"
+                  control={control}
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} />}
+                      label={
+                        <Typography variant="body2">
+                          Entièrement payé
+                        </Typography>
+                      }
+                    />
+                  )}
+                />
+              </Box>
+              <Box>
+                <Controller
+                  name="note"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      id="large-text"
+                      label="Note"
+                      multiline
+                      rows={4}
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
                 />
               </Box>
             </FormControl>

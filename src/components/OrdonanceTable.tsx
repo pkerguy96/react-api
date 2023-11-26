@@ -6,8 +6,13 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import getOrdonance from "../hooks/getOrdonance";
+import OrdonanceService from "../services/OrdonanceService";
+import { CACHE_KEY_Ordonance } from "../constants";
+import { useQueryClient } from "@tanstack/react-query";
 const OrdonanceTable = () => {
+  const queryClient = useQueryClient();
   const { data, isLoading } = getOrdonance();
   const navigate = useNavigate();
   if (isLoading) {
@@ -17,13 +22,20 @@ const OrdonanceTable = () => {
     id: ordonance.id,
     nom: `${ordonance.patient.nom} ${ordonance.patient.prenom}`,
     date: ordonance.date,
+    patient_id: ordonance.patient_id,
   }));
-  console.log(formatedData);
 
   const columns = [
     {
       name: "id",
       label: "#",
+    },
+    {
+      name: "patient_id",
+      label: "#",
+      options: {
+        display: false,
+      },
     },
 
     {
@@ -49,12 +61,26 @@ const OrdonanceTable = () => {
         filter: true,
         sort: true,
         customBodyRender: (value, tableMeta, updateValue) => (
-          <button className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer">
-            <DeleteOutlineIcon
-              className="pointer-events-none"
-              fill="currentColor"
-            />
-          </button>
+          <>
+            <button
+              className="btn-ordonance-edit text-gray-950 hover:text-blue-700 cursor-pointer"
+              title="Modifier"
+            >
+              <EditOutlinedIcon
+                className="pointer-events-none"
+                fill="currentColor"
+              />
+            </button>
+            <button
+              className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+              title="Modifier"
+            >
+              <DeleteOutlineIcon
+                className="pointer-events-none"
+                fill="currentColor"
+              />
+            </button>
+          </>
         ),
       },
     },
@@ -83,10 +109,20 @@ const OrdonanceTable = () => {
     selectableRowsHideCheckboxes: true,
     onRowClick: (s, m, e) => {
       if (
+        e.target.querySelector(".btn-ordonance-edit") ||
+        e.target.classList.contains("btn-ordonance-edit")
+      ) {
+        navigate(`/AddOrdonance/${s[1]}/${s[0]}`);
+      } else if (
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
-        console.log("delete");
+        // api
+        OrdonanceService.DeleteOne(`${s[0]}`)
+          .then((res) => console.log(res))
+          .then(() => {
+            queryClient.invalidateQueries(CACHE_KEY_Ordonance);
+          });
       } else {
         navigate(`/OrdonanceDetails/${s[0]}`);
       }

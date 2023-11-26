@@ -1,58 +1,60 @@
+//@ts-nocheck
 import {
   Paper,
   Box,
-  TextField,
-  Button,
   Divider,
+  TextField,
   Autocomplete,
+  Button,
   Chip,
-  IconButton,
   Modal,
+  IconButton,
   Typography,
+  FormControl,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ClearIcon from "@mui/icons-material/Clear";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import AddIcon from "@mui/icons-material/Add";
-
-import getPatients from "../hooks/getPatients";
-import { Patient } from "./AddPatientForm";
-import { useEffect, useState } from "react";
 import { items } from "../services/Medicines.json";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import moment from "moment";
-import addOrdonance from "../hooks/addOrdonance";
-
-import { AxiosError } from "axios";
-import SnackbarComponent from "../components/SnackbarComponent";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AddIcon from "@mui/icons-material/Add";
+import ClearIcon from "@mui/icons-material/Clear";
+import { useState, useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import getPatients from "../hooks/getPatients";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { Patient } from "./AddPatientForm";
 import { useNavigate, useParams } from "react-router";
-import getOrdonance from "../hooks/getOrdonance";
-import { Ordonance } from "../services/OrdonanceService";
-
-const AddOrdonance = () => {
-  const today = moment();
-  const { data: patientsData } = getPatients();
-  const [patient, setPatient] = useState<Patient>();
-  const [selectedMedicines, setSelectedMedicines] = useState<
-    { medicine_name: string; note: string }[]
-  >([]);
-  const [modalMedicineName, setModalMedicineName] = useState("");
-  const [noteValue, setNoteValue] = useState("");
-  const [medicineValue, setMedicineValue] = useState("");
-  const [open, setOpen] = useState(false);
-  const [selectedMedicineIndex, setSelectedMedicineIndex] = useState(-1);
-  const [selectedDate, setSelectedDate] = useState(today);
-  const mutation = addOrdonance();
-
-  const navigate = useNavigate();
+import updateOrdonance from "../hooks/updateOrdonance";
+import { AxiosError } from "axios";
+import addOrdonance from "../hooks/addOrdonance";
+import SnackbarComponent from "../components/SnackbarComponent";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+const AddOrdonanceUpdated = () => {
+  const Addmutation = addOrdonance();
+  const mutation = updateOrdonance();
+  const { data: patientsData, isLoading } = getPatients();
+  const { id, ordonance: ordonanceID } = useParams();
+  const [drugs, setDrugs] = useState([]);
+  const [drug, setDrug] = useState({});
+  const [name, setName] = useState("");
+  const [optionsArray, setOptionsArray] = useState(null); // Initialize with an empty array
   const [snackBar, setSnackBar] = useState({
     isOpen: false,
     message: "",
     severity: "info",
   });
-  // adding patient if existed
-  let dataArray: Patient[] = [];
+  const navigate = useNavigate();
+  const isAddMode = !id;
+  const onClose = () => setDrug({});
 
+  let dataArray: Patient[] = [];
+  let specifiedPatient;
+  let newOptionsArray;
   if (
     patientsData &&
     typeof patientsData === "object" &&
@@ -60,108 +62,32 @@ const AddOrdonance = () => {
   ) {
     dataArray = Object.values(patientsData);
   }
-  const handlePatientChange = (
-    event: React.SyntheticEvent<Element, Event>,
-    newValue: Patient | null
-  ) => {
-    if (newValue) {
-      setPatient(newValue);
-    } else {
-      setPatient(undefined);
-    }
-  };
-  const handleDelete = (index: number) => {
-    const updatedSelectedMedicines = [...selectedMedicines];
-    updatedSelectedMedicines.splice(index, 1);
-    setSelectedMedicines(updatedSelectedMedicines);
-  };
-  const handleDateChange = (date: any) => {
-    setSelectedDate(date);
-  };
+  useEffect(() => {
+    if (!isAddMode) {
+      specifiedPatient = patientsData?.find(
+        (patients) => patients.id === parseInt(id)
+      );
+      if (specifiedPatient) {
+        setOptionsArray(specifiedPatient);
+        setValue("patient", specifiedPatient);
+        setValue("date", specifiedPatient.date);
 
-  const handleMedicineSelection = () => {
-    if (
-      medicineValue &&
-      !selectedMedicines.some((item) => item.medicine_name === medicineValue)
-    ) {
-      const newMedicine = { medicine_name: medicineValue, note: "" };
-      setSelectedMedicines([...selectedMedicines, newMedicine]);
+        const SpecifiedOrdonance = specifiedPatient.ordonances.find(
+          (ordonance) => ordonance.id === parseInt(ordonanceID)
+        );
 
-      setMedicineValue("");
-    }
-  };
-  const handleOpenModal = (medicinename: string, index: number) => {
-    const selectedMedicine = selectedMedicines[index];
-    setNoteValue(selectedMedicine ? selectedMedicine.note : "");
-    setSelectedMedicineIndex(index);
-    setModalMedicineName(medicinename);
-    setOpen(true);
-  };
-  const handleSaveNote = () => {
-    if (selectedMedicineIndex !== -1) {
-      const updatedMedicines = [...selectedMedicines];
-      updatedMedicines[selectedMedicineIndex] = {
-        medicine_name: updatedMedicines[selectedMedicineIndex].medicine_name,
-        note: noteValue,
-      };
-      setSelectedMedicines(updatedMedicines);
-      setNoteValue("");
-      setOpen(false);
-    }
-  };
-  const onclicked = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    // Adjust the locale as needed
-    // Check if patient is undefined or null
-    if (!patient || !selectedDate) {
-      return;
-    }
-    // Check if selectedMedicines is undefined or empty
-    if (!selectedMedicines || selectedMedicines.length === 0) {
-      console.error("No selected medicines.");
-      return;
-    }
-    const formData = {
-      patient_id: patient?.id,
-      medicine: selectedMedicines,
-      date: selectedDate.format("YYYY-MM-DD"),
-    };
-    try {
-      mutation.mutateAsync(formData, {
-        onSuccess: () => {
-          setSnackBar({
-            isOpen: true,
-            message: "Ordonnance créée avec succès",
-            severity: "success",
-          });
-        },
-        onError: (error: any) => {
-          const message =
-            error instanceof AxiosError
-              ? error.response?.data?.message
-              : error.message;
+        const DrugsDetails = SpecifiedOrdonance.ordonance_details;
 
-          setSnackBar({
-            isOpen: true,
-            message: message,
-            severity: "warning",
-          });
-        },
-      });
-    } catch (error: any) {
-      const message =
-        error instanceof AxiosError
-          ? error.response?.data?.message
-          : error.message;
-      setSnackBar({
-        isOpen: true,
-        message: message,
-        severity: "warning",
-      });
+        const extractedDetails = DrugsDetails.map((item) => {
+          return {
+            medicine_name: item.medicine_name,
+            note: item.note,
+          };
+        });
+        setDrugs(extractedDetails);
+      }
     }
-  };
+  }, [patientsData, id]);
   useEffect(() => {
     let timerId: number;
     if (snackBar.isOpen) {
@@ -174,8 +100,97 @@ const AddOrdonance = () => {
       };
     }
   }, [snackBar.isOpen]);
-  const onClose = () => setOpen(false);
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      date: new Date().toISOString().split("T")[0],
+    },
+  });
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
+  const onSubmit = (data) => {
+    data.drugs = drugs;
+    console.log(data);
+
+    const formData = {
+      patient_id: data?.patient.id,
+      medicine: data.drugs,
+      date: data.date,
+    };
+    return isAddMode ? createUser(formData) : editUser(formData, ordonanceID);
+  };
+
+  const createUser = (formData) => {
+    Addmutation.mutateAsync(formData, {
+      onSuccess: () => {
+        setSnackBar({
+          isOpen: true,
+          message: "Ordonnance créée avec succès",
+          severity: "success",
+        });
+      },
+      onError: (error: any) => {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+
+        setSnackBar({
+          isOpen: true,
+          message: message,
+          severity: "warning",
+        });
+      },
+    });
+  };
+  const editUser = (formData, ordonanceID) => {
+    return mutation.mutateAsync(
+      { data: formData, id: ordonanceID },
+      {
+        onSuccess: () => {
+          setSnackBar({
+            isOpen: true,
+            message: "Ordonnance créée avec succès",
+            severity: "success",
+          });
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+          setSnackBar({
+            isOpen: true,
+            message: message,
+            severity: "warning",
+          });
+        },
+      }
+    );
+  };
+  const handleOpenModal = (index: number) => {
+    const current = drugs[index];
+    setDrug({
+      id: current.id,
+      name: current.name,
+      note: current.note || "",
+    });
+  };
+  const handleNoteChange = (id, value) => {
+    setDrugs((prevDrugs) =>
+      prevDrugs.map((drug) =>
+        drug.id === id ? { ...drug, note: value } : drug
+      )
+    );
+  };
   return (
     <Paper className="p-4">
       <SnackbarComponent
@@ -190,11 +205,11 @@ const AddOrdonance = () => {
         component="form"
         noValidate
         autoComplete="off"
-        /*   onSubmit={handleSubmit(onSubmit)} */
+        onSubmit={handleSubmit(onSubmit)}
         className="w-full flex flex-col gap-2"
       >
         <Box className="flex justify-center  text-lg  text-gray-400 uppercase">
-          <span>Ajouter une ordonance</span>
+          <span>Ajouter une ordonance LALIBERTI</span>
         </Box>
         <Divider
           orientation="horizontal"
@@ -206,17 +221,29 @@ const AddOrdonance = () => {
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Patient:
           </label>
-          <Box className="w-full md:flex-1">
-            <Autocomplete
-              disablePortal
-              id="combo-box-demo"
-              options={dataArray}
-              getOptionLabel={(option) => `${option.nom} ${option.prenom}`}
-              sx={{ width: " 100% " }}
-              renderInput={(params) => (
-                <TextField {...params} label="Patient" />
+          <Box className={`w-full md:flex-1 `}>
+            <Controller
+              control={control}
+              name="patient"
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  id="combo-box-demo"
+                  value={optionsArray || field.value || null}
+                  options={dataArray}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  getOptionLabel={(option) => `${option.nom} ${option.prenom}`}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Patient" />
+                  )}
+                  onChange={(e, data) => {
+                    optionsArray && setOptionsArray(data);
+                    setValue("patient", data); // Set the entire patient object as the value
+                  }}
+                />
               )}
-              onChange={handlePatientChange}
             />
           </Box>
         </Box>
@@ -224,16 +251,30 @@ const AddOrdonance = () => {
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Date:
           </label>
-          <Box className="w-full md:flex-1">
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DatePicker
-                label="Date"
-                defaultValue={selectedDate}
-                onChange={handleDateChange}
-                sx={{ width: "100%" }}
-              />
-            </LocalizationProvider>
-          </Box>
+          <FormControl className="w-full md:flex-1">
+            <Controller
+              name="date"
+              control={control}
+              rules={{
+                validate: (value) => {
+                  const selectedDate = new Date(value);
+                  const currentDate = new Date();
+                  return (
+                    selectedDate <= currentDate ||
+                    "La date ne peut pas être dans le futur."
+                  );
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  type="date"
+                  {...field}
+                  id="outlined-required"
+                  size="large"
+                />
+              )}
+            />
+          </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">
@@ -245,10 +286,10 @@ const AddOrdonance = () => {
               id="outlined-basic"
               label="Medicament"
               variant="outlined"
-              value={medicineValue}
+              value={name}
               inputProps={{ list: "browsers" }}
               onChange={(e) => {
-                setMedicineValue(e.target.value);
+                setName(e.target.value);
               }}
             />
             <datalist id="browsers">
@@ -261,7 +302,20 @@ const AddOrdonance = () => {
             sx={{ borderRadius: 16 }}
             variant="outlined"
             endIcon={<AddIcon />}
-            onClick={handleMedicineSelection}
+            onClick={() => {
+              const valid =
+                name.trim() !== "" &&
+                !drugs.some(
+                  (e) => e.medicine_name.toUpperCase() === name.toUpperCase()
+                );
+              if (valid) {
+                setDrugs([
+                  ...drugs,
+                  { medicine_name: name, note: "", id: drugs.length },
+                ]);
+              }
+              setName("");
+            }}
           >
             Ajouter
           </Button>
@@ -270,86 +324,54 @@ const AddOrdonance = () => {
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Sélectionné:
           </label>
-          <Box className="w-full md:flex-1 flex-wrap  ">
-            {selectedMedicines.map((item, index) => (
-              <Chip
-                key={index}
-                label={item.medicine_name}
-                variant="outlined"
-                className="!mr-1 !my-1"
-                onClick={() => handleOpenModal(item.medicine_name, index)}
-                onDelete={() => handleDelete(index)}
-              />
-            ))}
-          </Box>
+
+          <TableContainer className="w-full md:flex-1 flex-wrap">
+            <Table sx={{ minWidth: 480 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Medicine name</TableCell>
+                  <TableCell>Note</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {drugs.map((row, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.medicine_name}
+                    </TableCell>
+                    <TableCell style={{ minWidth: 200 }}>
+                      <TextField
+                        fullWidth
+                        value={row.note || ""}
+                        onChange={(e) =>
+                          handleNoteChange(row.id, e.target.value)
+                        }
+                        label="Note"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
 
         <Box sx={{ marginTop: 5 }}>
           <Button
-            onClick={(e) => onclicked(e)}
             type="submit"
             variant="contained"
             sx={{ borderRadius: 16 }}
             fullWidth={true}
           >
-            Enregistrer
+            {!isAddMode ? "Misajour" : "Enregistrer"}
           </Button>
         </Box>
       </Box>
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        className="flex justify-center items-center"
-      >
-        <Box
-          sx={{ width: 400, bgcolor: "background.paper", p: 2 }}
-          className="flex flex-col items-center gap-3 rounded-lg border-0"
-        >
-          <Box className=" w-full flex flex-row justify-end">
-            <IconButton onClick={() => onClose()}>
-              <ClearIcon />
-            </IconButton>
-          </Box>
-
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Médicament
-          </Typography>
-
-          <TextField
-            fullWidth
-            label="Nom"
-            id="Medicine-text"
-            disabled
-            value={modalMedicineName}
-          />
-
-          <TextField
-            id="large-text"
-            label="Note"
-            multiline
-            rows={4}
-            variant="outlined"
-            fullWidth
-            value={noteValue}
-            onChange={(e) => setNoteValue(e.target.value)}
-          />
-          <Box className=" mx-4 w-full flex gap-4 justify-center	 ">
-            <Button
-              variant="contained"
-              color="info"
-              size="small"
-              onClick={handleSaveNote}
-              startIcon={<CheckCircleIcon />}
-            >
-              Sauvegarder
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
     </Paper>
   );
 };
 
-export default AddOrdonance;
+export default AddOrdonanceUpdated;

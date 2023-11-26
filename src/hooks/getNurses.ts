@@ -13,8 +13,8 @@ interface Patient {
 
 const apiclient = new APIClient<Patient[]>("/Nurse");
 const getNurses = () => {
-  return useQuery<Patient[], Error>({
-    queryKey: [CACHE_KEY_NURSES],
+  return useQuery<Patient[], Error, any, any>({
+    queryKey: CACHE_KEY_NURSES,
     queryFn: apiclient.getall,
     staleTime: 600000, //10 minutes
     cacheTime: 3600000, //1 hour

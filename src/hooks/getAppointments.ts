@@ -10,8 +10,7 @@ export interface Appointments {
 }
 const apiclient = new APIClient<Appointments[]>("Appointment");
 const getAppointment = () => {
-  return useQuery<Appointments>({
-    //@ts-ignore
+  return useQuery<Appointments, Error, any, any>({
     queryKey: CACHE_KEY_APPOINTMENTS,
     queryFn: apiclient.getall,
     staleTime: 600000, //10 minutes
