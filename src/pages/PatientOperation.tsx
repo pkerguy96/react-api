@@ -9,26 +9,23 @@ import {
   MenuItem,
   Paper,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import "../styles.css";
-import React from "react";
+
 import { useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
 import getPatients from "../hooks/getPatients";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import { CheckBox } from "@mui/icons-material";
+
 const PatientOperation = () => {
   const { data, isLoading } = getPatients();
   const { id, age } = useParams();
-  const [selectedValue, setSelectedValue] = React.useState("");
+
   const [specificPatient, setSpecificPatient] = useState<Patient | undefined>(
     undefined
   );
@@ -51,8 +48,7 @@ const PatientOperation = () => {
     const prix = getValues("prix");
 
     if (value > prix) {
-      console.log("Prix should not exceed Paid Amount");
-      return "Prix should not exceed Paid Amount"; // Log the message and return it
+      return "le montant payé ne doit pas dépasser le prix";
     }
 
     return true; // Validation passed
@@ -91,6 +87,8 @@ const PatientOperation = () => {
     return <LoadingSpinner />;
   }
   const onSubmit = (data: any) => {
+    console.log(isFullyPaid);
+
     console.log(data);
   };
   return (
@@ -281,8 +279,14 @@ const PatientOperation = () => {
                   name="operation"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => (
-                    <>
+                  rules={{
+                    required: {
+                      value: true,
+                      message: "Sélectionnez le type d'opération",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Box className="flex flex-col">
                       <Select
                         {...field}
                         labelId="demo-simple-select-helper-label"
@@ -316,10 +320,10 @@ const PatientOperation = () => {
                           traitement endodontique 5 racines{" "}
                         </MenuItem>
                       </Select>
-                      <FormHelperText>
-                        Veuillez sélectionner un type.
+                      <FormHelperText error={!!fieldState.error}>
+                        {fieldState.error?.message}
                       </FormHelperText>
-                    </>
+                    </Box>
                   )}
                 />
               </Box>
@@ -328,15 +332,26 @@ const PatientOperation = () => {
                   name="prix"
                   control={control}
                   defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      id="outlined-basic"
-                      label="Prix"
-                      variant="outlined"
-                      type="number"
-                      fullWidth
-                    />
+                  rules={{
+                    required: {
+                      value: true,
+                      message: "le prix est requis",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Box className="flex flex-col">
+                      <TextField
+                        {...field}
+                        id="outlined-basic"
+                        label="Prix"
+                        variant="outlined"
+                        type="number"
+                        fullWidth
+                      />
+                      <FormHelperText error={!!fieldState.error}>
+                        {fieldState.error?.message}
+                      </FormHelperText>
+                    </Box>
                   )}
                 />
               </Box>
@@ -344,20 +359,36 @@ const PatientOperation = () => {
                 <Controller
                   name="paidAmount"
                   control={control}
-                  rules={{ validate: validatePrix }}
+                  rules={{
+                    validate: validatePrix,
+                    /* ...(isFullyPaid
+                      ? {}
+                      : {
+                          required: {
+                            value: true,
+                            message: "le montant payé est requis",
+                          },
+                        }), */
+                  }}
                   defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      disabled={isFullyPaid}
-                      id="paidAmount"
-                      label="Paid Amount"
-                      variant="outlined"
-                      type="number"
-                      fullWidth
-                    />
+                  render={({ field, fieldState }) => (
+                    <Box>
+                      <TextField
+                        {...field}
+                        disabled={isFullyPaid}
+                        id="paidAmount"
+                        label="Montant payé"
+                        variant="outlined"
+                        type="number"
+                        fullWidth
+                      />
+                      <FormHelperText error={!!fieldState.error}>
+                        {fieldState.error?.message}
+                      </FormHelperText>
+                    </Box>
                   )}
                 />
+
                 <Controller
                   name="fullyPaid"
                   control={control}
