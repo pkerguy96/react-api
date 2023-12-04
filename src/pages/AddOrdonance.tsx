@@ -48,6 +48,7 @@ const AddOrdonanceUpdated = () => {
     message: "",
     severity: "info",
   });
+  //TODO : fix when u add ordonance and try to get to it immediatly error
   const navigate = useNavigate();
   const isAddMode = !id;
   const onClose = () => setDrug({});
@@ -209,7 +210,7 @@ const AddOrdonanceUpdated = () => {
         className="w-full flex flex-col gap-2"
       >
         <Box className="flex justify-center  text-lg  text-gray-400 uppercase">
-          <span>Ajouter une ordonance LALIBERTI</span>
+          <span>Ajouter une ordonance </span>
         </Box>
         <Divider
           orientation="horizontal"

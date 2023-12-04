@@ -20,6 +20,7 @@ import OrdonnancePage from "./pages/OrdonnancePage";
 import PrintableComponant from "./components/PrintableComponant";
 import AddOrdonance from "./pages/AddOrdonance";
 import DicomPageViewer from "./pages/DicomPageViewer";
+import ReglementPage from "./pages/ReglementPage";
 
 const router = createBrowserRouter([
   {
@@ -94,6 +95,10 @@ const router = createBrowserRouter([
       {
         path: "Stock",
         element: <StockPage />,
+      },
+      {
+        path: "Reglement",
+        element: <ReglementPage />,
       },
     ],
   },
