@@ -25,7 +25,13 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import addOperation from "../hooks/addOperation";
 import { AxiosError } from "axios";
 import SnackbarComponent from "../components/SnackbarComponent";
-
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import { listOperations, listOperationsArray } from "../constants";
 const PatientOperation = () => {
   const addMutation = addOperation();
   const { data, isLoading } = getPatients();
@@ -38,6 +44,9 @@ const PatientOperation = () => {
   const [polygonColors, setPolygonColors] = useState<(string | undefined)[]>(
     []
   );
+  const [operations, setOperations] = useState([]);
+  const [operationsData, setOperationsData] = useState([]);
+
   const [teetherror, setTeethError] = useState(false);
   const [selectedteeth, setSelectedTeeth] = useState<string[] | number[]>([]);
   const [clientage, setClientAge] = useState("");
@@ -62,7 +71,7 @@ const PatientOperation = () => {
     }
   }, [snackBar.isOpen]);
 
-  const { handleSubmit, getValues, control, watch } = useForm({});
+  const { handleSubmit, getValues, setValue, control, watch } = useForm({});
   const isFullyPaid = watch("fullyPaid");
   const validatePrix = (value: number) => {
     const prix = getValues("prix");
@@ -115,7 +124,9 @@ const PatientOperation = () => {
     return <LoadingSpinner />;
   }
   const onSubmit = (data: any) => {
-    if (selectedteeth.length > 0) {
+    console.log(operationsData);
+
+    /*    if (selectedteeth.length > 0) {
       const formData = {
         patient_id: specificPatient?.id ?? -1,
         tooth_id: selectedteeth.map((tooth) =>
@@ -149,7 +160,13 @@ const PatientOperation = () => {
       });
     } else {
       setTeethError(true);
-    }
+    } */
+  };
+  const getItemName = (value) => {
+    // Map the menu item values to their corresponding names
+    const item = listOperationsArray.find((item) => item.value === value);
+
+    return item ? item.label : "Unknown Item";
   };
   return (
     <Paper>
@@ -312,11 +329,6 @@ const PatientOperation = () => {
               />
             ))}
           </svg>
-          {teetherror && (
-            <Alert className="mt-2" severity="error">
-              Veuillez sélectionner une dent.
-            </Alert>
-          )}
         </Box>
         {/* here second one  */}
         <Box
@@ -483,11 +495,6 @@ const PatientOperation = () => {
               />
             ))}
           </svg>
-          {teetherror && (
-            <Alert className="mt-2" severity="error">
-              Veuillez sélectionner une dent.
-            </Alert>
-          )}
         </Box>
         <Box
           component="form"
@@ -512,12 +519,12 @@ const PatientOperation = () => {
                   name="operation"
                   defaultValue=""
                   control={control}
-                  rules={{
+                  /* rules={{
                     required: {
                       value: true,
                       message: "Sélectionnez le type d'opération",
                     },
-                  }}
+                  }} */
                   render={({ field, fieldState }) => (
                     <Box className="flex flex-col">
                       <Select
@@ -525,32 +532,23 @@ const PatientOperation = () => {
                         labelId="demo-simple-select-helper-label"
                         id="demo-simple-select-helper"
                         label="Type"
+                        onChange={(e) => {
+                          const selectedOperation = e.target.value;
+                          const valid = !operations.some(
+                            (op) => op === selectedOperation
+                          );
+
+                          if (valid) {
+                            setOperations([...operations, selectedOperation]);
+                            setValue("operation", selectedOperation); // Update the value in React Hook Form state
+                          }
+                        }}
                       >
-                        <MenuItem value={10}>Blanchiment </MenuItem>
-                        <MenuItem value={20}>Extraction </MenuItem>
-                        <MenuItem value={30}>Implantation </MenuItem>
-                        <MenuItem value={50}>l'Orthopedie </MenuItem>
-                        <MenuItem value={90}>
-                          Traitement carie superficielle{" "}
-                        </MenuItem>
-                        <MenuItem value={40}>
-                          Traitement carie moyenne{" "}
-                        </MenuItem>
-                        <MenuItem value={410}>
-                          Soigner une carie profonde{" "}
-                        </MenuItem>
-                        <MenuItem value={50}>
-                          Traitement endodontique racine 2 racines{" "}
-                        </MenuItem>
-                        <MenuItem value={60}>
-                          traitement endodontique 3 racines{" "}
-                        </MenuItem>
-                        <MenuItem value={70}>
-                          traitement endodontique 4 racines{" "}
-                        </MenuItem>
-                        <MenuItem value={80}>
-                          traitement endodontique 5 racines{" "}
-                        </MenuItem>
+                        {listOperationsArray.map((item) => (
+                          <MenuItem key={item.value} value={item.value}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
                       </Select>
                       <FormHelperText error={!!fieldState.error}>
                         {fieldState.error?.message}
@@ -559,7 +557,78 @@ const PatientOperation = () => {
                   )}
                 />
               </Box>
-              <Box>
+              <TableContainer
+                sx={{
+                  maxHeight: 200,
+                  overflow: "auto",
+                }}
+                className="w-full md:flex-1 flex-wrap"
+              >
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableRow className="bg-gray-300 !rounded-2xl	">
+                      <TableCell>
+                        <strong>Operation name</strong>
+                      </TableCell>
+                      <TableCell>
+                        <strong>Price</strong>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {operations.map((item, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{getItemName(item)}</TableCell>
+                        <TableCell>
+                          <Controller
+                            name={`operations[${index}]`}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                label="Montant payé"
+                                variant="outlined"
+                                type="number"
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  console.log(index, e.target.value);
+                                  setOperationsData((prevdata) => {
+                                    const newdata = [...prevdata];
+                                    newdata[index] = {
+                                      operation: item,
+                                      price: e.target.value,
+                                    };
+                                    return newdata;
+                                  });
+                                  // Update the operations state when the input changes
+                                  /*  setValue(`operations[${index}]`, {
+                                    value: operations[index],
+                                    price: e.target.value,
+                                  }); */
+                                }}
+                              />
+                            )}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={2} align="right">
+                        <strong>Total Price:</strong> 300dh
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {/* <Box>
                 <Controller
                   name="prix"
                   control={control}
@@ -586,7 +655,7 @@ const PatientOperation = () => {
                     </Box>
                   )}
                 />
-              </Box>
+              </Box> */}
               <Box className="flex flex-col sm:flex-row gap-4 ">
                 <Controller
                   name="paidAmount"
@@ -682,6 +751,11 @@ const PatientOperation = () => {
           </Box>
         </Box>
       </Box>
+      {teetherror && (
+        <Alert className="mt-2" severity="error">
+          Veuillez sélectionner une dent.
+        </Alert>
+      )}
     </Paper>
   );
 };

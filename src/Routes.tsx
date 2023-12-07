@@ -22,6 +22,8 @@ import AddOrdonance from "./pages/AddOrdonance";
 import DicomPageViewer from "./pages/DicomPageViewer";
 import ReglementPage from "./pages/ReglementPage";
 
+import PaymentDetailsPage from "./pages/PaymentDetailsPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -99,6 +101,7 @@ const router = createBrowserRouter([
       {
         path: "Reglement",
         element: <ReglementPage />,
+        children: [{ path: "Details", element: <PaymentDetailsPage /> }],
       },
     ],
   },

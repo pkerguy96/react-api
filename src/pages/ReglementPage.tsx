@@ -1,7 +1,12 @@
-import React from "react";
+import ReglementTable from "../components/ReglementTable";
+import { Outlet, useLocation } from "react-router";
 
 const ReglementPage = () => {
-  return <div>ReglementPage</div>;
+  const location = useLocation();
+
+  const isDetailsRoute = location.pathname.startsWith("/Reglement/Details");
+
+  return <>{isDetailsRoute ? <Outlet /> : <ReglementTable />}</>;
 };
 
 export default ReglementPage;
