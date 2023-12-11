@@ -277,7 +277,7 @@ const AddOrdonanceUpdated = () => {
             />
           </FormControl>
         </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
+        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-end md:items-center mt-2">
           <label htmlFor="nom" className="w-full md:w-[160px]">
             Médicament:
           </label>
