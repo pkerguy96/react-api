@@ -3,6 +3,7 @@ export const CACHE_KEY_NURSES = ["nurses"];
 export const CACHE_KEY_APPOINTMENTS = ["appointments"];
 export const CACHE_KEY_Ordonance = ["ordonance"];
 export const CACHE_KEY_Operation = ["operation"];
+export const CACHE_KEY_PatientDetails = "patientdetails";
 export const listOperationsArray = [
   { value: 10, label: "Blanchiment" },
   { value: 20, label: "Extraction" },

@@ -13,6 +13,7 @@ import {
   Select,
   TextField,
   Typography,
+  Divider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import "../styles.css";
@@ -40,6 +41,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 import AddIcon from "@mui/icons-material/Add";
+import { Link } from "react-router-dom";
 
 const getColor = (colors) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -213,12 +215,20 @@ const PatientOperation = () => {
       >
         {/**top bar */}
         <Box className="flex flex-col justify-center gap-4">
-          <Typography
-            className="px-2 flex justify-center text-xl font-bold  text-[#1976d2]"
-            variant="h6"
-          >
-            Veuillez sélectionner les dents que vous souhaitez opérer
-          </Typography>
+          <Box className="flex flex-col md:flex-row md:items-center md:justify-between ">
+            <Typography
+              className="px-2 flex justify-center text-xl font-bold  text-gray-400"
+              variant="h6"
+            >
+              Veuillez sélectionner les dents que vous souhaitez opérer
+            </Typography>
+            <Link to={`/Patients/Details/${id}`}>
+              <p className="text-md font-mono font-bold text-[#1976d2] cursor-pointer ">
+                Historique des opérations
+              </p>
+            </Link>
+          </Box>
+
           <ButtonGroup
             className="flex  justify-center "
             disableElevation

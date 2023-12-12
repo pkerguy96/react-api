@@ -2,7 +2,7 @@ import { Box, Divider } from "@mui/material";
 import { useState } from "react";
 import {
   VerticalTimeline,
-  VerticalTimelineElement, 
+  VerticalTimelineElement,
   //@ts-ignore
 } from "react-vertical-timeline-component";
 
@@ -13,11 +13,15 @@ import { useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import HealthAndSafetyOutlinedIcon from "@mui/icons-material/HealthAndSafetyOutlined";
+import getPatientDetails from "../hooks/getPatientDetails";
 
 const PatientDetails = () => {
   //get id in the url
   const { id } = useParams();
   //get cached patients
+  /* const { data, isLoading } = id
+    ? getPatientDetails(Number(id))
+    : { data: null, isLoading: true }; */
   const { data, isLoading } = getPatients();
   const [activeBtn, setActiveBtn] = useState("one");
   const handleBtnClick = (ButtonName: string) => {
@@ -36,11 +40,15 @@ const PatientDetails = () => {
   const filteredPatient = (data as Patient[]).find(
     (patient: Patient) => patient.id === parseInt(id)
   );
+  console.log(filteredPatient);
+
   if (!filteredPatient) {
     return <div>Patient not found for ID: {id}</div>;
   }
 
   const appointments = filteredPatient.appointments;
+  console.log(appointments);
+
   return (
     <>
       <Box className="parent w-full flex flex-col gap-4">

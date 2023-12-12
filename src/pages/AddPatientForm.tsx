@@ -30,12 +30,12 @@ export interface Patient {
   phoneNumber?: string;
   mutuelle: string;
   note?: string;
-  appointments: {
+  appointments?: {
     title: string;
     date: string;
     note?: string;
   };
-  agecalc: string;
+  agecalc?: string;
 }
 const AddPatient = () => {
   const [snackBar, setSnackBar] = useState({
