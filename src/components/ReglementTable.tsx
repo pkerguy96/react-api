@@ -1,37 +1,52 @@
-//@ts-nocheck
+//@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
 import Tooltip from "@mui/material/Tooltip";
-import { Button, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import getOrdonance from "../hooks/getOrdonance";
-import OrdonanceService from "../services/OrdonanceService";
-import { CACHE_KEY_Ordonance } from "../constants";
-import { useQueryClient } from "@tanstack/react-query";
+
 import getOperation from "../hooks/getOperation";
+import PaymentModal from "./PaymentModal";
+import { useState } from "react";
+
+interface CustomPaymentInfo {
+  id: number;
+  date: string;
+  nom: string;
+  operation_type: null | string;
+  patient_id: number;
+  payments: Payment[];
+  prenom: string;
+  totalPaid: number;
+}
+
+interface Payment {
+  id: number;
+  amount_paid: string;
+  is_paid: number;
+  total_cost: string;
+}
 const ReglementTable = () => {
+  const [openModal, setOpenModal] = useState(false);
   const { data, isLoading } = getOperation();
   const navigate = useNavigate();
   if (isLoading) return <LoadingSpinner />;
-  const formattedData = data?.map((operation) => {
-    // Calculate the total amount_paid for the operation
-    const totalAmountPaid = operation.payments.reduce(
-      (total, payment) => total + parseFloat(payment.amount_paid),
-      0
-    );
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
+  const formattedData = data?.map((Paymentinfo: CustomPaymentInfo) => {
     return {
-      id: operation.id,
-      nom: `${operation.patient.nom} ${operation.patient.prenom}`,
-      date: operation.date,
-      prix: `${operation.payments[0]?.total_cost} MAD`, // Assuming the total_cost is the same for all payments in an operation
-      amount_paid: `${totalAmountPaid.toFixed(2)} MAD`, // Format the result to two decimal places
+      id: Paymentinfo.id,
+      nom: `${Paymentinfo.nom} ${Paymentinfo.prenom}`,
+      date: Paymentinfo.date,
+      prix: `${Paymentinfo.payments[0]?.total_cost} MAD`,
+      amount_paid: `${Paymentinfo.totalPaid.toFixed(2)} MAD`,
     };
   });
-  console.log(formattedData);
 
   const columns = [
     {
@@ -131,7 +146,7 @@ const ReglementTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s, m, e) => {
+    onRowClick: (s: [number, number], m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-edit") ||
         e.target.classList.contains("btn-ordonance-edit")
@@ -141,24 +156,24 @@ const ReglementTable = () => {
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
-        // api
-        OrdonanceService.DeleteOne(`${s[0]}`)
-          .then((res) => console.log(res))
-          .then(() => {
-            queryClient.invalidateQueries(CACHE_KEY_Ordonance);
-          });
       } else {
-        navigate(`/Reglement/Details`);
+        console.log("Opening PaymentModal");
+        setOpenModal(true);
       }
     },
   };
   return (
-    <MUIDataTable
-      title={"Liste des ordonances"}
-      data={formattedData}
-      columns={columns}
-      options={options}
-    />
+    <>
+      <MUIDataTable
+        title={"Liste des ordonances"}
+        data={formattedData}
+        columns={columns}
+        options={options}
+      />
+      {openModal && (
+        <PaymentModal open={openModal} onClose={handleCloseModal} />
+      )}
+    </>
   );
 };
 

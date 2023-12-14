@@ -1,5 +1,6 @@
 import { APIClient } from "./Http";
 export interface Operation {
+  date: any;
   patient_id: number;
   tooth_id: number[];
   operation_type: number;

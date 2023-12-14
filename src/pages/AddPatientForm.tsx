@@ -18,6 +18,7 @@ import { useAddPatientMutation } from "../hooks/addPatient";
 
 import { calculateAge } from "../utils/dateUtils";
 import { AxiosError } from "axios";
+//TODO: MAKE CIN NOT REQUIRED CALC WITH AGE,FIX DYCOM
 
 export interface Patient {
   id?: number;
