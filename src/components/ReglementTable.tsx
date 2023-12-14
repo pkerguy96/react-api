@@ -21,6 +21,7 @@ interface CustomPaymentInfo {
   payments: Payment[];
   prenom: string;
   totalPaid: number;
+  total_cost: number;
 }
 
 interface Payment {
@@ -31,6 +32,8 @@ interface Payment {
 }
 const ReglementTable = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [modalOperationId, setModalOperationId] = useState<number | null>(null);
+
   const { data, isLoading } = getOperation();
   const navigate = useNavigate();
   if (isLoading) return <LoadingSpinner />;
@@ -43,7 +46,7 @@ const ReglementTable = () => {
       id: Paymentinfo.id,
       nom: `${Paymentinfo.nom} ${Paymentinfo.prenom}`,
       date: Paymentinfo.date,
-      prix: `${Paymentinfo.payments[0]?.total_cost} MAD`,
+      prix: `${Paymentinfo.total_cost} MAD`,
       amount_paid: `${Paymentinfo.totalPaid.toFixed(2)} MAD`,
     };
   });
@@ -52,13 +55,6 @@ const ReglementTable = () => {
     {
       name: "id",
       label: "#",
-    },
-    {
-      name: "patient_id",
-      label: "#",
-      options: {
-        display: false,
-      },
     },
 
     {
@@ -99,27 +95,17 @@ const ReglementTable = () => {
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => (
-          <>
-            <button
-              className="btn-ordonance-edit text-gray-950 hover:text-blue-700 cursor-pointer"
-              title="Modifier"
-            >
-              <EditOutlinedIcon
-                className="pointer-events-none"
-                fill="currentColor"
-              />
-            </button>
-            <button
-              className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-              title="Modifier"
-            >
-              <DeleteOutlineIcon
-                className="pointer-events-none"
-                fill="currentColor"
-              />
-            </button>
-          </>
+        customBodyRender: () => (
+          <button
+            className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+            title="Modifier"
+          >
+            <DeleteOutlineIcon
+              color="error"
+              className="pointer-events-none"
+              fill="currentColor"
+            />
+          </button>
         ),
       },
     },
@@ -128,36 +114,22 @@ const ReglementTable = () => {
   const options = {
     searchOpen: true,
     filterType: "dropdown",
-    searchPlaceholder: "Rechercher une ordonance",
+    searchPlaceholder: "Rechercher une paiement",
     textLabels: {
       body: {
-        noMatch: "Désolé, aucun ordonance n'est dans nos données",
+        noMatch: "Désolé, aucun paiement n'est dans nos données",
       },
     },
-    customToolbar: () => (
-      <Tooltip title="Nouveau ordonance">
-        <IconButton
-          onClick={() => {
-            navigate(`/AddOrdonance`);
-          }}
-        >
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
-    ),
+
     selectableRowsHideCheckboxes: true,
     onRowClick: (s: [number, number], m: any, e: any) => {
       if (
-        e.target.querySelector(".btn-ordonance-edit") ||
-        e.target.classList.contains("btn-ordonance-edit")
-      ) {
-        navigate(`/AddOrdonance/${s[1]}/${s[0]}`);
-      } else if (
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
+        console.log("delete");
       } else {
-        console.log("Opening PaymentModal");
+        setModalOperationId(s[0]);
         setOpenModal(true);
       }
     },
@@ -165,13 +137,17 @@ const ReglementTable = () => {
   return (
     <>
       <MUIDataTable
-        title={"Liste des ordonances"}
+        title={"Liste des Règlement"}
         data={formattedData}
         columns={columns}
         options={options}
       />
       {openModal && (
-        <PaymentModal open={openModal} onClose={handleCloseModal} />
+        <PaymentModal
+          open={openModal}
+          onClose={handleCloseModal}
+          operationID={modalOperationId}
+        />
       )}
     </>
   );
