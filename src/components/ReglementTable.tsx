@@ -1,16 +1,15 @@
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
-import Tooltip from "@mui/material/Tooltip";
-import { IconButton } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { useNavigate } from "react-router";
+import { Box, IconButton } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-
 import getOperation from "../hooks/getOperation";
 import PaymentModal from "./PaymentModal";
 import { useState } from "react";
+import ConfirmDialog, { confirmDialog } from "./ConfirmDialog";
+import deletePayment from "../hooks/deletePayment";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import SnackBarComponentv2 from "./SnackBarComponentv2";
 
 interface CustomPaymentInfo {
   id: number;
@@ -33,9 +32,9 @@ interface Payment {
 const ReglementTable = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalOperationId, setModalOperationId] = useState<number | null>(null);
-
+  const { showSnackbar } = useSnackbarStore();
   const { data, isLoading } = getOperation();
-  const navigate = useNavigate();
+
   if (isLoading) return <LoadingSpinner />;
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -127,7 +126,29 @@ const ReglementTable = () => {
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
-        console.log("delete");
+        /* confirmDialog(
+          "Voulez-vous vraiment supprimer le paiement ?",
+          async () => {
+            try {
+              const deletionSuccessful = await deletePayment(s[0]);
+              if (deletionSuccessful) {
+                console.log(
+                  "Payment deletion was successful",
+                  deletionSuccessful
+                );
+              } else {
+                console.error("Payment deletion failed");
+              }
+            } catch (error) {
+              console.error(
+                "An error occurred during payment deletion:",
+                error
+              );
+            }
+          }
+        ); */
+        showSnackbar("hi", "success");
+        console.log(100);
       } else {
         setModalOperationId(s[0]);
         setOpenModal(true);
@@ -136,12 +157,14 @@ const ReglementTable = () => {
   };
   return (
     <>
-      <MUIDataTable
-        title={"Liste des Règlement"}
-        data={formattedData}
-        columns={columns}
-        options={options}
-      />
+      <Box className="relative">
+        <MUIDataTable
+          title={"Liste des Règlement"}
+          data={formattedData}
+          columns={columns}
+          options={options}
+        />
+      </Box>
       {openModal && (
         <PaymentModal
           open={openModal}
@@ -149,6 +172,8 @@ const ReglementTable = () => {
           operationID={modalOperationId}
         />
       )}
+
+      <ConfirmDialog />
     </>
   );
 };

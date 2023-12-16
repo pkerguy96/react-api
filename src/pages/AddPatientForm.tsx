@@ -10,15 +10,12 @@ import {
   TextField,
 } from "@mui/material";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useEffect, useState } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor } from "@mui/material/Alert";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAddPatientMutation } from "../hooks/addPatient";
-
 import { calculateAge } from "../utils/dateUtils";
 import { AxiosError } from "axios";
-//TODO: MAKE CIN NOT REQUIRED CALC WITH AGE,FIX DYCOM
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
 
 export interface Patient {
   id?: number;
@@ -39,11 +36,7 @@ export interface Patient {
   agecalc?: string;
 }
 const AddPatient = () => {
-  const [snackBar, setSnackBar] = useState({
-    isopen: false,
-    message: "",
-    severity: "warning",
-  });
+  const { showSnackbar } = useSnackbarStore();
 
   const [age, setAge] = useState(0);
   const navigate = useNavigate();
@@ -54,9 +47,7 @@ const AddPatient = () => {
     prenom: {
       required: "Le champ Prenom est requis.",
     },
-    cin: {
-      required: "Le champ Cin est requis.",
-    },
+
     date: {
       required: "Le champ Date est requis.",
     },
@@ -113,37 +104,17 @@ const AddPatient = () => {
   const onSubmit: SubmitHandler<Patient> = async (data) => {
     try {
       await addPatientMutation.mutateAsync(data);
-      setSnackBar({
-        isopen: true,
-        message: "Patient added successfully",
-        severity: "success",
-      });
+      showSnackbar("Patient ajouté avec succès.", "success");
+      navigate("/Patients");
     } catch (error: any) {
       const message =
         error instanceof AxiosError
           ? error.response?.data?.message
           : error.message;
-      setSnackBar({
-        isopen: true,
-        message: message,
-        severity: "error",
-      });
+      showSnackbar(message, "error");
     }
   };
-  useEffect(() => {
-    let intervalId: number;
-    if (snackBar.severity === "success") {
-      intervalId = setInterval(() => {
-        // Perform your navigation here
-        navigate("/Patients");
-      }, 1500); // Adjust the interval duration (in milliseconds) as needed
-    }
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [snackBar.severity]);
+
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {
     onChange: (e) => {
@@ -154,28 +125,6 @@ const AddPatient = () => {
   //TODO: dir bhal had form fk olchi
   return (
     <Paper className="p-4">
-      <Snackbar
-        open={snackBar.isopen}
-        autoHideDuration={3000} // Adjust the duration for how long the snackbar should be displayed
-        onClose={() =>
-          setSnackBar((prevState) => ({ ...prevState, isopen: false }))
-        }
-        anchorOrigin={{
-          vertical: "top", // Set the vertical position to top
-          horizontal: "right", // Set the horizontal position to right
-        }}
-      >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={() =>
-            setSnackBar((prevState) => ({ ...prevState, isopen: false }))
-          }
-          severity={snackBar.severity as AlertColor}
-        >
-          {snackBar.message}
-        </MuiAlert>
-      </Snackbar>
       <Box
         component="form"
         noValidate
@@ -236,27 +185,6 @@ const AddPatient = () => {
             </FormControl>
           </Box>
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-            <label htmlFor="nom" className="w-full md:w-[160px]">
-              Cin:
-            </label>
-            <FormControl className="w-full md:flex-1">
-              <Controller
-                name="cin"
-                control={control}
-                rules={{ required: customErrorMessages.cin.required }}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    id="outlined-required"
-                    label="Cin"
-                    error={!!errors.cin}
-                    helperText={errors.cin?.message}
-                  />
-                )}
-              />
-            </FormControl>
-          </Box>
-          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
             <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
               <label htmlFor="nom" className="w-full md:w-[160px]">
                 Date de naissance:
@@ -280,7 +208,6 @@ const AddPatient = () => {
                     <TextField
                       type="date"
                       {...field}
-                      label="Date de naissance"
                       id="outlined-required"
                       error={!!errors.date}
                       helperText={errors.date?.message}
@@ -309,6 +236,28 @@ const AddPatient = () => {
               </FormControl>
             </Box>
           </Box>
+
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Cin:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="cin"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="outlined-required"
+                    label="Cin"
+                    error={!!errors.cin}
+                    helperText={errors.cin?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
             <label htmlFor="nom" className="w-full md:w-[160px]">
               Sex:

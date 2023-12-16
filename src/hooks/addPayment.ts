@@ -1,10 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import OperationDetailsService from "../services/OperationDetailsService";
+
+import OperationService from "../services/OperationService";
 
 const addPayment = () => {
   //@ts-ignore
-  const mutation = useMutation((payment: any) => {
-    OperationDetailsService.Postall(payment);
+  const mutation = useMutation((params: { data: any; id: number }) => {
+    const { id, data } = params;
+    return OperationService.UpdateAll(data, id);
   });
   return mutation;
 };

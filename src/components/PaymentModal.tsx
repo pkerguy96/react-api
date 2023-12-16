@@ -4,6 +4,9 @@ import LoadingSpinner from "./LoadingSpinner";
 import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import addPayment from "../hooks/addPayment";
+import { useQueryClient } from "@tanstack/react-query";
+import { CACHE_KEY_OperationDetail } from "../constants";
 
 interface ModalComponentProps {
   open: boolean;
@@ -11,16 +14,18 @@ interface ModalComponentProps {
   operationID: number | null;
 }
 interface FormData {
-  montant: number;
+  amount_paid: number;
   // Add other form fields here
 }
 const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
-  const { handleSubmit, control, reset } = useForm<FormData>();
+  const { handleSubmit, control, setValue } = useForm<FormData>();
   const [fetchedoperations, setFetchedOperations] = useState<any[]>([]);
   const [totalCost, setTotalCost] = useState<number>(0);
-
+  const addMutation = addPayment();
+  const queryClient = useQueryClient();
   if (!operationID) return null;
   const { data, isLoading } = getOperationDetail(operationID);
+
   useEffect(() => {
     if (data && data.payments) {
       setFetchedOperations(data.payments);
@@ -36,31 +41,41 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
   if (isLoading) return <LoadingSpinner />;
   const onSubmit = (data: FormData) => {
     if (data) {
-      if (totalpaid + Number(data.montant) > totalCost) {
+      if (totalpaid + Number(data.amount_paid) > totalCost) {
         console.log("Total payment exceeds total cost.");
         return;
       }
-      setFetchedOperations((prevData) => [
-        ...prevData,
-        {
-          amount_paid: data.montant,
-          date: new Date()
-            .toLocaleString("en-US", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: false,
-            })
-            .replace(/\//g, "-")
-            .replace(/,/, ""),
-          id: Math.floor(Math.random() * 1000),
-        },
-      ]);
+
+      addMutation
+        .mutateAsync(
+          { data, id: operationID },
+          {
+            onSuccess(data: any) {
+              console.log("returned", data);
+              queryClient.invalidateQueries([
+                CACHE_KEY_OperationDetail,
+                operationID,
+              ]);
+              setFetchedOperations((prevData) => [
+                ...prevData,
+                {
+                  amount_paid: data.amount_paid,
+                  date: data.date,
+                  id: data.id,
+                },
+              ]);
+              setValue("amount_paid", "");
+            },
+            onError(error) {
+              console.log(error);
+            },
+          }
+        )
+        .catch((error) => {
+          console.error("onError", error);
+        });
     }
-    console.log(fetchedoperations);
+    console.log("firstdata", data);
   };
   const totalpaid = fetchedoperations.reduce(
     (total, payment) => total + Number(payment.amount_paid),
@@ -86,79 +101,101 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
             onSubmit={handleSubmit(onSubmit)}
             className="!rounded-lg border bg-card text-card-foreground shadow-sm max-w-lg mx-auto"
           >
-            <Box className="flex flex-col space-y-1.5 p-4">
+            <Box className="flex flex-col gap-6 p-6">
               <h3 className="text-2xl font-semibold leading-none tracking-tight">
                 Détails du paiement des patients
               </h3>
-            </Box>
-
-            <Box className="p-6">
-              <Box className="flex flex-col space-y-4">
-                <Box className="flex items-center justify-between">
-                  <span className="font-semibold  text-lg">Opération</span>
-                  <span className="font-semibold  text-lg">Prix</span>
-                </Box>
-
-                {data?.operation_details?.map((detail: any, i: number) => (
-                  <Box className="flex items-center justify-between" key={i}>
-                    <span className="text-gray-500">
-                      {getOperationname(detail.operation_type) ||
-                        "No Operation Name"}
+              <Box className="flex flex-col gap-4">
+                <Box className="flex flex-col gap-2">
+                  <Box className="flex items-center justify-between">
+                    <span className="font-semibold text-base text-start">
+                      Opération
                     </span>
-                    <span className="text-gray-500">{detail.price} MAD</span>
-                  </Box>
-                ))}
-              </Box>
-              <Box className="flex justify-between items-center mt-6">
-                <h2 className="font-semibold text-lg w-1/3">Payments</h2>
-                <h2 className="font-semibold text-lg w-1/3">Price</h2>
-                <h2 className="font-semibold text-lg w-1/3">Date</h2>
-              </Box>
-              <Box className="flex flex-col space-y-4 mt-4">
-                {fetchedoperations?.map((payment: any, j: number) => (
-                  <Box className="flex items-center justify-between" key={j}>
-                    <span className="text-gray-500 w-1/3">Payment {j + 1}</span>
-                    <span className="text-gray-500 w-1/3">
-                      {payment.amount_paid} MAD
+                    <span className="font-semibold text-base text-end">
+                      Prix
                     </span>
-                    <span className="text-gray-500 w-1/3">{payment.date}</span>
                   </Box>
-                ))}
-              </Box>
-              <Box className="flex items-center mt-4">
-                <Box className="flex items-center space-x-2">
-                  <Controller
-                    defaultValue=""
-                    name="montant"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        disabled={outstandingAmount === 0}
-                        id="montant"
-                        label="Montant"
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        placeholder="Enter Montant" // Add a placeholder
-                        {...field}
-                      />
-                    )}
-                  />
-                  <Button
-                    variant="outlined"
-                    className=""
-                    disabled={outstandingAmount === 0}
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
+                  <Box className="flex flex-col gap-1">
+                    {data?.operation_details?.map((detail: any, i: number) => (
+                      <Box
+                        className="flex items-center justify-between"
+                        key={i}
+                      >
+                        <span className="text-gray-500 text-base text-start">
+                          {getOperationname(detail.operation_type) ||
+                            "No Operation Name"}
+                        </span>
+                        <span className="text-gray-500 text-sm text-end">
+                          {detail.price} MAD
+                        </span>
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
-              <Box className="flex justify-between items-center mt-6">
-                <h2 className="font-semibold text-lg">Montant restant </h2>
-                <span className="font-semibold text-lg">{`${outstandingAmount.toFixed(
-                  2
-                )} MAD `}</span>
+                <Box className="flex flex-col gap-2">
+                  <Box className="flex justify-between items-center">
+                    <h2 className="font-semibold text-base text-start w-1/3">
+                      Paiements
+                    </h2>
+                    <h2 className="font-semibold text-base text-center w-1/3">
+                      Prix
+                    </h2>
+                    <h2 className="font-semibold text-base text-end w-1/3">
+                      Date
+                    </h2>
+                  </Box>
+                  <Box className="flex flex-col gap-1">
+                    {fetchedoperations?.map((payment: any, j: number) => (
+                      <Box
+                        className="flex items-center justify-between"
+                        key={j}
+                      >
+                        <span className="text-gray-500 text-base text-start w-1/3">
+                          Payment {j + 1}
+                        </span>
+                        <span className="text-gray-500 text-sm text-center w-1/3">
+                          {payment.amount_paid} MAD
+                        </span>
+                        <span className="text-gray-500 text-sm text-end w-1/3">
+                          {payment.date}
+                        </span>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+                {outstandingAmount !== 0 && (
+                  <Box className="flex items-center flex-wrap gap-2">
+                    <Controller
+                      //@ts-ignore
+                      defaultValue=""
+                      name="amount_paid"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          className="flex-1"
+                          id="amount_paid"
+                          label="Montant"
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          placeholder="Enter Montant" // Add a placeholder
+                          {...field}
+                        />
+                      )}
+                    />
+                    <Button variant="outlined" className="" type="submit">
+                      {addMutation.isLoading ? "..." : "Ajouter"}
+                    </Button>
+                  </Box>
+                )}
+                <Box className="flex justify-between items-center">
+                  <h2 className="font-semibold text-base text-start">
+                    Montant restant
+                  </h2>
+                  <span className="font-semibold text-sm text-end">{`${outstandingAmount.toFixed(
+                    2
+                  )} MAD `}</span>
+                </Box>
               </Box>
             </Box>
           </Box>

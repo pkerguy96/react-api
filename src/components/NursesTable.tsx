@@ -1,4 +1,4 @@
-import { Tooltip, IconButton } from "@mui/material";
+import { Tooltip, IconButton, Box } from "@mui/material";
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
 import AddIcon from "@mui/icons-material/Add";
@@ -103,12 +103,14 @@ const NursesTable = () => {
   };
 
   return (
-    <MUIDataTable
-      title={"Liste des infirmières"}
-      data={data}
-      columns={columns}
-      options={options}
-    />
+    <Box className="relative">
+      <MUIDataTable
+        title={"Liste des infirmières"}
+        data={data}
+        columns={columns}
+        options={options}
+      />
+    </Box>
   );
 };
 

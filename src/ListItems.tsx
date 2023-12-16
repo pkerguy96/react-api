@@ -7,7 +7,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 
 import PeopleIcon from "@mui/icons-material/People";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 /* newly added  */
 import DateRangeSharpIcon from "@mui/icons-material/DateRangeSharp";
 
@@ -16,12 +16,13 @@ import ContentPasteSearchOutlinedIcon from "@mui/icons-material/ContentPasteSear
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
+const location = useLocation();
 export const mainListItems = (
   <React.Fragment>
     <Link to="/dashboard" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
-          <DashboardIcon />
+          <DashboardIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Accueille" />
       </ListItemButton>
@@ -29,7 +30,7 @@ export const mainListItems = (
     <Link to="/Appointments" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
-          <DateRangeSharpIcon />
+          <DateRangeSharpIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Rendez-vous" />
       </ListItemButton>
@@ -37,7 +38,7 @@ export const mainListItems = (
     <Link to="/Patients" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
-          <PeopleIcon />
+          <PeopleIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Patients" />
       </ListItemButton>
@@ -45,7 +46,7 @@ export const mainListItems = (
     <Link to="/Ordonnance" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
-          <MedicationLiquidOutlinedIcon />
+          <MedicationLiquidOutlinedIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Ordonnance" />
       </ListItemButton>
@@ -53,7 +54,7 @@ export const mainListItems = (
     <Link to="/Reglement" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
-          <RequestQuoteOutlinedIcon />
+          <RequestQuoteOutlinedIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Règlement" />
       </ListItemButton>
@@ -71,7 +72,7 @@ export function SecondaryListItems({}: Props) {
       <Link to="/Nurses" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
-            <BadgeIcon />
+            <BadgeIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary="gérer les infirmières" />
         </ListItemButton>
@@ -82,7 +83,7 @@ export function SecondaryListItems({}: Props) {
       <Link to="/dicom" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
-            <ContentPasteSearchOutlinedIcon />
+            <ContentPasteSearchOutlinedIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary="Xray" />
         </ListItemButton>
@@ -90,7 +91,7 @@ export function SecondaryListItems({}: Props) {
       <Link to="/Stock" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
-            <Inventory2OutlinedIcon />
+            <Inventory2OutlinedIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary="Stock" />
         </ListItemButton>

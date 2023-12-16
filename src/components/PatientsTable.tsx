@@ -4,7 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { redirect, useNavigate } from "react-router";
 import getPatients from "../hooks/getPatients";
 import Tooltip from "@mui/material/Tooltip";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
 import { Link } from "react-router-dom";
 import FolderCopyOutlinedIcon from "@mui/icons-material/FolderCopyOutlined";
@@ -145,12 +145,14 @@ const PatientsTable = () => {
   };
 
   return (
-    <MUIDataTable
-      title={"Liste des patients"}
-      data={data}
-      columns={columns}
-      options={options}
-    />
+    <Box className="relative">
+      <MUIDataTable
+        title={"Liste des patients"}
+        data={data}
+        columns={columns}
+        options={options}
+      />
+    </Box>
   );
 };
 

@@ -42,13 +42,13 @@ const AddOrdonanceUpdated = () => {
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
   const [name, setName] = useState("");
-  const [optionsArray, setOptionsArray] = useState(null); // Initialize with an empty array
+  const [optionsArray, setOptionsArray] = useState(null);
   const [snackBar, setSnackBar] = useState({
     isOpen: false,
     message: "",
     severity: "info",
   });
-  //TODO : fix when u add ordonance and try to get to it immediatly error
+  //TODO : fix when u add ordonance and try to get to it immediatly error and errors validation
   const navigate = useNavigate();
   const isAddMode = !id;
   const onClose = () => setDrug({});
@@ -194,14 +194,6 @@ const AddOrdonanceUpdated = () => {
   };
   return (
     <Paper className="p-4">
-      <SnackbarComponent
-        isOpen={snackBar.isOpen}
-        message={snackBar.message}
-        severity={snackBar.severity}
-        onClose={() =>
-          setSnackBar((prevState) => ({ ...prevState, isOpen: false }))
-        }
-      />
       <Box
         component="form"
         noValidate
@@ -218,157 +210,159 @@ const AddOrdonanceUpdated = () => {
           className="gap-2 mb-4"
           variant="middle"
         />
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Patient:
-          </label>
-          <Box className={`w-full md:flex-1 `}>
-            <Controller
-              control={control}
-              name="patient"
-              render={({ field }) => (
-                <Autocomplete
-                  {...field}
-                  id="combo-box-demo"
-                  value={optionsArray || field.value || null}
-                  options={dataArray}
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
-                  getOptionLabel={(option) => `${option.nom} ${option.prenom}`}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Patient" />
-                  )}
-                  onChange={(e, data) => {
-                    optionsArray && setOptionsArray(data);
-                    setValue("patient", data); // Set the entire patient object as the value
-                  }}
-                />
-              )}
-            />
+        <Box className="w-full flex flex-col gap-4">
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Patient:
+            </label>
+            <Box className={`w-full md:flex-1 `}>
+              <Controller
+                control={control}
+                name="patient"
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    id="combo-box-demo"
+                    value={optionsArray || field.value || null}
+                    options={dataArray}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    getOptionLabel={(option) =>
+                      `${option.nom} ${option.prenom}`
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Patient" />
+                    )}
+                    onChange={(e, data) => {
+                      optionsArray && setOptionsArray(data);
+                      setValue("patient", data); // Set the entire patient object as the value
+                    }}
+                  />
+                )}
+              />
+            </Box>
           </Box>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Date:
-          </label>
-          <FormControl className="w-full md:flex-1">
-            <Controller
-              name="date"
-              control={control}
-              rules={{
-                validate: (value) => {
-                  const selectedDate = new Date(value);
-                  const currentDate = new Date();
-                  return (
-                    selectedDate <= currentDate ||
-                    "La date ne peut pas être dans le futur."
-                  );
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                  type="date"
-                  {...field}
-                  id="outlined-required"
-                  size="large"
-                />
-              )}
-            />
-          </FormControl>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-end md:items-center mt-2">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Médicament:
-          </label>
-          <Box className="w-full md:flex-1">
-            <TextField
-              className="w-full"
-              id="outlined-basic"
-              label="Medicament"
-              variant="outlined"
-              value={name}
-              inputProps={{ list: "browsers" }}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-            <datalist id="browsers">
-              {items.map((e, i) => (
-                <option key={i} value={e} />
-              ))}
-            </datalist>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Date:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="date"
+                control={control}
+                rules={{
+                  validate: (value) => {
+                    const selectedDate = new Date(value);
+                    const currentDate = new Date();
+                    return (
+                      selectedDate <= currentDate ||
+                      "La date ne peut pas être dans le futur."
+                    );
+                  },
+                }}
+                render={({ field }) => (
+                  <TextField
+                    type="date"
+                    {...field}
+                    id="outlined-required"
+                    size="large"
+                  />
+                )}
+              />
+            </FormControl>
           </Box>
-          <Button
-            sx={{ borderRadius: 16 }}
-            variant="outlined"
-            endIcon={<AddIcon />}
-            onClick={() => {
-              const valid =
-                name.trim() !== "" &&
-                !drugs.some(
-                  (e) => e.medicine_name.toUpperCase() === name.toUpperCase()
-                );
-              if (valid) {
-                setDrugs([
-                  ...drugs,
-                  { medicine_name: name, note: "", id: drugs.length },
-                ]);
-              }
-              setName("");
-            }}
-          >
-            Ajouter
-          </Button>
-        </Box>
-        <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
-          <label htmlFor="nom" className="w-full md:w-[160px]">
-            Sélectionné:
-          </label>
-
-          <TableContainer className="w-full md:flex-1 flex-wrap">
-            <Table sx={{ minWidth: 480 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Medicine name</TableCell>
-                  <TableCell>Note</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {drugs.map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row.medicine_name}
-                    </TableCell>
-                    <TableCell style={{ minWidth: 200 }}>
-                      <TextField
-                        fullWidth
-                        value={row.note || ""}
-                        onChange={(e) =>
-                          handleNoteChange(row.id, e.target.value)
-                        }
-                        label="Note"
-                      />
-                    </TableCell>
-                  </TableRow>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-end md:items-center mt-2">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Médicament:
+            </label>
+            <Box className="w-full md:flex-1">
+              <TextField
+                className="w-full"
+                id="outlined-basic"
+                label="Medicament"
+                variant="outlined"
+                value={name}
+                inputProps={{ list: "browsers" }}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+              <datalist id="browsers">
+                {items.map((e, i) => (
+                  <option key={i} value={e} />
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
+              </datalist>
+            </Box>
+            <Button
+              sx={{ borderRadius: 16 }}
+              variant="outlined"
+              endIcon={<AddIcon />}
+              onClick={() => {
+                const valid =
+                  name.trim() !== "" &&
+                  !drugs.some(
+                    (e) => e.medicine_name.toUpperCase() === name.toUpperCase()
+                  );
+                if (valid) {
+                  setDrugs([
+                    ...drugs,
+                    { medicine_name: name, note: "", id: drugs.length },
+                  ]);
+                }
+                setName("");
+              }}
+            >
+              Ajouter
+            </Button>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
+            <label htmlFor="nom" className="w-full md:w-[160px]">
+              Sélectionné:
+            </label>
 
-        <Box sx={{ marginTop: 5 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ borderRadius: 16 }}
-            fullWidth={true}
-          >
-            {!isAddMode ? "Misajour" : "Enregistrer"}
-          </Button>
+            <TableContainer className="w-full md:flex-1 flex-wrap">
+              <Table sx={{ minWidth: 480 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Medicine name</TableCell>
+                    <TableCell>Note</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {drugs.map((row, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.medicine_name}
+                      </TableCell>
+                      <TableCell style={{ minWidth: 200 }}>
+                        <TextField
+                          fullWidth
+                          value={row.note || ""}
+                          onChange={(e) =>
+                            handleNoteChange(row.id, e.target.value)
+                          }
+                          label="Note"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+          <Box className="flex mt-4">
+            <Button
+              type="submit"
+              variant="contained"
+              className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
+            >
+              Enregistrer
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Paper>

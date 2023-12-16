@@ -1,6 +1,6 @@
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
-import { Tooltip, IconButton } from "@mui/material";
+import { Tooltip, IconButton, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 
@@ -61,12 +61,14 @@ const stockTable = () => {
   };
 
   return (
-    <MUIDataTable
-      title={"Gestion Stock"}
-      data={data}
-      columns={columns}
-      options={options}
-    />
+    <Box className="relative">
+      <MUIDataTable
+        title={"Gestion Stock"}
+        data={data}
+        columns={columns}
+        options={options}
+      />
+    </Box>
   );
 };
 
