@@ -34,7 +34,13 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { CACHE_KEY_Ordonance } from "../constants";
+import getOrdonance from "../hooks/getOrdonance";
 const AddOrdonanceUpdated = () => {
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarStore();
   const Addmutation = addOrdonance();
   const mutation = updateOrdonance();
   const { data: patientsData, isLoading } = getPatients();
@@ -43,19 +49,14 @@ const AddOrdonanceUpdated = () => {
   const [drug, setDrug] = useState({});
   const [name, setName] = useState("");
   const [optionsArray, setOptionsArray] = useState(null);
-  const [snackBar, setSnackBar] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info",
-  });
-  //TODO : fix when u add ordonance and try to get to it immediatly error and errors validation
+  const [iserror, setIsError] = useState(false);
+
   const navigate = useNavigate();
   const isAddMode = !id;
-  const onClose = () => setDrug({});
 
   let dataArray: Patient[] = [];
   let specifiedPatient;
-  let newOptionsArray;
+
   if (
     patientsData &&
     typeof patientsData === "object" &&
@@ -76,31 +77,23 @@ const AddOrdonanceUpdated = () => {
         const SpecifiedOrdonance = specifiedPatient.ordonances.find(
           (ordonance) => ordonance.id === parseInt(ordonanceID)
         );
+        // error here
+        if (SpecifiedOrdonance) {
+          const DrugsDetails = SpecifiedOrdonance.ordonance_details;
 
-        const DrugsDetails = SpecifiedOrdonance.ordonance_details;
-
-        const extractedDetails = DrugsDetails.map((item) => {
-          return {
-            medicine_name: item.medicine_name,
-            note: item.note,
-          };
-        });
-        setDrugs(extractedDetails);
+          const extractedDetails = DrugsDetails.map((item) => {
+            return {
+              id: item.id,
+              medicine_name: item.medicine_name,
+              note: item.note,
+            };
+          });
+          setDrugs(extractedDetails);
+        }
       }
     }
   }, [patientsData, id]);
-  useEffect(() => {
-    let timerId: number;
-    if (snackBar.isOpen) {
-      timerId = setTimeout(() => {
-        navigate("/Ordonnance");
-      }, 2000); // 2 seconds
 
-      return () => {
-        clearTimeout(timerId);
-      };
-    }
-  }, [snackBar.isOpen]);
   const {
     handleSubmit,
     setValue,
@@ -117,38 +110,47 @@ const AddOrdonanceUpdated = () => {
     return <LoadingSpinner />;
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     data.drugs = drugs;
-    console.log(data);
 
-    const formData = {
-      patient_id: data?.patient.id,
-      medicine: data.drugs,
-      date: data.date,
-    };
-    return isAddMode ? createUser(formData) : editUser(formData, ordonanceID);
+    if (data.drugs && data.drugs.length === 0) {
+      setIsError(true);
+    } else {
+      const formData = {
+        patient_id: data?.patient.id,
+        medicine: data.drugs,
+        date: data.date,
+      };
+
+      try {
+        if (isAddMode) {
+          await createUser(formData);
+        } else {
+          await editUser(formData, ordonanceID);
+        }
+        queryClient.invalidateQueries({ queryKey: ["ordonance"] });
+        navigate("/Ordonnance");
+      } catch (error) {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+        showSnackbar(message, "error");
+      }
+    }
   };
 
-  const createUser = (formData) => {
-    Addmutation.mutateAsync(formData, {
+  const createUser = async (formData) => {
+    await Addmutation.mutateAsync(formData, {
       onSuccess: () => {
-        setSnackBar({
-          isOpen: true,
-          message: "Ordonnance créée avec succès",
-          severity: "success",
-        });
+        showSnackbar("Ordonance ajouté avec succès.", "success");
       },
       onError: (error: any) => {
         const message =
           error instanceof AxiosError
             ? error.response?.data?.message
             : error.message;
-
-        setSnackBar({
-          isOpen: true,
-          message: message,
-          severity: "warning",
-        });
+        showSnackbar(message, "warning");
       },
     });
   };
@@ -157,22 +159,14 @@ const AddOrdonanceUpdated = () => {
       { data: formData, id: ordonanceID },
       {
         onSuccess: () => {
-          setSnackBar({
-            isOpen: true,
-            message: "Ordonnance créée avec succès",
-            severity: "success",
-          });
+          showSnackbar("Ordonance ajouté avec succès.", "success");
         },
         onError: (error: any) => {
           const message =
             error instanceof AxiosError
               ? error.response?.data?.message
               : error.message;
-          setSnackBar({
-            isOpen: true,
-            message: message,
-            severity: "warning",
-          });
+          showSnackbar(message, "warning");
         },
       }
     );
@@ -217,9 +211,10 @@ const AddOrdonanceUpdated = () => {
             </label>
             <Box className={`w-full md:flex-1 `}>
               <Controller
+                rules={{ required: "Veuillez sélectionner un patient" }} // Add required rule
                 control={control}
                 name="patient"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Autocomplete
                     {...field}
                     id="combo-box-demo"
@@ -231,9 +226,16 @@ const AddOrdonanceUpdated = () => {
                     getOptionLabel={(option) =>
                       `${option.nom} ${option.prenom}`
                     }
-                    renderInput={(params) => (
-                      <TextField {...params} label="Patient" />
-                    )}
+                    renderInput={(params) => {
+                      return (
+                        <TextField
+                          {...params}
+                          label="Patient"
+                          error={Boolean(fieldState?.error?.message)}
+                          helperText={fieldState?.error?.message || ""}
+                        />
+                      );
+                    }}
                     onChange={(e, data) => {
                       optionsArray && setOptionsArray(data);
                       setValue("patient", data); // Set the entire patient object as the value
@@ -316,6 +318,11 @@ const AddOrdonanceUpdated = () => {
               Ajouter
             </Button>
           </Box>
+          {iserror && (
+            <Typography color="error" className="flex justify-center">
+              S'il vous plaît, sélectionnez au moins un médicament.
+            </Typography>
+          )}
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center mt-2">
             <label htmlFor="nom" className="w-full md:w-[160px]">
               Sélectionné:

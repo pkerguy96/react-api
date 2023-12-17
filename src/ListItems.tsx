@@ -16,7 +16,7 @@ import ContentPasteSearchOutlinedIcon from "@mui/icons-material/ContentPasteSear
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
-const location = useLocation();
+
 export const mainListItems = (
   <React.Fragment>
     <Link to="/dashboard" className="no-underline">

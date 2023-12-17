@@ -17,8 +17,6 @@ const getPatients = () => {
   return useQuery<Data[], Error, any, any>({
     queryKey: CACHE_KEY_PATIENTS,
     queryFn: apiclient.getall,
-    staleTime: 600000, //10 minutes
-    cacheTime: 3600000, //1 hour
   });
 };
 
