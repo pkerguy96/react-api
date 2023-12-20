@@ -75,7 +75,7 @@ const router = createBrowserRouter([
         element: <PrintableComponant />,
       },
       {
-        path: "AddPatient",
+        path: "AddPatient/:id?",
         element: <AddPatient />,
       },
       {

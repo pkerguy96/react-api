@@ -43,8 +43,6 @@ export class APIClient<T> {
     return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
   };
   UpdateAll = (data: T, id: number) => {
-    const apiUrl = `${this.endpoint}/${id}`;
-    console.log("API URL:", apiUrl);
     return axiosInstance
       .patch<T>(`${this.endpoint}/${id}`, data)
       .then((res) => res.data);

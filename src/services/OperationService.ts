@@ -9,4 +9,5 @@ export interface Operation {
   amount_paid: number;
   is_paid: boolean;
 }
-export default new APIClient<Operation>("/Operation");
+const operationApiClient = new APIClient<Operation>("/Operation");
+export default operationApiClient;

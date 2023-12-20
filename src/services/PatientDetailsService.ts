@@ -15,7 +15,8 @@ interface Operation {
   operation_type: OperationType[];
 }
 
-export interface PatientDetails extends Patient {
+export interface Patientinfo extends Patient {
   operations: Operation[];
 }
-export default new APIClient<PatientDetails>("/patientDetails");
+const patientdetailsApiClient = new APIClient<Patientinfo>("/patientDetails");
+export default patientdetailsApiClient;

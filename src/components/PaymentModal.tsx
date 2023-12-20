@@ -1,5 +1,5 @@
 import { Modal, Box, Button, TextField, Paper } from "@mui/material";
-import getOperationDetail from "../hooks/getOperationDetail";
+
 import LoadingSpinner from "./LoadingSpinner";
 import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
@@ -7,6 +7,10 @@ import { Controller, useForm } from "react-hook-form";
 import addPayment from "../hooks/addPayment";
 import { useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_OperationDetail } from "../constants";
+import getGlobalById from "../hooks/getGlobalById";
+import operationDetailsApiClient, {
+  OperationDetail,
+} from "../services/OperationDetailsService";
 
 interface ModalComponentProps {
   open: boolean;
@@ -24,7 +28,15 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
   const addMutation = addPayment();
   const queryClient = useQueryClient();
   if (!operationID) return null;
-  const { data, isLoading } = getOperationDetail(operationID);
+
+  const { data, isLoading } = getGlobalById(
+    {} as OperationDetail,
+    [CACHE_KEY_OperationDetail, operationID.toString()],
+    operationDetailsApiClient,
+    undefined,
+    operationID
+  );
+  console.log(data);
 
   useEffect(() => {
     if (data && data.payments) {
@@ -51,7 +63,6 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
           { data, id: operationID },
           {
             onSuccess(data: any) {
-              console.log("returned", data);
               queryClient.invalidateQueries([
                 CACHE_KEY_OperationDetail,
                 operationID,
@@ -89,11 +100,11 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
       onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
-      className="flex justify-center items-center "
+      className="flex justify-center items-center p-4"
     >
       <Paper elevation={5}>
         <Box
-          sx={{ width: 500, bgcolor: "background.paper" }}
+          sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}
           className="rounded-lg"
         >
           <Box

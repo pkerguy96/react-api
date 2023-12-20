@@ -4,12 +4,26 @@ import MUIDataTable from "mui-datatables-mara";
 import AddIcon from "@mui/icons-material/Add";
 
 import { useNavigate } from "react-router";
-import getNurses from "../hooks/getNurses";
+
+import getGlobal from "../hooks/getGlobal";
+import nurseApiClient, { Nurse } from "../services/NurseService";
+import { CACHE_KEY_NURSES } from "../constants";
+import LoadingSpinner from "./LoadingSpinner";
 
 const NursesTable = () => {
   const navigate = useNavigate();
-  const { data } = getNurses();
 
+  const { data, isLoading } = getGlobal(
+    {} as Nurse,
+    [CACHE_KEY_NURSES[0]],
+    nurseApiClient,
+    {
+      staleTime: 600000, // 10 minutes
+      cacheTime: 3600000, // 1 hour
+    }
+  );
+
+  if (isLoading) return <LoadingSpinner />;
   const columns = [
     {
       name: "id",

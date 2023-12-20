@@ -1,4 +1,3 @@
-//@ts-nocheck
 import MUIDataTable from "mui-datatables-mara";
 import Tooltip from "@mui/material/Tooltip";
 import { Button, IconButton, Box } from "@mui/material";
@@ -7,13 +6,25 @@ import { useNavigate } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import getOrdonance from "../hooks/getOrdonance";
-import OrdonanceService from "../services/OrdonanceService";
+
+import { Ordonance } from "../services/OrdonanceService";
 import { CACHE_KEY_Ordonance } from "../constants";
+import { confirmDialog } from "./ConfirmDialog";
 import { useQueryClient } from "@tanstack/react-query";
+import deleteOrdonance from "../hooks/deleteOrdonance";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import getGlobal from "../hooks/getGlobal";
+import ordonanceApiClient from "../services/OrdonanceService";
 const OrdonanceTable = () => {
+  const { showSnackbar } = useSnackbarStore();
   const queryClient = useQueryClient();
-  const { data, isLoading } = getOrdonance();
+  /*   const { data, isLoading } = getOrdonance(); */
+  const { data, isLoading } = getGlobal(
+    {} as Ordonance,
+    [CACHE_KEY_Ordonance[0]],
+    ordonanceApiClient,
+    undefined
+  );
   const navigate = useNavigate();
   if (isLoading) {
     return <LoadingSpinner />;
@@ -76,6 +87,7 @@ const OrdonanceTable = () => {
               title="Modifier"
             >
               <DeleteOutlineIcon
+                color="error"
                 className="pointer-events-none"
                 fill="currentColor"
               />
@@ -118,11 +130,26 @@ const OrdonanceTable = () => {
         e.target.classList.contains("btn-ordonance-delete")
       ) {
         // api
-        OrdonanceService.DeleteOne(`${s[0]}`)
-          .then((res) => console.log(res))
-          .then(() => {
-            queryClient.invalidateQueries(CACHE_KEY_Ordonance);
-          });
+        confirmDialog(
+          "Voulez-vous vraiment supprimer le ordonance ?",
+          async () => {
+            try {
+              const deletionSuccessful = await deleteOrdonance(s[0]);
+              if (deletionSuccessful) {
+                queryClient.invalidateQueries(CACHE_KEY_Ordonance);
+
+                showSnackbar("La suppression du ordonance a réussi", "success");
+              } else {
+                showSnackbar("La suppression du ordonance a échoué", "error");
+              }
+            } catch (error) {
+              showSnackbar(
+                `Une erreur s'est produite lors de la suppression du ordonance:${error}`,
+                "error"
+              );
+            }
+          }
+        );
       } else {
         navigate(`/OrdonanceDetails/${s[0]}`);
       }

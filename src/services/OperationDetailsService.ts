@@ -23,4 +23,7 @@ export interface Payment {
   date: string;
 }
 
-export default new APIClient<OperationDetail>("/getByOperationId");
+const operationDetailsApiClient = new APIClient<OperationDetail>(
+  "/getByOperationId"
+);
+export default operationDetailsApiClient;

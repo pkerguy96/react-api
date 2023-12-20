@@ -1,15 +1,18 @@
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
-import { Box, IconButton } from "@mui/material";
+import { Box } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import getOperation from "../hooks/getOperation";
 import PaymentModal from "./PaymentModal";
 import { useState } from "react";
-import ConfirmDialog, { confirmDialog } from "./ConfirmDialog";
+import { confirmDialog } from "./ConfirmDialog";
 import deletePayment from "../hooks/deletePayment";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
-import SnackBarComponentv2 from "./SnackBarComponentv2";
+
+import { useQueryClient } from "@tanstack/react-query";
+import getGlobal from "../hooks/getGlobal";
+import operationApiClient, { Operation } from "../services/OperationService";
+import { CACHE_KEY_Operation } from "../constants";
 
 interface CustomPaymentInfo {
   id: number;
@@ -33,8 +36,13 @@ const ReglementTable = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalOperationId, setModalOperationId] = useState<number | null>(null);
   const { showSnackbar } = useSnackbarStore();
-  const { data, isLoading } = getOperation();
-
+  const { data, isLoading } = getGlobal(
+    {} as Operation,
+    [CACHE_KEY_Operation[0]],
+    operationApiClient,
+    undefined
+  );
+  const queryClient = useQueryClient();
   if (isLoading) return <LoadingSpinner />;
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -126,29 +134,25 @@ const ReglementTable = () => {
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
-        /* confirmDialog(
+        confirmDialog(
           "Voulez-vous vraiment supprimer le paiement ?",
           async () => {
             try {
               const deletionSuccessful = await deletePayment(s[0]);
               if (deletionSuccessful) {
-                console.log(
-                  "Payment deletion was successful",
-                  deletionSuccessful
-                );
+                queryClient.invalidateQueries({ queryKey: ["operation"] });
+                showSnackbar("La suppression du paiement a réussi", "success");
               } else {
-                console.error("Payment deletion failed");
+                showSnackbar("La suppression du paiement a échoué", "error");
               }
             } catch (error) {
-              console.error(
-                "An error occurred during payment deletion:",
-                error
+              showSnackbar(
+                `Une erreur s'est produite lors de la suppression du paiement :${error}`,
+                "error"
               );
             }
           }
-        ); */
-        showSnackbar("hi", "success");
-        console.log(100);
+        );
       } else {
         setModalOperationId(s[0]);
         setOpenModal(true);
@@ -172,8 +176,6 @@ const ReglementTable = () => {
           operationID={modalOperationId}
         />
       )}
-
-      <ConfirmDialog />
     </>
   );
 };

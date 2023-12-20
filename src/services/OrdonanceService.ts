@@ -7,4 +7,5 @@ export interface Ordonance {
     note: string;
   }[];
 }
-export default new APIClient<Ordonance>("/Ordonance");
+const ordonanceApiClient = new APIClient<Ordonance>("/Ordonance");
+export default ordonanceApiClient;

@@ -1,17 +1,22 @@
-//@ts-nocheck
+//@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
 import AddIcon from "@mui/icons-material/Add";
-import { redirect, useNavigate } from "react-router";
-import getPatients from "../hooks/getPatients";
+import { useNavigate } from "react-router";
 import Tooltip from "@mui/material/Tooltip";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
-import { Link } from "react-router-dom";
 import FolderCopyOutlinedIcon from "@mui/icons-material/FolderCopyOutlined";
+import getGlobal from "../hooks/getGlobal";
+import { CACHE_KEY_PATIENTS } from "../constants";
+import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 
 const PatientsTable = () => {
-  const { data, isLoading } = getPatients();
-
+  const { data, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
   const navigate = useNavigate();
   if (isLoading) {
     return <LoadingSpinner />;
@@ -97,7 +102,7 @@ const PatientsTable = () => {
       options: {
         filter: true,
         sort: false,
-        customBodyRender: (value, tableMeta, updateValue) => (
+        customBodyRender: () => (
           <button className="btn-patient-info text-gray-950 hover:text-blue-700 cursor-pointer">
             <FolderCopyOutlinedIcon
               className="pointer-events-none"
@@ -130,7 +135,7 @@ const PatientsTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s, m, e) => {
+    onRowClick: (s: any, m: any, e: any) => {
       if (
         e.target.querySelector(".btn-patient-info") ||
         e.target.classList.contains("btn-patient-info")

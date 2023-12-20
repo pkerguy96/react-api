@@ -13,14 +13,16 @@ import Snackbar from "@mui/material/Snackbar";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment"; // Import moment library
-import getPatients from "../hooks/getPatients";
+
 import { Patient } from "../pages/AddPatientForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_APPOINTMENTS } from "../constants";
 
 import { AxiosError } from "axios";
 import { APIClient } from "../services/Http";
-
+import getGlobal from "../hooks/getGlobal";
+import { CACHE_KEY_PATIENTS } from "../constants";
+import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 interface ModalComponentProps {
   open: boolean;
   onClose: () => void;
@@ -43,7 +45,13 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
   const [title, setTitle] = useState("");
   const [dateTimeValue, setDateTimeValue] = useState<string>();
   const [note, setNote] = useState("");
-  const { data: patientsData } = getPatients();
+  const { data: patientsData, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
+
   let dataArray = [];
   if (patientsData && typeof patientsData === "object") {
     dataArray = Object.values(patientsData);
@@ -171,7 +179,7 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
             disablePortal
             id="combo-box-demo"
             options={dataArray}
-            getOptionLabel={(option) => option.nom}
+            getOptionLabel={(option) => `${option.nom} ${option.prenom}`}
             sx={{ width: " 100% " }}
             renderInput={(params) => <TextField {...params} label="Patient" />}
             onChange={handlePatientChange} // Handle changes

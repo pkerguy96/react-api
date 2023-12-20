@@ -1,5 +1,5 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
+
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -7,8 +7,7 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
+
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
@@ -18,7 +17,7 @@ import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
 import isUserLoggedIn from "../utils/loginChecker";
 import { FormHelperText } from "@mui/material";
-import img from "../assets/logo.png";
+
 function Copyright(props: any) {
   return (
     <Typography
@@ -88,8 +87,9 @@ export default function SignIn() {
         }
       })
       .catch((err) => {
-        setError(true);
         console.log(err);
+
+        setError(true);
       });
   };
 
@@ -104,7 +104,7 @@ export default function SignIn() {
           alignItems: "center",
         }}
       >
-        <img src={img} />
+        <img src="/logo.png" />
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField

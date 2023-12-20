@@ -1,4 +1,3 @@
-//@ts-nocheck
 import {
   Alert,
   Box,
@@ -13,13 +12,13 @@ import {
   Select,
   TextField,
   Typography,
-  Divider,
 } from "@mui/material";
+
 import { useEffect, useState } from "react";
 import "../styles.css";
 import { useNavigate, useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
-import getPatients from "../hooks/getPatients";
+
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -32,14 +31,11 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import {
-  Older,
-  Younger,
-  listOperations,
-  listOperationsArray,
-} from "../constants";
+import { Older, Younger, listOperationsArray } from "../constants";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-
+import getGlobal from "../hooks/getGlobal";
+import { CACHE_KEY_PATIENTS } from "../constants";
+import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import AddIcon from "@mui/icons-material/Add";
 import { Link } from "react-router-dom";
 
@@ -51,7 +47,13 @@ const getColor = (colors) => {
 
 const PatientOperation = () => {
   const addMutation = addOperation();
-  const { data, isLoading } = getPatients();
+  const { data, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
+
   const { id, age } = useParams();
   const navigate = useNavigate();
 
@@ -63,7 +65,7 @@ const PatientOperation = () => {
   const [globalTeeth, setGlobalTeeth] = useState([]);
   const [globalData, setGlobalData] = useState([]);
 
-  const [globalerror, setGlobalError] = useState(false);
+  const [globalerror, setGlobalError] = useState("");
   const [clientage, setClientAge] = useState("");
   const [snackBar, setSnackBar] = useState({
     isOpen: false,
@@ -425,6 +427,9 @@ const PatientOperation = () => {
                               />
                             )}
                           />
+                          {/* <IconButton onClick={() => clearTeeth(item)}>
+                            <DeleteIcon />
+                          </IconButton> */}
                           <Button
                             className="w-max"
                             variant="outlined"

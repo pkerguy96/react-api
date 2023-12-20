@@ -6,28 +6,18 @@ import {
   TextField,
   Autocomplete,
   Button,
-  Chip,
-  Modal,
-  IconButton,
   Typography,
   FormControl,
 } from "@mui/material";
 import { items } from "../services/Medicines.json";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
-import ClearIcon from "@mui/icons-material/Clear";
 import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import getPatients from "../hooks/getPatients";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Patient } from "./AddPatientForm";
 import { useNavigate, useParams } from "react-router";
-import updateOrdonance from "../hooks/updateOrdonance";
 import { AxiosError } from "axios";
 import addOrdonance from "../hooks/addOrdonance";
-import SnackbarComponent from "../components/SnackbarComponent";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -36,14 +26,28 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { useQueryClient } from "@tanstack/react-query";
-import { CACHE_KEY_Ordonance } from "../constants";
-import getOrdonance from "../hooks/getOrdonance";
+import getGlobal from "../hooks/getGlobal";
+import { CACHE_KEY_PATIENTS } from "../constants";
+import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
+import updateItem from "../hooks/updateItem";
+import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
+
 const AddOrdonanceUpdated = () => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarStore();
   const Addmutation = addOrdonance();
-  const mutation = updateOrdonance();
-  const { data: patientsData, isLoading } = getPatients();
+
+  const useUpdateOrdonance = updateItem<Ordonance>(
+    {} as Ordonance,
+    ordonanceApiClient
+  );
+
+  const { data: patientsData, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
   const { id, ordonance: ordonanceID } = useParams();
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
@@ -97,10 +101,8 @@ const AddOrdonanceUpdated = () => {
   const {
     handleSubmit,
     setValue,
-    getValues,
+
     control,
-    reset,
-    formState: { errors },
   } = useForm({
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
@@ -110,7 +112,7 @@ const AddOrdonanceUpdated = () => {
     return <LoadingSpinner />;
   }
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     data.drugs = drugs;
 
     if (data.drugs && data.drugs.length === 0) {
@@ -126,7 +128,7 @@ const AddOrdonanceUpdated = () => {
         if (isAddMode) {
           await createUser(formData);
         } else {
-          await editUser(formData, ordonanceID);
+          await editUser(formData, parseInt(ordonanceID));
         }
         queryClient.invalidateQueries({ queryKey: ["ordonance"] });
         navigate("/Ordonnance");
@@ -140,7 +142,7 @@ const AddOrdonanceUpdated = () => {
     }
   };
 
-  const createUser = async (formData) => {
+  const createUser = async (formData: Ordonance) => {
     await Addmutation.mutateAsync(formData, {
       onSuccess: () => {
         showSnackbar("Ordonance ajouté avec succès.", "success");
@@ -154,12 +156,12 @@ const AddOrdonanceUpdated = () => {
       },
     });
   };
-  const editUser = (formData, ordonanceID) => {
-    return mutation.mutateAsync(
+  const editUser = async (formData: Ordonance, ordonanceID: number) => {
+    await useUpdateOrdonance.mutateAsync(
       { data: formData, id: ordonanceID },
       {
         onSuccess: () => {
-          showSnackbar("Ordonance ajouté avec succès.", "success");
+          showSnackbar("Ordonnance Modifiée avec succès.", "success");
         },
         onError: (error: any) => {
           const message =
@@ -238,7 +240,7 @@ const AddOrdonanceUpdated = () => {
                     }}
                     onChange={(e, data) => {
                       optionsArray && setOptionsArray(data);
-                      setValue("patient", data); // Set the entire patient object as the value
+                      setValue("patient", data);
                     }}
                   />
                 )}
@@ -367,7 +369,7 @@ const AddOrdonanceUpdated = () => {
               variant="contained"
               className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
             >
-              Enregistrer
+              {useUpdateOrdonance.isLoading ? "mise à jour..." : "Enregistrer"}
             </Button>
           </Box>
         </Box>

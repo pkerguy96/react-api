@@ -3,22 +3,29 @@ import { useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
 import { useParams } from "react-router";
 import LoadingSpinner from "../components/LoadingSpinner";
-import getPatientDetails from "../hooks/getPatientDetails";
 import AppointmentVerticalTimeline from "../components/AppointmentVerticalTimeline";
 import PatientsdetailsComponent from "../components/PatientsdetailsComponent";
 import React from "react";
 import OperationVerticalTimeline from "../components/OperationVerticalTimeline";
-
+import getGlobalById from "../hooks/getGlobalById";
+import patientdetailsApiClient, {
+  Patientinfo,
+} from "../services/PatientDetailsService";
+import { CACHE_KEY_PatientDetails } from "../constants";
 const PatientDetails = React.memo(() => {
   const [activeBtn, setActiveBtn] = useState("one");
   //get id in the url
   const { id } = useParams();
-  //get cached patients
-  const { data, isLoading } = id
-    ? getPatientDetails(Number(id))
-    : { data: null, isLoading: true };
-  console.log(data);
 
+  const { data, isLoading } = id
+    ? getGlobalById(
+        {} as Patientinfo,
+        [CACHE_KEY_PatientDetails, id],
+        patientdetailsApiClient,
+        undefined,
+        parseInt(id)
+      )
+    : { data: null, isLoading: true };
   const handleBtnClick = (ButtonName: string) => {
     setActiveBtn(ButtonName);
   };
@@ -26,13 +33,12 @@ const PatientDetails = React.memo(() => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  console.log(activeBtn);
 
   if (!id) {
     return <div>No ID specified.</div>;
   }
   const { appointments, operations } = data;
-  console.log(operations);
+
   return (
     <>
       <Box className="parent w-full flex flex-col gap-4">

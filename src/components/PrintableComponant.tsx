@@ -1,12 +1,12 @@
-//@ts-nocheck
-import React from "react";
 import { useParams } from "react-router";
-import getPatients from "../hooks/getPatients";
-import getOrdonance from "../hooks/getOrdonance";
+import getGlobal from "../hooks/getGlobal";
+import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
+
 import LoadingSpinner from "./LoadingSpinner";
 import Button from "@mui/material/Button";
 import PrintIcon from "@mui/icons-material/Print";
-import { Avatar, Box, IconButton, Menu, MenuItem } from "@mui/material";
+import { Box } from "@mui/material";
+import { CACHE_KEY_Ordonance } from "../constants";
 function $tempkate(opts: any) {
   const { lang, dir, size, margin, css, page } = opts;
   return `<!DOCTYPE html><html lang="${lang}"dir="${dir}"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible"content="IE=edge"/><meta name="viewport"content="width=device-width, initial-scale=1.0"/><style>@page{size:${size.page};margin:${margin}}#page{width:100%}#head{height:${size.head}}#foot{height:${size.foot}}</style>${css}</head><body><table id="page"><thead><tr><td><div id="head"></div></td></tr></thead><tbody><tr><td><main id="main">${page}</main></td></tr></tbody><tfoot><tr><td><div id=foot></div></td></tr></tfoot></table></body></html>`;
@@ -47,7 +47,13 @@ const PrintableComponant = () => {
   if (!id) {
     return <div>No ID specified.</div>;
   }
-  const { data, isLoading } = getOrdonance();
+
+  const { data, isLoading } = getGlobal(
+    {} as Ordonance,
+    [CACHE_KEY_Ordonance[0]],
+    ordonanceApiClient,
+    undefined
+  );
   if (isLoading) {
     return <LoadingSpinner />;
   }

@@ -10,13 +10,19 @@ import {
   TextField,
 } from "@mui/material";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAddPatientMutation } from "../hooks/addPatient";
 import { calculateAge } from "../utils/dateUtils";
-import { AxiosError } from "axios";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 
+import updatePatient from "../hooks/updatePatient";
+import getGlobal from "../hooks/getGlobal";
+import { CACHE_KEY_PATIENTS } from "../constants";
+import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
+import { AxiosError } from "axios";
+import getGlobalById from "../hooks/getGlobalById";
+//TODO: replace patient interface with new one
 export interface Patient {
   id?: number;
   nom: string;
@@ -36,44 +42,25 @@ export interface Patient {
   agecalc?: string;
 }
 const AddPatient = () => {
-  const { showSnackbar } = useSnackbarStore();
+  const { data: hey, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
 
   const [age, setAge] = useState(0);
+  const { id } = useParams();
+  const { showSnackbar } = useSnackbarStore();
   const navigate = useNavigate();
-  const customErrorMessages = {
-    nom: {
-      required: "Le champ Nom est requis.",
-    },
-    prenom: {
-      required: "Le champ Prenom est requis.",
-    },
-
-    date: {
-      required: "Le champ Date est requis.",
-    },
-    sex: {
-      required: "Le champ Sex est requis.",
-    },
-    address: {
-      required: "Le champ Address est requis.",
-    },
-    phoneNumber: {
-      required: "Le champ Telephone est requis.",
-    },
-    mutuelle: {
-      required: "Le champ Mutuelle est requis.",
-    },
-    note: {
-      required: "Le champ Note est requis.",
-    },
-  };
   const {
     handleSubmit,
     control,
+    setValue,
     register,
     reset,
     formState: { errors },
-  } = useForm<Patient>({
+  } = useForm<OnlyPatientData>({
     defaultValues: {
       nom: "",
       prenom: "",
@@ -86,7 +73,44 @@ const AddPatient = () => {
       agecalc: "",
       note: "",
     },
-  }); // Specify Patient as the generic type for useForm
+  });
+  let PatientData: OnlyPatientData | undefined;
+
+  if (id) {
+    const queryResult = getGlobalById(
+      {} as OnlyPatientData,
+      [CACHE_KEY_PATIENTS[0], id],
+      patientAPIClient,
+      undefined,
+      parseInt(id)
+    );
+
+    PatientData = queryResult.data;
+  }
+  const isAddMode = !id;
+
+  useEffect(() => {
+    if (!isAddMode) {
+      console.log("add mode ");
+      setValue("nom", PatientData?.nom ?? "");
+      setValue("prenom", PatientData?.prenom ?? "");
+      setValue("date", PatientData?.date ?? "");
+      setValue("cin", PatientData?.cin ?? "");
+      setValue("address", PatientData?.address ?? "");
+      setValue("sex", PatientData?.sex ?? "");
+      setValue("phoneNumber", PatientData?.phoneNumber ?? "");
+      setValue("mutuelle", PatientData?.mutuelle ?? "");
+      setValue("note", PatientData?.note ?? "");
+      // Ensure PatientData.date is defined before calculating age
+      if (PatientData?.date) {
+        const patientage = calculateAge(PatientData.date);
+
+        setAge(patientage);
+      }
+    }
+  }, [PatientData, id]);
+
+  // Specify Patient as the generic type for useForm
   const addPatientMutation = useAddPatientMutation(() => {
     reset({
       nom: "",
@@ -101,11 +125,29 @@ const AddPatient = () => {
       note: "",
     });
   });
-  const onSubmit: SubmitHandler<Patient> = async (data) => {
+  const updatePatientMutation = updatePatient(() => {
+    reset({
+      nom: "",
+      prenom: "",
+      cin: "",
+      date: "",
+      sex: "",
+      address: "",
+      phoneNumber: "",
+      mutuelle: "",
+      agecalc: "",
+      note: "",
+    });
+  });
+  const onSubmit: SubmitHandler<OnlyPatientData> = async (data) => {
+    console.log(data);
+
     try {
-      await addPatientMutation.mutateAsync(data);
+      console.log(id);
+
+      await updatePatientMutation.mutateAsync({ data, id });
       showSnackbar("Patient ajouté avec succès.", "success");
-      navigate("/Patients");
+      /*  navigate("/Patients"); */
     } catch (error: any) {
       const message =
         error instanceof AxiosError
@@ -122,7 +164,7 @@ const AddPatient = () => {
       setAge(age); // Set the 'age' field in the form with the calculated age
     },
   });
-  //TODO: dir bhal had form fk olchi
+
   return (
     <Paper className="p-4">
       <Box
@@ -150,7 +192,8 @@ const AddPatient = () => {
               <Controller
                 name="nom"
                 control={control}
-                rules={{ required: customErrorMessages.nom.required }}
+                rules={{ required: "Le champ Nom est requis." }}
+                defaultValue={PatientData ? PatientData.nom : ""}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -171,7 +214,7 @@ const AddPatient = () => {
               <Controller
                 name="prenom"
                 control={control}
-                rules={{ required: customErrorMessages.prenom.required }}
+                rules={{ required: "Le champ Prenom est requis." }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -186,7 +229,7 @@ const AddPatient = () => {
           </Box>
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
             <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-              <label htmlFor="nom" className="w-full md:w-[160px]">
+              <label htmlFor="date" className="w-full md:w-[160px]">
                 Date de naissance:
               </label>
               <FormControl className="w-full md:flex-1">
@@ -194,7 +237,7 @@ const AddPatient = () => {
                   name="date"
                   control={control}
                   rules={{
-                    required: customErrorMessages.date.required,
+                    required: "Le champ Date est requis.",
                     validate: (value) => {
                       const selectedDate = new Date(value);
                       const currentDate = new Date();
@@ -217,7 +260,7 @@ const AddPatient = () => {
               </FormControl>
             </Box>
             <Box className="w-full md:w-[300px] flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-              <label htmlFor="nom" className="w-full md:w-[160px]">
+              <label htmlFor="agecalc" className="w-full md:w-[160px]">
                 age calcule:
               </label>
               <FormControl className="w-full md:flex-1">
@@ -238,7 +281,7 @@ const AddPatient = () => {
           </Box>
 
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-            <label htmlFor="nom" className="w-full md:w-[160px]">
+            <label htmlFor="cin" className="w-full md:w-[160px]">
               Cin:
             </label>
             <FormControl className="w-full md:flex-1">
@@ -259,7 +302,7 @@ const AddPatient = () => {
           </Box>
 
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-            <label htmlFor="nom" className="w-full md:w-[160px]">
+            <label htmlFor="sex" className="w-full md:w-[160px]">
               Sex:
             </label>
             <FormControl className="w-full md:flex-1">
@@ -267,7 +310,7 @@ const AddPatient = () => {
               <Controller
                 name="sex"
                 control={control}
-                rules={{ required: customErrorMessages.sex.required }} // Add any validation rules as needed
+                rules={{ required: "Le champ Sex est requis." }} // Add any validation rules as needed
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -284,14 +327,14 @@ const AddPatient = () => {
             </FormControl>
           </Box>
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-            <label htmlFor="nom" className="w-full md:w-[160px]">
+            <label htmlFor="address" className="w-full md:w-[160px]">
               Adresse:
             </label>
             <FormControl className="w-full md:flex-1">
               <Controller
                 name="address"
                 control={control}
-                rules={{ required: customErrorMessages.address.required }}
+                rules={{ required: "Le champ Address est requis." }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -312,7 +355,7 @@ const AddPatient = () => {
               <Controller
                 name="phoneNumber"
                 control={control}
-                rules={{ required: customErrorMessages.phoneNumber.required }}
+                rules={{ required: "Le champ Telephone est requis." }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -334,7 +377,7 @@ const AddPatient = () => {
               <Controller
                 name="mutuelle"
                 control={control}
-                rules={{ required: customErrorMessages.mutuelle.required }} // Add any validation rules as needed
+                rules={{ required: "Le champ Mutuelle est requis." }} // Add any validation rules as needed
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -370,7 +413,6 @@ const AddPatient = () => {
               <Controller
                 name="note"
                 control={control}
-                rules={{ required: customErrorMessages.note.required }}
                 render={({ field }) => (
                   <TextField
                     {...field}

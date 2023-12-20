@@ -7,8 +7,13 @@ import { Paper } from "@mui/material";
 import AppointmentModal from "./AppointmentModal";
 import { EventClickArg } from "@fullcalendar/core/index.js";
 import moment from "moment";
-import getAppointment from "../hooks/getAppointments";
 import AppointmentConfirmation from "./AppointmentConfirmation";
+import getGlobal from "../hooks/getGlobal";
+import appointmentAPIClient, {
+  Appointments,
+} from "../services/AppointmentService";
+import { CACHE_KEY_APPOINTMENTS } from "../constants";
+import LoadingSpinner from "./LoadingSpinner";
 const AppointmentsCalendar = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
@@ -21,7 +26,14 @@ const AppointmentsCalendar = () => {
     title: "",
     date: "",
   });
-  const { data } = getAppointment();
+
+  const { data, isLoading } = getGlobal(
+    {} as Appointments,
+    [CACHE_KEY_APPOINTMENTS[0]],
+    appointmentAPIClient,
+    undefined
+  );
+  if (isLoading) return <LoadingSpinner />;
 
   const openAppointmentConfirmationModal = (data: any) => {
     setConfirmationData(data);
