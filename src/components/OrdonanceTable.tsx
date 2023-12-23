@@ -11,10 +11,11 @@ import { Ordonance } from "../services/OrdonanceService";
 import { CACHE_KEY_Ordonance } from "../constants";
 import { confirmDialog } from "./ConfirmDialog";
 import { useQueryClient } from "@tanstack/react-query";
-import deleteOrdonance from "../hooks/deleteOrdonance";
+
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import getGlobal from "../hooks/getGlobal";
 import ordonanceApiClient from "../services/OrdonanceService";
+import deleteItem from "../hooks/deleteItem";
 const OrdonanceTable = () => {
   const { showSnackbar } = useSnackbarStore();
   const queryClient = useQueryClient();
@@ -134,7 +135,10 @@ const OrdonanceTable = () => {
           "Voulez-vous vraiment supprimer le ordonance ?",
           async () => {
             try {
-              const deletionSuccessful = await deleteOrdonance(s[0]);
+              const deletionSuccessful = await deleteItem(
+                s[0],
+                ordonanceApiClient
+              );
               if (deletionSuccessful) {
                 queryClient.invalidateQueries(CACHE_KEY_Ordonance);
 

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   Alert,
   Box,
@@ -22,7 +23,7 @@ import { Patient } from "./AddPatientForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import addOperation from "../hooks/addOperation";
+
 import { AxiosError } from "axios";
 import SnackbarComponent from "../components/SnackbarComponent";
 import Table from "@mui/material/Table";
@@ -38,6 +39,8 @@ import { CACHE_KEY_PATIENTS } from "../constants";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import AddIcon from "@mui/icons-material/Add";
 import { Link } from "react-router-dom";
+import addGlobal from "../hooks/addGlobal";
+import operationApiClient, { Operation } from "../services/OperationService";
 
 const getColor = (colors) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -46,7 +49,7 @@ const getColor = (colors) => {
 };
 
 const PatientOperation = () => {
-  const addMutation = addOperation();
+  const addMutation = addGlobal({} as Operation, operationApiClient);
   const { data, isLoading } = getGlobal(
     {} as OnlyPatientData, // Tname (you can use a placeholder object here)
     [CACHE_KEY_PATIENTS[0]], // query

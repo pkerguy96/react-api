@@ -4,13 +4,15 @@ import LoadingSpinner from "./LoadingSpinner";
 import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import addPayment from "../hooks/addPayment";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_OperationDetail } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
 import operationDetailsApiClient, {
   OperationDetail,
 } from "../services/OperationDetailsService";
+import updateItem from "../hooks/updateItem";
+import operationApiClient, { Operation } from "../services/OperationService";
 
 interface ModalComponentProps {
   open: boolean;
@@ -25,7 +27,10 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
   const { handleSubmit, control, setValue } = useForm<FormData>();
   const [fetchedoperations, setFetchedOperations] = useState<any[]>([]);
   const [totalCost, setTotalCost] = useState<number>(0);
-  const addMutation = addPayment();
+  const addMutation = updateItem<Operation>(
+    {} as Operation,
+    operationApiClient
+  );
   const queryClient = useQueryClient();
   if (!operationID) return null;
 
@@ -36,7 +41,6 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
     undefined,
     operationID
   );
-  console.log(data);
 
   useEffect(() => {
     if (data && data.payments) {
@@ -51,22 +55,25 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     if (data) {
       if (totalpaid + Number(data.amount_paid) > totalCost) {
         console.log("Total payment exceeds total cost.");
         return;
       }
 
-      addMutation
+      await addMutation
         .mutateAsync(
           { data, id: operationID },
           {
             onSuccess(data: any) {
+              console.log("adding", operationID);
+
               queryClient.invalidateQueries([
                 CACHE_KEY_OperationDetail,
-                operationID,
+                operationID.toString(),
               ]);
+
               setFetchedOperations((prevData) => [
                 ...prevData,
                 {
@@ -78,6 +85,8 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
               setValue("amount_paid", "");
             },
             onError(error) {
+              console.log("eerorr");
+
               console.log(error);
             },
           }

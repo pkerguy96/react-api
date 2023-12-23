@@ -17,7 +17,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { Patient } from "./AddPatientForm";
 import { useNavigate, useParams } from "react-router";
 import { AxiosError } from "axios";
-import addOrdonance from "../hooks/addOrdonance";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -31,12 +31,13 @@ import { CACHE_KEY_PATIENTS } from "../constants";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import updateItem from "../hooks/updateItem";
 import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
+import addGlobal from "../hooks/addGlobal";
 
 const AddOrdonanceUpdated = () => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarStore();
-  const Addmutation = addOrdonance();
 
+  const Addmutation = addGlobal({} as Ordonance, ordonanceApiClient);
   const useUpdateOrdonance = updateItem<Ordonance>(
     {} as Ordonance,
     ordonanceApiClient

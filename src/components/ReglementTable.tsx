@@ -6,13 +6,14 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PaymentModal from "./PaymentModal";
 import { useState } from "react";
 import { confirmDialog } from "./ConfirmDialog";
-import deletePayment from "../hooks/deletePayment";
+
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 
 import { useQueryClient } from "@tanstack/react-query";
 import getGlobal from "../hooks/getGlobal";
 import operationApiClient, { Operation } from "../services/OperationService";
 import { CACHE_KEY_Operation } from "../constants";
+import deleteItem from "../hooks/deleteItem";
 
 interface CustomPaymentInfo {
   id: number;
@@ -138,18 +139,25 @@ const ReglementTable = () => {
           "Voulez-vous vraiment supprimer le paiement ?",
           async () => {
             try {
-              const deletionSuccessful = await deletePayment(s[0]);
+              const deletionSuccessful = await deleteItem(
+                s[0],
+                operationApiClient
+              );
+              console.log(deletionSuccessful);
+
               if (deletionSuccessful) {
                 queryClient.invalidateQueries({ queryKey: ["operation"] });
                 showSnackbar("La suppression du paiement a réussi", "success");
               } else {
                 showSnackbar("La suppression du paiement a échoué", "error");
+                console.log("else", deletionSuccessful);
               }
             } catch (error) {
               showSnackbar(
                 `Une erreur s'est produite lors de la suppression du paiement :${error}`,
                 "error"
               );
+              console.log(error);
             }
           }
         );
