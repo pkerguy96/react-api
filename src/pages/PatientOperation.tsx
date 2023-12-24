@@ -14,9 +14,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import "../styles.css";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
+import "../styles.css";
 import { Patient } from "./AddPatientForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Controller, useForm } from "react-hook-form";
@@ -54,58 +54,55 @@ const PatientOperation = () => {
     undefined // opts
   );
 
-  const { id, age } = useParams();
+  const { id, age } = useParams<{ id: string; age: string }>();
+  const { showSnackbar } = useSnackbarStore();
   const navigate = useNavigate();
-
   const [specificPatient, setSpecificPatient] = useState<Patient | undefined>(
     undefined
   );
-
   const [globalCurrentColor, setGlobalCurrentColor] = useState(getColor([]));
   const [globalTeeth, setGlobalTeeth] = useState([]);
   const [globalData, setGlobalData] = useState([]);
-
   const [globalerror, setGlobalError] = useState("");
   const [clientage, setClientAge] = useState("");
 
-  const { showSnackbar } = useSnackbarStore();
-
   const { handleSubmit, getValues, setValue, control, watch } = useForm({});
   const isFullyPaid = watch("fullyPaid");
-  const validatePrix = (value: number) => {
-    const totalPrice = globalData.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price;
-    }, 0);
-    if (totalPrice <= 0) {
-      return setGlobalError("le prix doit etre un nombre positive.");
-    }
-    if (totalPrice < value) {
-      return "le montant payé ne doit pas dépasser le prix";
-    }
 
-    return true; // Validation passed
-  };
-  const toggleStrokeColor = (key: number) => {
-    const teeth = [...globalTeeth];
-    var current = teeth.indexOf(key);
-    if (current > -1) teeth.splice(current, 1);
-    else teeth.push(key);
-    setGlobalTeeth(teeth);
-  };
+  const getItemName = useMemo(() => {
+    return (value) => {
+      const item = listOperationsArray.find((item) => item.value === value);
 
-  const teethColor = (key) => {
-    var color = "transparent";
-    const found = globalData.find((e) => e.teeth.includes(key));
-    if (found) color = found.color;
-    if (globalTeeth.includes(key)) color = globalCurrentColor;
-    return color;
-  };
+      return item ? item.label : "Unknown Item";
+    };
+  }, [listOperationsArray]);
 
-  const resetTeethSelection = () => {
-    setGlobalCurrentColor(getColor([]));
-    setGlobalTeeth([]);
-    setGlobalData([]);
-  };
+  const teethColor = useMemo(() => {
+    return (key) => {
+      var color = "transparent";
+      const found = globalData.find((e) => e.teeth.includes(key));
+      if (found) color = found.color;
+      if (globalTeeth.includes(key)) color = globalCurrentColor;
+      return color;
+    };
+  }, [globalData, globalTeeth, globalCurrentColor]);
+
+  const validatePrix = useMemo(() => {
+    return (value: number) => {
+      const totalPrice = globalData.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price;
+      }, 0);
+      if (totalPrice <= 0) {
+        return setGlobalError("le prix doit etre un nombre positive.");
+      }
+      if (totalPrice < value) {
+        return "le montant payé ne doit pas dépasser le prix";
+      }
+
+      return true;
+    };
+  }, [globalData]);
+
   useEffect(() => {
     if (data && id && age) {
       const foundPatient = (data as Patient[]).find(
@@ -165,14 +162,23 @@ const PatientOperation = () => {
       });
     }
   };
-  const getItemName = (value) => {
-    // Map the menu item values to their corresponding names
-    const item = listOperationsArray.find((item) => item.value === value);
 
-    return item ? item.label : "Unknown Item";
+  const toggleStrokeColor = (key: number) => {
+    const teeth = [...globalTeeth];
+    var current = teeth.indexOf(key);
+    if (current > -1) teeth.splice(current, 1);
+    else teeth.push(key);
+    setGlobalTeeth(teeth);
   };
+
+  const resetTeethSelection = () => {
+    setGlobalCurrentColor(getColor([]));
+    setGlobalTeeth([]);
+    setGlobalData([]);
+  };
+
   const clearTeeth = (item) => {
-    const data = globalData.filter((d) => d.id !== item.id);
+    const data = globalData.filter((d, i) => d.id !== item.id);
     setGlobalData(data);
   };
 
@@ -367,7 +373,7 @@ const PatientOperation = () => {
                             render={({ field, fieldState }) => (
                               <TextField
                                 {...field}
-                                value={field.value}
+                                value={item.price || ""}
                                 className="w-0 flex-1"
                                 label="Montant payé"
                                 variant="outlined"
@@ -382,11 +388,11 @@ const PatientOperation = () => {
                                 }
                                 type="number"
                                 onChange={(e) => {
-                                  field.onChange(e);
                                   setGlobalData(
                                     globalData.map((o) => {
                                       if (o.id === index + 1) {
                                         o.price = +e.target.value;
+                                        field.onChange(e);
                                       }
                                       return o;
                                     })
@@ -395,17 +401,13 @@ const PatientOperation = () => {
                               />
                             )}
                           />
-                          {/* <IconButton onClick={() => clearTeeth(item)}>
-                            <DeleteIcon />
-                          </IconButton> */}
                           <Button
                             className="w-max"
                             variant="outlined"
                             color="error"
-                            startIcon={<DeleteOutlineIcon />}
                             onClick={() => clearTeeth(item)}
                           >
-                            Supprimer
+                            <DeleteOutlineIcon />
                           </Button>
                         </Box>
                       </TableCell>
