@@ -15,14 +15,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAddPatientMutation } from "../hooks/addPatient";
 import { calculateAge } from "../utils/dateUtils";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
-
 import updatePatient from "../hooks/updatePatient";
-import getGlobal from "../hooks/getGlobal";
 import { CACHE_KEY_PATIENTS } from "../constants";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import { AxiosError } from "axios";
 import getGlobalById from "../hooks/getGlobalById";
-//TODO: replace patient interface with new one
+import { useQueryClient } from "@tanstack/react-query";
+
 export interface Patient {
   id?: number;
   nom: string;
@@ -42,13 +41,7 @@ export interface Patient {
   agecalc?: string;
 }
 const AddPatient = () => {
-  const { data: hey, isLoading } = getGlobal(
-    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
-    [CACHE_KEY_PATIENTS[0]], // query
-    patientAPIClient, // service
-    undefined // opts
-  );
-
+  const queryClient = useQueryClient();
   const [age, setAge] = useState(0);
   const { id } = useParams();
   const { showSnackbar } = useSnackbarStore();
@@ -91,7 +84,6 @@ const AddPatient = () => {
 
   useEffect(() => {
     if (!isAddMode) {
-      console.log("add mode ");
       setValue("nom", PatientData?.nom ?? "");
       setValue("prenom", PatientData?.prenom ?? "");
       setValue("date", PatientData?.date ?? "");
@@ -140,14 +132,22 @@ const AddPatient = () => {
     });
   });
   const onSubmit: SubmitHandler<OnlyPatientData> = async (data) => {
-    console.log(data);
-
     try {
-      console.log(id);
-
-      await updatePatientMutation.mutateAsync({ data, id });
-      showSnackbar("Patient ajouté avec succès.", "success");
-      /*  navigate("/Patients"); */
+      try {
+        if (isAddMode) {
+          await createUser(data);
+        } else {
+          await updateUser(data);
+        }
+        queryClient.invalidateQueries({ queryKey: ["patient"] });
+        navigate("/Patients");
+      } catch (error: any) {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+        showSnackbar(message, "error");
+      }
     } catch (error: any) {
       const message =
         error instanceof AxiosError
@@ -156,7 +156,37 @@ const AddPatient = () => {
       showSnackbar(message, "error");
     }
   };
-
+  const updateUser = async (data: Patient) => {
+    await updatePatientMutation.mutateAsync(
+      { data, id },
+      {
+        onSuccess: () => {
+          showSnackbar("Patient modifié avec succès.", "success");
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+          showSnackbar(message, "warning");
+        },
+      }
+    );
+  };
+  const createUser = async (formData: Patient) => {
+    await addPatientMutation.mutateAsync(formData, {
+      onSuccess: () => {
+        showSnackbar("Patient ajouté avec succès.", "success");
+      },
+      onError: (error: any) => {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+        showSnackbar(message, "warning");
+      },
+    });
+  };
   // Watch the 'date' field and calculate age whenever it changes
   register("date", {
     onChange: (e) => {

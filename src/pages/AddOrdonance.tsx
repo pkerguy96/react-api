@@ -74,18 +74,23 @@ const AddOrdonanceUpdated = () => {
       specifiedPatient = patientsData?.find(
         (patients) => patients.id === parseInt(id)
       );
-      if (specifiedPatient) {
+
+      if (specifiedPatient && id && !ordonanceID) {
+        console.log("only id ");
+        setValue("patient", specifiedPatient);
+      } else if (specifiedPatient) {
+        console.log("dazt lakhra");
+
         setOptionsArray(specifiedPatient);
         setValue("patient", specifiedPatient);
-        setValue("date", specifiedPatient.date);
 
         const SpecifiedOrdonance = specifiedPatient.ordonances.find(
           (ordonance) => ordonance.id === parseInt(ordonanceID)
         );
-        // error here
-        if (SpecifiedOrdonance) {
-          const DrugsDetails = SpecifiedOrdonance.ordonance_details;
 
+        if (SpecifiedOrdonance) {
+          setValue("date", SpecifiedOrdonance.date);
+          const DrugsDetails = SpecifiedOrdonance.ordonance_details;
           const extractedDetails = DrugsDetails.map((item) => {
             return {
               id: item.id,
@@ -125,14 +130,19 @@ const AddOrdonanceUpdated = () => {
         date: data.date,
       };
 
+      let response;
       try {
         if (isAddMode) {
-          await createUser(formData);
+          response = await createUser(formData);
         } else {
           await editUser(formData, parseInt(ordonanceID));
         }
         queryClient.invalidateQueries({ queryKey: ["ordonance"] });
-        navigate("/Ordonnance");
+        if (id) {
+          navigate(`/OrdonanceDetails/${ordonanceID}`);
+        } else {
+          navigate(`/OrdonanceDetails/${response?.data?.id}`);
+        }
       } catch (error) {
         const message =
           error instanceof AxiosError
@@ -144,7 +154,7 @@ const AddOrdonanceUpdated = () => {
   };
 
   const createUser = async (formData: Ordonance) => {
-    await Addmutation.mutateAsync(formData, {
+    return await Addmutation.mutateAsync(formData, {
       onSuccess: () => {
         showSnackbar("Ordonance ajouté avec succès.", "success");
       },

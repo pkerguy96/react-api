@@ -18,9 +18,9 @@ function Print(target: any) {
   var iframe = document.createElement("iframe");
   iframe.style.display = "none";
   document.body.appendChild(iframe);
-  var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-  iframeDoc.open();
-  iframeDoc.write(
+  var iframeDoc = iframe.contentDocument || iframe?.contentWindow?.document;
+  iframeDoc?.open();
+  iframeDoc?.write(
     $tempkate({
       size: {
         page: "A5",
@@ -34,9 +34,9 @@ function Print(target: any) {
       ],
     })
   );
-  iframeDoc.close();
+  iframeDoc?.close();
   iframe.onload = function () {
-    iframe.contentWindow.print();
+    iframe?.contentWindow?.print();
     setTimeout(() => {
       document.body.removeChild(iframe);
     }, 1000);
@@ -57,9 +57,14 @@ const PrintableComponant = () => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  const filteredOrdonance = data?.find(
-    (ordonance) => ordonance.id === parseInt(id)
-  );
+  console.log(data);
+  //TODO: FACTORE THIS
+  const filteredOrdonance = data?.find((ordonance: any) => {
+    console.log(ordonance.id, parseInt(id, 10));
+
+    return ordonance.id === parseInt(id, 10);
+  });
+  console.log(filteredOrdonance);
 
   const FormattedDate = filteredOrdonance?.date.split("-");
 
@@ -154,14 +159,16 @@ const PrintableComponant = () => {
           </div>
           <div className="w-full flex flex-col gap-4 my-10">
             <div className="w-full flex flex-col gap-2">
-              {filteredOrdonance?.ordonance_details.map((details, index) => (
-                <div key={index}>
-                  <h3 className="font-bold">
-                    {index + 1}- {details.medicine_name}
-                  </h3>
-                  <p className="ms-4">{details.note}</p>
-                </div>
-              ))}
+              {filteredOrdonance?.ordonance_details.map(
+                (details: any, index: number) => (
+                  <div key={index}>
+                    <h3 className="font-bold">
+                      {index + 1}- {details.medicine_name}
+                    </h3>
+                    <p className="ms-4">{details.note}</p>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -255,14 +262,16 @@ const PrintableComponant = () => {
           </div>
           <div className="w-full flex flex-col gap-4">
             <div className="w-full flex flex-col gap-2">
-              {filteredOrdonance?.ordonance_details.map((details, index) => (
-                <div key={index}>
-                  <h3 className="font-bold">
-                    {index + 1}- {details.medicine_name}
-                  </h3>
-                  <p className="ms-4">{details.note}</p>
-                </div>
-              ))}
+              {filteredOrdonance?.ordonance_details.map(
+                (details: any, index: number) => (
+                  <div key={index}>
+                    <h3 className="font-bold">
+                      {index + 1}- {details.medicine_name}
+                    </h3>
+                    <p className="ms-4">{details.note}</p>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>

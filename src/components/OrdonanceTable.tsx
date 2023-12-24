@@ -19,7 +19,7 @@ import deleteItem from "../hooks/deleteItem";
 const OrdonanceTable = () => {
   const { showSnackbar } = useSnackbarStore();
   const queryClient = useQueryClient();
-  /*   const { data, isLoading } = getOrdonance(); */
+
   const { data, isLoading } = getGlobal(
     {} as Ordonance,
     [CACHE_KEY_Ordonance[0]],
@@ -30,7 +30,7 @@ const OrdonanceTable = () => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  const formatedData = data?.map((ordonance) => ({
+  const formatedData = data?.map((ordonance: any) => ({
     id: ordonance.id,
     nom: `${ordonance.patient.nom} ${ordonance.patient.prenom}`,
     date: ordonance.date,
@@ -69,10 +69,12 @@ const OrdonanceTable = () => {
     {
       name: "Actions",
       label: "Actions",
+
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => (
+
+        customBodyRender: () => (
           <>
             <button
               className="btn-ordonance-edit text-gray-950 hover:text-blue-700 cursor-pointer"
@@ -120,7 +122,7 @@ const OrdonanceTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s, m, e) => {
+    onRowClick: (s: any, m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-edit") ||
         e.target.classList.contains("btn-ordonance-edit")

@@ -71,6 +71,10 @@ const router = createBrowserRouter([
         element: <AddOrdonance />,
       },
       {
+        path: "AddOrdonance/:id?",
+        element: <AddOrdonance />,
+      },
+      {
         path: "OrdonanceDetails/:id",
         element: <PrintableComponant />,
       },

@@ -14,18 +14,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
 import { useEffect, useState } from "react";
 import "../styles.css";
 import { useNavigate, useParams } from "react-router";
 import { Patient } from "./AddPatientForm";
-
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
 import { AxiosError } from "axios";
-import SnackbarComponent from "../components/SnackbarComponent";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -41,6 +37,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Link } from "react-router-dom";
 import addGlobal from "../hooks/addGlobal";
 import operationApiClient, { Operation } from "../services/OperationService";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
 
 const getColor = (colors) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -70,26 +67,8 @@ const PatientOperation = () => {
 
   const [globalerror, setGlobalError] = useState("");
   const [clientage, setClientAge] = useState("");
-  const [snackBar, setSnackBar] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info",
-  });
-  const navigateToOrdonance = () => {
-    navigate(`/AddOrdonance`);
-  };
-  useEffect(() => {
-    let timerId: number;
-    if (snackBar.isOpen) {
-      timerId = setTimeout(() => {
-        navigate("/Ordonnance");
-      }, 2000); // 2 seconds
 
-      return () => {
-        clearTimeout(timerId);
-      };
-    }
-  }, [snackBar.isOpen]);
+  const { showSnackbar } = useSnackbarStore();
 
   const { handleSubmit, getValues, setValue, control, watch } = useForm({});
   const isFullyPaid = watch("fullyPaid");
@@ -172,22 +151,16 @@ const PatientOperation = () => {
     } else {
       addMutation.mutateAsync(validData, {
         onSuccess: () => {
-          setSnackBar({
-            isOpen: true,
-            message: "Ordonnance créée avec succès",
-            severity: "success",
-          });
+          showSnackbar("Ordonnance créée avec succès", "success");
+          navigate(`/AddOrdonance/${id}`);
         },
         onError: (error: any) => {
           const message =
             error instanceof AxiosError
               ? error.response?.data?.message
               : error.message;
-          setSnackBar({
-            isOpen: true,
-            message: message,
-            severity: "warning",
-          });
+
+          showSnackbar(`Oops ${message}`, "error");
         },
       });
     }
@@ -205,14 +178,6 @@ const PatientOperation = () => {
 
   return (
     <Paper>
-      <SnackbarComponent
-        isOpen={snackBar.isOpen}
-        message={snackBar.message}
-        severity={snackBar.severity}
-        onClose={() =>
-          setSnackBar((prevState) => ({ ...prevState, isOpen: false }))
-        }
-      />
       <FormControl
         component="form"
         className="!p-6 w-full flex flex-col gap-4"
