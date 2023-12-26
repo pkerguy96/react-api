@@ -1,18 +1,28 @@
-import { Modal, Box, Button, TextField, Paper } from "@mui/material";
-
+import {
+  Modal,
+  Box,
+  Button,
+  TextField,
+  Paper,
+  IconButton,
+} from "@mui/material";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import LoadingSpinner from "./LoadingSpinner";
 import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_OperationDetail } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
 import operationDetailsApiClient, {
   OperationDetail,
+  deleteoperationdetailsApiclient,
 } from "../services/OperationDetailsService";
 import updateItem from "../hooks/updateItem";
 import operationApiClient, { Operation } from "../services/OperationService";
+import deleteItem from "../hooks/deleteItem";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
 
 interface ModalComponentProps {
   open: boolean;
@@ -31,10 +41,11 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
     {} as Operation,
     operationApiClient
   );
+  const { showSnackbar } = useSnackbarStore();
   const queryClient = useQueryClient();
   if (!operationID) return null;
 
-  const { data, isLoading } = getGlobalById(
+  const { data, isLoading, refetch } = getGlobalById(
     {} as OperationDetail,
     [CACHE_KEY_OperationDetail, operationID.toString()],
     operationDetailsApiClient,
@@ -56,19 +67,34 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
 
   if (isLoading) return <LoadingSpinner />;
   const onSubmit = async (data: FormData) => {
+    console.log("data", data);
+
     if (data) {
+      console.log(
+        totalpaid + Number(data.amount_paid) > totalCost,
+        totalCost,
+        totalpaid,
+        data.amount_paid
+      );
+      //TODO: BUG
       if (totalpaid + Number(data.amount_paid) > totalCost) {
-        console.log("Total payment exceeds total cost.");
+        console.log(totalpaid, Number(data.amount_paid), totalCost);
+
+        showSnackbar("Total payment exceeds total cost.");
+
         return;
       }
 
       await addMutation
         .mutateAsync(
+          //@ts-ignore
           { data, id: operationID },
           {
             onSuccess(data: any) {
-              console.log("adding", operationID);
+              console.log("onsucess", data);
 
+              console.log("adding", operationID);
+              console.log(totalpaid, Number(data.amount_paid), totalCost);
               queryClient.invalidateQueries([
                 CACHE_KEY_OperationDetail,
                 operationID.toString(),
@@ -82,11 +108,13 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
                   id: data.id,
                 },
               ]);
+              //@ts-ignore
               setValue("amount_paid", "");
             },
+            onSettled(data, error, variables, context) {
+              console.log(data, error);
+            },
             onError(error) {
-              console.log("eerorr");
-
               console.log(error);
             },
           }
@@ -95,14 +123,34 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
           console.error("onError", error);
         });
     }
-    console.log("firstdata", data);
   };
   const totalpaid = fetchedoperations.reduce(
     (total, payment) => total + Number(payment.amount_paid),
     0
   );
   const outstandingAmount = totalCost - totalpaid;
+  const deletePayment = async (id: number) => {
+    try {
+      const deletionSuccessful = await deleteItem(
+        id,
+        deleteoperationdetailsApiclient
+      );
 
+      if (deletionSuccessful) {
+        refetch();
+        /* queryClient.invalidateQueries([CACHE_KEY_OperationDetail, id]); */
+        showSnackbar("La suppression du paiement a réussi", "success");
+      } else {
+        showSnackbar("La suppression du paiement a échoué", "error");
+      }
+    } catch (error) {
+      showSnackbar(
+        `Une erreur s'est produite lors de la suppression du paiement :${error}`,
+        "error"
+      );
+      console.log(error);
+    }
+  };
   return (
     <Modal
       open={open}
@@ -113,8 +161,8 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
     >
       <Paper elevation={5}>
         <Box
-          sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}
-          className="rounded-lg"
+          sx={{ maxWidth: 500, bgcolor: "background.paper" }}
+          className="rounded-lg sm:w-full  md:w-[500px]"
         >
           <Box
             component="form"
@@ -163,24 +211,36 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
                     <h2 className="font-semibold text-base text-end w-1/3">
                       Date
                     </h2>
+                    <h2 className="font-semibold text-base text-end w-1/3">
+                      Action
+                    </h2>
                   </Box>
                   <Box className="flex flex-col gap-1">
-                    {fetchedoperations?.map((payment: any, j: number) => (
-                      <Box
-                        className="flex items-center justify-between"
-                        key={j}
-                      >
-                        <span className="text-gray-500 text-base text-start w-1/3">
-                          Payment {j + 1}
-                        </span>
-                        <span className="text-gray-500 text-sm text-center w-1/3">
-                          {payment.amount_paid} MAD
-                        </span>
-                        <span className="text-gray-500 text-sm text-end w-1/3">
-                          {payment.date}
-                        </span>
-                      </Box>
-                    ))}
+                    {fetchedoperations?.map((payment: any, j: number) => {
+                      return (
+                        <Box
+                          className="flex items-center justify-between"
+                          key={j}
+                        >
+                          <span className="text-gray-500 text-base text-start w-1/3">
+                            Payment {j + 1}
+                          </span>
+                          <span className="text-gray-500 text-sm text-center w-1/3">
+                            {payment.amount_paid} MAD
+                          </span>
+                          <span className="text-gray-500 text-sm text-end w-1/3">
+                            {payment.date}
+                          </span>
+                          <IconButton
+                            aria-label="delete"
+                            color="error"
+                            onClick={() => deletePayment(payment.id)}
+                          >
+                            <DeleteOutlineOutlinedIcon />
+                          </IconButton>
+                        </Box>
+                      );
+                    })}
                   </Box>
                 </Box>
                 {outstandingAmount !== 0 && (

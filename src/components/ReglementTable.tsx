@@ -1,6 +1,6 @@
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
-import { Box } from "@mui/material";
+import { Box, Chip } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PaymentModal from "./PaymentModal";
@@ -25,6 +25,7 @@ interface CustomPaymentInfo {
   prenom: string;
   totalPaid: number;
   total_cost: number;
+  isPaid: boolean;
 }
 
 interface Payment {
@@ -43,6 +44,7 @@ const ReglementTable = () => {
     operationApiClient,
     undefined
   );
+
   const queryClient = useQueryClient();
   if (isLoading) return <LoadingSpinner />;
   const handleCloseModal = () => {
@@ -56,6 +58,7 @@ const ReglementTable = () => {
       date: Paymentinfo.date,
       prix: `${Paymentinfo.total_cost} MAD`,
       amount_paid: `${Paymentinfo.totalPaid.toFixed(2)} MAD`,
+      ispaid: Paymentinfo.isPaid ? "true" : "false",
     };
   });
 
@@ -64,7 +67,13 @@ const ReglementTable = () => {
       name: "id",
       label: "#",
     },
-
+    {
+      name: "ispaid",
+      label: "ispaid",
+      options: {
+        display: "excluded",
+      },
+    },
     {
       name: "nom",
       label: "Nom",
@@ -95,6 +104,29 @@ const ReglementTable = () => {
       options: {
         filter: true,
         sort: true,
+      },
+    },
+    {
+      name: "status",
+      label: "Status",
+      options: {
+        filter: true,
+        sort: true,
+        customBodyRender: (
+          value: any,
+          tableMeta: { rowData: string[] },
+          updateValue: any
+        ) => {
+          const color = tableMeta.rowData[1] === "true" ? "success" : "error";
+
+          return (
+            <Chip
+              label={color === "success" ? "Entièrement payé" : "Non payé"}
+              color={color}
+              variant="outlined"
+            />
+          );
+        },
       },
     },
     {
@@ -143,7 +175,6 @@ const ReglementTable = () => {
                 s[0],
                 operationApiClient
               );
-              console.log(deletionSuccessful);
 
               if (deletionSuccessful) {
                 queryClient.invalidateQueries({ queryKey: ["operation"] });

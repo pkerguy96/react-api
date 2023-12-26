@@ -26,4 +26,7 @@ export interface Payment {
 const operationDetailsApiClient = new APIClient<OperationDetail>(
   "/getByOperationId"
 );
+export const deleteoperationdetailsApiclient = new APIClient<OperationDetail>(
+  "/deletePaymentDetail"
+);
 export default operationDetailsApiClient;

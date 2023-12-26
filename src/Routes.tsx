@@ -105,7 +105,6 @@ const router = createBrowserRouter([
       {
         path: "Reglement",
         element: <ReglementPage />,
-        children: [{ path: "Details", element: <PaymentDetailsPage /> }],
       },
     ],
   },
