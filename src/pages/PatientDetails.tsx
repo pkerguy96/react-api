@@ -13,7 +13,7 @@ import patientdetailsApiClient, {
 } from "../services/PatientDetailsService";
 import { CACHE_KEY_PatientDetails } from "../constants";
 const PatientDetails = React.memo(() => {
-  const [activeBtn, setActiveBtn] = useState("one");
+  const [activeBtn, setActiveBtn] = useState("three");
   //get id in the url
   const { id } = useParams();
 
