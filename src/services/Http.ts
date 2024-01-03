@@ -39,8 +39,18 @@ export class APIClient<T> {
       .get<ApiResponse<T>>(endpointWithId)
       .then((res) => res.data.data);
   };
-  Postall = (data: T) => {
-    return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
+  getUrl = (id: string) => {
+    const endpointWithId = `${this.endpoint}/${id}`;
+
+    return axiosInstance
+      .get<ApiResponse<T>>(endpointWithId)
+      .then((res) => res.data.data);
+  };
+  Postall = (data: T, options: any) => {
+    console.log(data, options);
+    return axiosInstance
+      .post<T>(this.endpoint, data, options)
+      .then((res) => res.data);
   };
   UpdateAll = (data: T, id: number) => {
     return axiosInstance

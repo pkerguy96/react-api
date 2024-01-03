@@ -23,6 +23,8 @@ import DicomPageViewer from "./pages/DicomPageViewer";
 import ReglementPage from "./pages/ReglementPage";
 
 import PaymentDetailsPage from "./pages/PaymentDetailsPage";
+import DicomPage from "./pages/DicomPage";
+import AddFile from "./pages/AddFile";
 
 const router = createBrowserRouter([
   {
@@ -95,8 +97,8 @@ const router = createBrowserRouter([
         element: <AddNurseForm />,
       },
       {
-        path: "Dicom",
-        element: <DicomPageViewer />,
+        path: "Files",
+        element: <DicomPage />,
       },
       {
         path: "Stock",
@@ -105,6 +107,10 @@ const router = createBrowserRouter([
       {
         path: "Reglement",
         element: <ReglementPage />,
+      },
+      {
+        path: "Addfile",
+        element: <AddFile />,
       },
     ],
   },

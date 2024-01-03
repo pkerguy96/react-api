@@ -13,9 +13,10 @@ import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useAddNurseMutation } from "../hooks/addNurse";
-import { AxiosError } from "axios";
+
 import { calculateAge } from "../utils/dateUtils";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import { AxiosError } from "axios";
 export interface Nurse {
   nom: string;
   prenom: string;
@@ -23,8 +24,9 @@ export interface Nurse {
   date: string;
   sex: string;
   address: string;
-  phoneNumber?: string;
-
+  phone_number?: string;
+  email: string;
+  password: string;
   agecalc: string;
 }
 const AddNurseForm = () => {
@@ -51,8 +53,14 @@ const AddNurseForm = () => {
     address: {
       required: "Le champ Address est requis.", // Customize the required error message for "nom" field
     },
-    phoneNumber: {
+    phone_number: {
       required: "Le champ Telephone est requis.", // Customize the required error message for "nom" field
+    },
+    email: {
+      required: "Le champ Email est requis.", // Customize the required error message for "nom" field
+    },
+    password: {
+      required: "Le champ Mot de pass est requis.", // Customize the required error message for "nom" field
     },
   };
   const {
@@ -69,26 +77,31 @@ const AddNurseForm = () => {
       date: "",
       sex: "",
       address: "",
-      phoneNumber: "",
+      phone_number: "",
+      email: "",
+      password: "",
       agecalc: "",
     },
   });
   const addPatientMutation = useAddNurseMutation(() => {
-    reset({
-      nom: "",
+    /*  reset({
+       nom: "",
       prenom: "",
       cin: "",
       date: "",
       sex: "",
       address: "",
-      phoneNumber: "",
-
+      phone_number: "",
+      email: "",
+      password: "",
       agecalc: "",
-    });
+    }); */
   });
   const onSubmit: SubmitHandler<Nurse> = async (data) => {
+    console.log(data);
+    const { agecalc, ...newData } = data;
     try {
-      await addPatientMutation.mutateAsync(data);
+      await addPatientMutation.mutateAsync(newData);
       showSnackbar("Infirmière ajoutée avec succès.", "success");
       navigate("/Nurses");
     } catch (error: any) {
@@ -159,7 +172,7 @@ const AddNurseForm = () => {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id="outlined-required"
+                    id="prenom"
                     label="Prenom"
                     error={!!errors.prenom}
                     helperText={errors.prenom?.message}
@@ -192,7 +205,7 @@ const AddNurseForm = () => {
                     <TextField
                       type="date"
                       {...field}
-                      id="outlined-required"
+                      id="date"
                       error={!!errors.date}
                       helperText={errors.date?.message}
                     />
@@ -209,12 +222,7 @@ const AddNurseForm = () => {
                   name="agecalc"
                   control={control}
                   render={({ field }) => (
-                    <TextField
-                      {...field}
-                      id="outlined-required"
-                      disabled
-                      value={age}
-                    />
+                    <TextField {...field} id="agecalc" disabled value={age} />
                   )}
                 />
               </FormControl>
@@ -232,7 +240,7 @@ const AddNurseForm = () => {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id="outlined-required"
+                    id="cin"
                     label="Cin"
                     error={!!errors.cin}
                     helperText={errors.cin?.message}
@@ -279,7 +287,7 @@ const AddNurseForm = () => {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id="outlined-required"
+                    id="address"
                     label="Adresse"
                     error={!!errors.address}
                     helperText={errors.address?.message}
@@ -289,26 +297,70 @@ const AddNurseForm = () => {
             </FormControl>
           </Box>
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
-            <label htmlFor="phoneNumber" className="w-full md:w-[160px]">
+            <label htmlFor="phone_number" className="w-full md:w-[160px]">
               Telephone:
             </label>
             <FormControl className="w-full md:flex-1">
               <Controller
-                name="phoneNumber"
+                name="phone_number"
                 control={control}
-                rules={{ required: customErrorMessages.phoneNumber.required }}
+                rules={{ required: customErrorMessages.phone_number.required }}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id="outlined-required"
+                    id="phone_number"
                     label="Phone Number"
-                    error={!!errors.phoneNumber}
-                    helperText={errors.phoneNumber?.message}
+                    error={!!errors.phone_number}
+                    helperText={errors.phone_number?.message}
                   />
                 )}
               />
             </FormControl>
           </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="Email" className="w-full md:w-[160px]">
+              Email:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="email"
+                control={control}
+                rules={{ required: customErrorMessages.email.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="email"
+                    label="Email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="password" className="w-full md:w-[160px]">
+              Mot de pass:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="password"
+                control={control}
+                rules={{ required: customErrorMessages.password.required }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="password"
+                    id="password"
+                    label=" Mot de pass"
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+
           <Box className="flex mt-4">
             <Button
               type="submit"

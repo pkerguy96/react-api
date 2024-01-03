@@ -74,18 +74,18 @@ export function SecondaryListItems({}: Props) {
           <ListItemIcon>
             <BadgeIcon color="primary" />
           </ListItemIcon>
-          <ListItemText primary="gérer les infirmières" />
+          <ListItemText primary="Gérer les infirmières" />
         </ListItemButton>
       </Link>
 
       <Divider />
 
-      <Link to="/dicom" className="no-underline">
+      <Link to="/Files" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
             <ContentPasteSearchOutlinedIcon color="primary" />
           </ListItemIcon>
-          <ListItemText primary="Xray" />
+          <ListItemText primary="Documents" />
         </ListItemButton>
       </Link>
       <Link to="/Stock" className="no-underline">

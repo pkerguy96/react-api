@@ -1,6 +1,7 @@
+//@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
 import Tooltip from "@mui/material/Tooltip";
-import { Button, IconButton, Box } from "@mui/material";
+import { IconButton, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
