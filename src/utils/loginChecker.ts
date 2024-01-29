@@ -16,8 +16,6 @@ const isUserLoggedIn = async (navigate: NavigateFunction) => {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // If the token is valid, do nothing; the user stays on the current route.
     } else {
       navigate("/");
     }

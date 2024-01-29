@@ -101,6 +101,10 @@ const router = createBrowserRouter([
         element: <DicomPage />,
       },
       {
+        path: "Dicom/:id?",
+        element: <DicomPageViewer />,
+      },
+      {
         path: "Stock",
         element: <StockPage />,
       },

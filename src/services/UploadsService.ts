@@ -4,7 +4,9 @@ interface Patient {
   nom: string;
   prenom: string;
 }
-
+export interface UrlList {
+  data: string[]; // An array of strings representing URLs
+}
 export interface ClusterData {
   patientName: Patient[];
   type: string;

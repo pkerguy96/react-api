@@ -2,10 +2,11 @@ import { APIClient } from "../services/Http";
 const getUrls = async <T>(id: string, service: APIClient<T>): Promise<any> => {
   try {
     const data = await service.getUrl(id);
-    return data; // Deletion was successful
+
+    return data;
   } catch (error) {
     console.error("fetching failed:", error);
-    return false; // Deletion failed
+    return false;
   }
 };
 

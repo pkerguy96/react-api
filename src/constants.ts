@@ -7,6 +7,7 @@ export const CACHE_KEY_PatientDetails = "patientdetails";
 export const CACHE_KEY_OperationDetail = "operationdetail";
 export const CACHE_KEY_UploadInfo = ["uploadinfo"];
 export const CACHE_KEY_UploadUrl = ["UploadUrl"];
+export const CACHE_KEY_Url = "urllist";
 
 export const listOperationsArray = [
   { value: 10, label: "Blanchiment" },

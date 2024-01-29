@@ -1,33 +1,65 @@
 import { Box, Typography } from "@mui/material";
 import maledoc from "/maldoc.svg";
-const DashboardKpiPage = () => {
-  // return (
-  //   <Box className="parent w-full flex flex-col gap-2">
-  //     <Box className="grid grid-cols-4  items-start  grid-rows-1 gap-4">
-  //       <Box className="bg-gradient-to-br from-sky-100 to-sky-200  rounded-lg flex col-span-2">
-  //         <img src={maledoc} width="100" height="100" alt="Maledoc SVG" />
-  //         <Box className="flex flex-initial flex-col gap-2 p-4 ">
-  //           <Typography
-  //             variant="h5"
-  //             className="text-center text-white !font-medium"
-  //           >
-  //             Good Evening , <p className="inline-block">Aymen Elkor</p>
-  //           </Typography>
-  //           <p className="text-white ">
-  //             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur,
-  //             eligendi itaque. Assumenda laudantium cupiditate hic nemo ipsam
-  //           </p>
-  //         </Box>
-  //       </Box>
-  //       <Box className="bg-gradient-to-br from-innovation-100 to-innovation-300 rounded-lg flex flex-col gap-2 p-4 ">
-  //         <Typography variant="h5">Total Appointment</Typography>
-  //         <p className="inline-block">300</p>
-  //       </Box>
-  //       <Box>3</Box>
-  //     </Box>
-  //   </Box>
-  // );
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { PieChart } from "@mui/icons-material";
+import Pichart from "../components/Kpis/pichart";
 
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+const DashboardKpiPage = () => {
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Chart.js Bar Chart",
+      },
+    },
+  };
+
+  const labels = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+  ];
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: [400, 300, 600, 200, 800, 500, 700], // Replace with your own data
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Dataset 2",
+        data: [700, 500, 300, 800, 100, 600, 400], // Replace with your own data
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  };
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
@@ -61,6 +93,7 @@ const DashboardKpiPage = () => {
         <div className="flex flex-col gap-6 lg:col-span-9">
           <Box className="w-full shadow-md bg-white text-gray-950 flex flex-col">
             <h1 className="text-xl font-semibold p-6">Hospital Survey</h1>
+            <Bar options={options} data={data} />
           </Box>
           <Box className="w-full shadow-md bg-white text-gray-950 flex flex-col">
             <h1 className="text-xl font-semibold p-6">Appointment Activity</h1>
@@ -68,9 +101,8 @@ const DashboardKpiPage = () => {
         </div>
         <div className="flex flex-col gap-6 lg:col-span-3">
           <Box className="w-full shadow-md bg-white text-gray-950 flex flex-col">
-            <h1 className="text-xl font-semibold p-6">
-              Average Patient Visits
-            </h1>
+            <h1 className="text-xl font-semibold p-6">Total Patients</h1>
+            <Pichart />
           </Box>
           <Box className="w-full shadow-md bg-white text-gray-950 flex flex-col">
             <h1 className="text-xl font-semibold p-6">Employees</h1>

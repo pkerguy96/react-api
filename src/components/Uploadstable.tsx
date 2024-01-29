@@ -4,18 +4,14 @@ import { Tooltip, IconButton, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import getGlobal from "../hooks/getGlobal";
-import { CACHE_KEY_UploadInfo, CACHE_KEY_UploadUrl } from "../constants";
-import {
-  ClusterData,
-  UploadServiceApiClient,
-} from "../services/UploadsService";
+import { CACHE_KEY_UploadInfo } from "../constants";
+import { ClusterData } from "../services/UploadsService";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
 import ShowUploadsServiceApiClient from "../services/UploadsService";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import getGlobalById from "../hooks/getGlobalById";
-import getUrls from "../hooks/getUrls";
+
 const Uploadstable = () => {
   const navigate = useNavigate();
   const { data, isLoading } = getGlobal(
@@ -26,16 +22,24 @@ const Uploadstable = () => {
   );
 
   if (isLoading) return <LoadingSpinner />;
+  const download = (links: string) => {
+    const downloadLink = document.createElement("a");
+    downloadLink.setAttribute("download", "");
+    document.body.appendChild(downloadLink);
 
+    downloadLink.href = links;
+    downloadLink.click();
+
+    document.body.removeChild(downloadLink);
+  };
   const transformedData = Object.entries(data).map(
     ([cluster, clusterData]: any) => ({
       id: cluster,
       nom: clusterData.patientName[0].nom,
       type: clusterData.type,
       date: clusterData.dates[0],
-
       size: `${clusterData.totalSize.toFixed(2)} Mb`,
-      action: clusterData.mimeType[0],
+      action: { mime: clusterData.mimeType[0], urls: clusterData.links },
     })
   );
 
@@ -89,7 +93,7 @@ const Uploadstable = () => {
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (data) => {
+        customBodyRender: (data: any) => {
           console.log(data);
 
           return (
@@ -105,6 +109,7 @@ const Uploadstable = () => {
                 />
               </button>
               <button
+                onClick={() => download(data.urls)}
                 className="btn-ordonance-download text-gray-950 hover:text-blue-700 cursor-pointer"
                 title="Modifier"
               >
@@ -114,7 +119,7 @@ const Uploadstable = () => {
                 />
               </button>
 
-              {data === "application/dicom" ? (
+              {data.mime === "application/dicom" ? (
                 <button
                   className="btn-ordonance-see text-gray-950 hover:text-blue-700 cursor-pointer"
                   title="Modifier"
@@ -160,7 +165,7 @@ const Uploadstable = () => {
         if (s[1] === "application/dicom") {
           console.log(true);
         }
-        /*   navigate(`/AddOrdonance/${s[1]}/${s[0]}`); */
+        navigate(`/Dicom/${s[0]}`);
       } else if (
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
@@ -171,27 +176,6 @@ const Uploadstable = () => {
         e.target.classList.contains("btn-ordonance-download")
       ) {
         try {
-          const response = await getUrls(s[0], UploadServiceApiClient); // Correctly invoke the async function
-          console.log(response[0]);
-          /* const link = response.data[0];
-
-          // Create an anchor element
-          const downloadLink = document.createElement("a");
-
-          // Set the href attribute to the download link
-          downloadLink.href = link;
-
-          // Specify the suggested file name for the download
-          downloadLink.download = "downloaded_file.png";
-
-          // Append the anchor element to the document body
-          document.body.appendChild(downloadLink);
-
-          // Trigger a click event on the anchor element
-          downloadLink.click();
-
-          // Remove the anchor element from the document body
-          document.body.removeChild(downloadLink); */
         } catch (error) {
           console.log(error);
         }
