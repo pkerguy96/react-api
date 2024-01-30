@@ -7,6 +7,11 @@ export const CACHE_KEY_PatientDetails = "patientdetails";
 export const CACHE_KEY_OperationDetail = "operationdetail";
 export const CACHE_KEY_UploadInfo = ["uploadinfo"];
 export const CACHE_KEY_UploadUrl = ["UploadUrl"];
+export const CACHE_KEY_AppointmentsCount = ["AppointmentsCount"];
+export const CACHE_KEY_RevenueKpi = ["RevenueKpi"];
+export const CACHE_KEY_CanceledApppointments = ["CanceledApppointments"];
+export const CACHE_KEY_Agegroup = ["PatientsAgeGroup"];
+export const CACHE_KEY_totalPatients = ["totalPatients"];
 export const CACHE_KEY_Url = "urllist";
 
 export const listOperationsArray = [
