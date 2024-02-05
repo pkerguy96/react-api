@@ -1,22 +1,20 @@
 import * as React from "react";
-
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
 import { useState, useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
 import isUserLoggedIn from "../utils/loginChecker";
 import { FormHelperText } from "@mui/material";
+import addGlobal from "../hooks/addGlobal";
+import { AuthData, AuthServiceClient } from "../services/AuthService";
 
 function Copyright(props: any) {
   return (
@@ -41,23 +39,18 @@ interface UserData {
   password: string;
 }
 
-interface ApiResponse {
-  status: number;
-  message: string;
-  data: any;
-}
-
 export default function SignIn() {
   const [errors, setErrors] = useState({
     email: false,
     password: false,
   });
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [error, setError] = useState(false);
+
+  const [error, setError] = useState({ isError: false, message: "" });
   const [userdata, setUserData] = useState<UserData>({
     email: "",
     password: "",
   });
+  const addmutation = addGlobal({} as AuthData, AuthServiceClient);
   const navigate = useNavigate();
   useEffect(() => {
     isUserLoggedIn(navigate);
@@ -69,28 +62,27 @@ export default function SignIn() {
       [name]: value,
     }));
   };
-  // TODO : cancel axios request  show error msg in the inputs
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newErrors = {
       email: !userdata.email.trim(),
       password: !userdata.password.trim(),
     };
     setErrors(newErrors);
-    axios
-      .post("http://127.0.0.1:8000/api/v1/login", userdata)
-      .then((res: AxiosResponse<ApiResponse>) => {
-        if (res.status === 200) {
-          localStorage.setItem("user_login", JSON.stringify(res.data.data));
-          setLoggedIn(true);
-          navigate("/dashboard");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-
-        setError(true);
-      });
+    await addmutation.mutateAsync(userdata, {
+      onSuccess: (data: any) => {
+        localStorage.setItem("user_login", JSON.stringify(data.data));
+        navigate("/dashboard");
+      },
+      onError: (error: any) => {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+        setError({ isError: true, message });
+      },
+    });
   };
 
   return (
@@ -152,9 +144,9 @@ export default function SignIn() {
           >
             Sign In
           </Button>
-          {error && (
+          {error.isError && (
             <Alert variant="filled" severity="error">
-              Les identifiants ne correspondent pas. Réessayez.
+              {error.message}
             </Alert>
           )}
           <Grid container>

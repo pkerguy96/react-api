@@ -5,6 +5,7 @@ export interface Appointments {
   title: string;
   note: string;
   date: Date;
+  patient_name?: string;
 }
 const appointmentAPIClient = new APIClient<Appointments>("/Appointment");
 export default appointmentAPIClient;

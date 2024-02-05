@@ -19,10 +19,33 @@ export interface AgeData {
 export interface TotalPatients {
   data: number;
 }
+export interface AppointmentKpi {
+  title: string;
+  date: string;
+  patient_name: string;
+  note: string;
+}
+export interface AppointmentKpiData {
+  data: AppointmentKpi[];
+}
+export interface NewAppointments {
+  data: number[];
+}
+export interface CanceledAppointments {
+  data: number[];
+}
 export const AppointmentsKpiClient = new APIClient<appointmentsCount>(
   "/getAppointments"
 );
+export const CanceledMonthlyAppointmentsKpiClient =
+  new APIClient<CanceledAppointments>("/getMonthlyCanceledAppointments");
+export const MonthlyAppointmentsKpiClient = new APIClient<NewAppointments>(
+  "/getMonthlyAppointments"
+);
 export const TotalRevenueKpiClient = new APIClient<Revenue>("/getTotalRevenue");
+export const AppointmentKpiClient = new APIClient<AppointmentKpiData>(
+  "/appointmentKpipeak"
+);
 export const TotalPatientKpiClient = new APIClient<TotalPatients>(
   "/TotalPatients"
 );

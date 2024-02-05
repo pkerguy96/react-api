@@ -47,7 +47,6 @@ export class APIClient<T> {
       .then((res) => res.data.data);
   };
   Postall = (data: T, options: any) => {
-    console.log(data, options);
     return axiosInstance
       .post<T>(this.endpoint, data, options)
       .then((res) => res.data);

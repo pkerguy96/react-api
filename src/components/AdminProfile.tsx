@@ -5,27 +5,30 @@ import {
   FormControl,
   Input,
   Paper,
-  Snackbar,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import MuiAlert from "@mui/material/Alert";
-
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import axiosInstance from "../services/Http";
-interface Props {
+import addGlobal from "../hooks/addGlobal";
+import { AuthProfileServiceClient } from "../services/AuthService";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import { AxiosError } from "axios";
+export interface Props {
   name: string;
   email: string;
   picture: File | null;
 }
 
 const AdminProfile = () => {
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<
-    "success" | "error" | "warning" | "info" | undefined
-  >(undefined);
+  const { showSnackbar } = useSnackbarStore();
+
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const addmutation = addGlobal({} as Props, AuthProfileServiceClient, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
   const storedUserData = localStorage.getItem("user_login");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   const userProfilePicture = parsedUserData
@@ -39,7 +42,7 @@ const AdminProfile = () => {
     formState: { errors },
   } = useForm<Props>({
     defaultValues: {
-      name: userData?.name || "",
+      name: userData?.nom || "",
       email: userData?.email || "",
     },
   });
@@ -59,29 +62,24 @@ const AdminProfile = () => {
       if (data.picture) {
         form.append("picture", data.picture);
       }
-
-      const response = await axiosInstance.post(
-        "http://127.0.0.1:8000/api/v1/Admin/update/profile",
-        form,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
-        }
-      );
-      if (response.status === 200) {
-        const user = JSON.parse(localStorage.getItem("user_login") || "{}");
-        user.user = response.data.data;
-        user.profile = response.data.profile;
-        localStorage.setItem("user_login", JSON.stringify(user));
-        setSnackbarOpen(true);
-        setSnackbarMessage("Admin modified successfully");
-        setSnackbarSeverity("success");
-      }
+      await addmutation.mutateAsync(form, {
+        onSuccess(data: any) {
+          const user = JSON.parse(localStorage.getItem("user_login") || "{}");
+          user.user = data.data;
+          user.profile = data.profile;
+          localStorage.setItem("user_login", JSON.stringify(user));
+          showSnackbar("Utilisateur modifié avec succès", "success");
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+          showSnackbar(`Oops.. ${message}`, "error");
+        },
+      });
     } catch (error) {
-      setSnackbarOpen(false);
-      setSnackbarMessage("Oops something went wrong please try again");
-      setSnackbarSeverity("error");
+      showSnackbar(`Oops.. ${error}`, "error");
     }
   };
   return (
@@ -143,8 +141,8 @@ const AdminProfile = () => {
                   id="name"
                   label="name"
                   size="small"
-                  error={!!errors.name} // Add error prop based on whether the field has an error
-                  helperText={errors.name?.message} // Display the error message for the field
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
                 />
               )}
             />
@@ -165,8 +163,8 @@ const AdminProfile = () => {
                   id="email"
                   label="email"
                   size="small"
-                  error={!!errors.email} // Add error prop based on whether the field has an error
-                  helperText={errors.email?.message} // Display the error message for the field
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
                 />
               )}
             />
@@ -183,24 +181,6 @@ const AdminProfile = () => {
           </Button>
         </Box>
       </Box>
-      <Snackbar
-        open={snackbarOpen}
-        onClose={() => setSnackbarOpen(false)}
-        autoHideDuration={6000}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
-        >
-          {snackbarMessage}
-        </MuiAlert>
-      </Snackbar>
     </Paper>
   );
 };

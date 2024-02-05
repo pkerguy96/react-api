@@ -6,7 +6,7 @@ import {
 } from "../../services/KpisService";
 import LoadingSpinner from "../LoadingSpinner";
 
-const CanceledAppointmentsKpi = () => {
+const CanceledAppointmentsKpi = ({ className }: { className?: string }) => {
   const { data, isLoading } = getGlobal(
     {} as CanceledappointmentsCount,
     CACHE_KEY_CanceledApppointments,
@@ -15,7 +15,7 @@ const CanceledAppointmentsKpi = () => {
   );
   if (isLoading) return <LoadingSpinner />;
   return (
-    <div className="p-6 pb-2 flex flex-col flex-1 gap-1">
+    <div className={`p-6 pb-2 flex flex-col flex-1 gap-1 ${className}`}>
       <h1 className="text-base font-medium">Appointment Canceled</h1>
       <p className="text-4xl font-semibold text-pink-600">{data}</p>
     </div>

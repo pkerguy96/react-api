@@ -62,12 +62,12 @@ const RevenueKpi = () => {
       {
         label: "Le mois dernier",
         data: [...newdata[1]],
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        backgroundColor: "#f2edfd",
       },
       {
         label: "Le mois en cours",
         data: [...newdata[0]],
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
+        backgroundColor: "#6b37e7",
       },
     ],
   };
