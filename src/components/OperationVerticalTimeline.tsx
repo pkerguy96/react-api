@@ -4,21 +4,22 @@ import {
   //@ts-ignore
 } from "react-vertical-timeline-component";
 import { Operation } from "../services/OperationService";
-import HealthAndSafetyOutlinedIcon from "@mui/icons-material/HealthAndSafetyOutlined";
+
 import VaccinesOutlinedIcon from "@mui/icons-material/VaccinesOutlined";
 import LoadingSpinner from "./LoadingSpinner";
 import { useMemo } from "react";
 
 import { Box } from "@mui/material";
 import { getOperationname } from "../utils/helperFunctions";
+interface OperationVerticalTimelineProps {
+  Operations: Operation[]; // Updated type definition to represent an array of Operation objects
+  isLoading: boolean;
+}
 
 const OperationVerticalTimeline = ({
   Operations,
   isLoading,
-}: {
-  Operations: Operation;
-  isLoading: boolean;
-}) => {
+}: OperationVerticalTimelineProps) => {
   if (isLoading) return <LoadingSpinner />;
   const Operationtimeline = useMemo(
     () => (
@@ -60,7 +61,7 @@ const OperationVerticalTimeline = ({
                           </span>
                         </div>
                         <div className="flex gap-1">
-                          <h6>Price:</h6>
+                          <h6>Prix:</h6>
                           <span>{operationType.price} MAD</span>
                         </div>
                       </div>

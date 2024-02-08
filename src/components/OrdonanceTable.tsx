@@ -123,7 +123,7 @@ const OrdonanceTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s: any, m: any, e: any) => {
+    onRowClick: (s: any, _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-edit") ||
         e.target.classList.contains("btn-ordonance-edit")

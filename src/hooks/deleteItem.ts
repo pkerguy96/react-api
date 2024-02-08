@@ -7,7 +7,6 @@ const deleteItem = async <T>(
     await service.DeleteOne(id);
     return true; // Deletion was successful
   } catch (error) {
-    console.error("Deletion failed:", error);
     return false; // Deletion failed
   }
 };

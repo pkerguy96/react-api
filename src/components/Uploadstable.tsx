@@ -94,8 +94,6 @@ const Uploadstable = () => {
         filter: true,
         sort: true,
         customBodyRender: (data: any) => {
-          console.log(data);
-
           return (
             <>
               <button
@@ -161,9 +159,7 @@ const Uploadstable = () => {
         e.target.querySelector(".btn-ordonance-see") ||
         e.target.classList.contains("btn-ordonance-see")
       ) {
-        console.log(s);
         if (s[1] === "application/dicom") {
-          console.log(true);
         }
         navigate(`/Dicom/${s[0]}`);
       } else if (

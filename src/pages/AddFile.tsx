@@ -73,7 +73,7 @@ const AddFile = () => {
 
     try {
       await mutation.mutateAsync(form, {
-        onSuccess: (data) => {
+        onSuccess: () => {
           showSnackbar("Fichier téléchargé avec succès", "success");
           setUploadProgress(0);
           navigate("/Files");
@@ -130,7 +130,7 @@ const AddFile = () => {
                         helperText={fieldState?.error?.message || ""}
                       />
                     )}
-                    onChange={(e, data) => {
+                    onChange={(_e, data) => {
                       setValue("patient", data);
                     }}
                   />
@@ -204,9 +204,9 @@ const AddFile = () => {
                       Upload files ({selectedFilesCount})
                       <input
                         type="file"
-                        //@ts-ignore
                         onChange={(e) => {
                           onFileChange(e);
+                          //@ts-ignore
                           field.onChange([...e.target.files]);
                         }}
                         multiple

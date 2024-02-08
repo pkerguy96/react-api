@@ -12,7 +12,7 @@ export const useAddNurseMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Nurse, Error, Nurse, Nursecontext>({
     mutationFn: async (data: Nurse) => {
-      return await apiclient.Postall(data);
+      return await apiclient.Postall(data, undefined);
     },
     onMutate: async (newNurse: Nurse) => {
       const previousNurses =
@@ -33,7 +33,7 @@ export const useAddNurseMutation = (onAdd: () => void) => {
         })
       );
     },
-    onError: (error, newNurse, context) => {
+    onError: (_error, _newNurse, context) => {
       if (!context) return;
       queryClient.setQueryData<Nurse[]>(
         CACHE_KEY_NURSES,

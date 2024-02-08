@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import maledoc from "/maldoc.svg";
 import RevenueKpi from "../components/Kpis/RevenueKpi";
 import TotalAppointmentsKpi from "../components/Kpis/TotalAppointmentsKpi";
@@ -34,7 +34,6 @@ const DashboardKpiPage = () => {
     { staleTime: 300000 }
   );
   if (isLoading || isLoading1) return <LoadingSpinner />;
-  console.log(data);
 
   return (
     <div className="flex flex-col gap-6">

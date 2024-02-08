@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Box, Button, Paper } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import pic0 from "/case1/case1_008.dcm?url";
 import pic1 from "/case1/case1_010.dcm?url";
 import pic2 from "/case1/case1_012.dcm?url";
@@ -53,26 +53,13 @@ import axios from "axios";
 
 const DicomPageViewer = () => {
   const { id } = useParams();
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  /*  const { data, isLoading, error } = useQuery(["getUrls", id], () =>
-    getUrls(id, UploadServiceApiClient)
-  ); */
-
-  /* const { data, isLoading, refetch } = getGlobalById(
-    {} as UrlList,
-    [CACHE_KEY_Url, id],
-    UploadServiceApiClient,
-    undefined,
-    id
-  ); */
   const iframeSrc = `http://127.0.0.1:8000/file-upload/${id}?iframe=true`;
 
   return (
     <Paper id="paperContainer" className="fullscreen-container flex flex-col">
       <iframe
         src={iframeSrc}
-        className="relative w-full aspect-[16/10]"
+        className="relative w-full aspect-[10/13] lg:aspect-[16/10]"
       ></iframe>
     </Paper>
   );

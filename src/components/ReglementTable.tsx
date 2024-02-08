@@ -113,9 +113,9 @@ const ReglementTable = () => {
         filter: true,
         sort: true,
         customBodyRender: (
-          value: any,
+          _value: any,
           tableMeta: { rowData: string[] },
-          updateValue: any
+          _updateValue: any
         ) => {
           const color = tableMeta.rowData[1] === "true" ? "success" : "error";
 
@@ -162,7 +162,7 @@ const ReglementTable = () => {
     },
 
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s: [number, number], m: any, e: any) => {
+    onRowClick: (s: [number, number], _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
@@ -181,14 +181,12 @@ const ReglementTable = () => {
                 showSnackbar("La suppression du paiement a réussi", "success");
               } else {
                 showSnackbar("La suppression du paiement a échoué", "error");
-                console.log("else", deletionSuccessful);
               }
             } catch (error) {
               showSnackbar(
                 `Une erreur s'est produite lors de la suppression du paiement :${error}`,
                 "error"
               );
-              console.log(error);
             }
           }
         );

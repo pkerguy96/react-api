@@ -6,6 +6,7 @@ export interface AuthData {
   email: string;
 }
 export const AuthServiceClient = new APIClient<AuthData>("/login");
+
 export const AuthProfileServiceClient = new APIClient<Props>(
   "/Admin/update/profile"
 );

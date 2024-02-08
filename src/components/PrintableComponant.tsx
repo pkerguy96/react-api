@@ -57,14 +57,11 @@ const PrintableComponant = () => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  console.log(data);
+
   //TODO: FACTORE THIS
   const filteredOrdonance = data?.find((ordonance: any) => {
-    console.log(ordonance.id, parseInt(id, 10));
-
     return ordonance.id === parseInt(id, 10);
   });
-  console.log(filteredOrdonance);
 
   const FormattedDate = filteredOrdonance?.date.split("-");
 

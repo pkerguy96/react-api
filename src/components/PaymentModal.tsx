@@ -11,7 +11,6 @@ import LoadingSpinner from "./LoadingSpinner";
 import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_OperationDetail } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
@@ -67,21 +66,9 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
 
   if (isLoading) return <LoadingSpinner />;
   const onSubmit = async (data: FormData) => {
-    console.log("data", data);
-
     if (data) {
-      console.log(
-        totalpaid + Number(data.amount_paid) > totalCost,
-        totalCost,
-        totalpaid,
-        data.amount_paid
-      );
-      //TODO: BUG
       if (totalpaid + Number(data.amount_paid) > totalCost) {
-        console.log(totalpaid, Number(data.amount_paid), totalCost);
-
         showSnackbar("Total payment exceeds total cost.");
-
         return;
       }
 
@@ -91,10 +78,6 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
           { data, id: operationID },
           {
             onSuccess(data: any) {
-              console.log("onsucess", data);
-
-              console.log("adding", operationID);
-              console.log(totalpaid, Number(data.amount_paid), totalCost);
               queryClient.invalidateQueries([
                 CACHE_KEY_OperationDetail,
                 operationID.toString(),
@@ -111,9 +94,7 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
               //@ts-ignore
               setValue("amount_paid", "");
             },
-            onSettled(data, error, variables, context) {
-              console.log(data, error);
-            },
+
             onError(error) {
               console.log(error);
             },

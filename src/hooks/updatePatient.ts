@@ -1,4 +1,4 @@
-// useUpdatePatientsMutation.js
+//@ts-nocheck
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { APIClient } from "../services/Http";
 import { CACHE_KEY_PATIENTS } from "../constants";
@@ -46,15 +46,12 @@ const updatePatient = (onUpdate: () => void) => {
       // Return the snapshot value for rollback
       return { previousPatients };
     },
-    onSuccess: (updatedData) => {
-      const nchufu = queryClient.getQueryData<Patient[]>(CACHE_KEY_PATIENTS);
-      console.log("Mutation succeeded. Updated data:", nchufu);
-      console.log("Updated Data:", updatedData);
+    onSuccess: (_updatedData) => {
+      queryClient.getQueryData<Patient[]>(CACHE_KEY_PATIENTS);
     },
-    onError: (error, newPatient, context) => {
+    onError: (error, _newPatient, context) => {
       console.error("Mutation error:", error);
       if (context?.previousPatients) {
-        // Rollback to the previous value
         queryClient.setQueryData(CACHE_KEY_PATIENTS, context.previousPatients);
       }
     },

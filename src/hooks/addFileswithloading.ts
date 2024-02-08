@@ -1,5 +1,6 @@
+//@ts-nocheck
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
+
 import axiosInstance from "../services/Http";
 
 const addFileswithloading = <T>(Tname: T, service: any) => {
@@ -7,9 +8,8 @@ const addFileswithloading = <T>(Tname: T, service: any) => {
     axiosInstance.post<T>(service.endpoint, data, {
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
+          ((progressEvent.loaded ?? 0) * 100) / (progressEvent.total ?? 1)
         );
-        console.log(percentCompleted); // Log the progress or use it as needed
       },
     })
   );

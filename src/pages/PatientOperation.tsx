@@ -48,10 +48,10 @@ const getColor = (colors) => {
 const PatientOperation = () => {
   const addMutation = addGlobal({} as Operation, operationApiClient);
   const { data, isLoading } = getGlobal(
-    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
-    [CACHE_KEY_PATIENTS[0]], // query
-    patientAPIClient, // service
-    undefined // opts
+    {} as OnlyPatientData,
+    [CACHE_KEY_PATIENTS[0]],
+    patientAPIClient,
+    undefined
   );
 
   const { id, age } = useParams<{ id: string; age: string }>();
@@ -351,7 +351,7 @@ const PatientOperation = () => {
                 </TableHead>
                 <TableBody>
                   {globalData.map((item, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={item.id}>
                       <TableCell>
                         <div className="flex items-center flex-wrap gap-2">
                           <span
@@ -366,7 +366,7 @@ const PatientOperation = () => {
                       <TableCell className="w-64">
                         <Box className="w-full flex flex-wrap items-center gap-2">
                           <Controller
-                            name={`operations[${index}]`}
+                            name={`operations[${item.id}]`}
                             control={control}
                             defaultValue={""}
                             rules={{ required: "Montant payé est requis" }}
@@ -390,7 +390,7 @@ const PatientOperation = () => {
                                 onChange={(e) => {
                                   setGlobalData(
                                     globalData.map((o) => {
-                                      if (o.id === index + 1) {
+                                      if (o.id === item.id) {
                                         o.price = +e.target.value;
                                         field.onChange(e);
                                       }
@@ -430,87 +430,77 @@ const PatientOperation = () => {
                 )}
               </span>
             </Box>
-          </Box>
-        </Box>
-        {/**bottom bar */}
-        <Box className="flex flex-col justify-center gap-4">
-          <Box className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
-            <Controller
-              name="paidAmount"
-              control={control}
-              rules={{
-                validate: validatePrix,
-                ...(isFullyPaid
-                  ? {
-                      required: {
-                        value: false,
-                        message: "",
-                      },
-                    }
-                  : {
-                      required: {
-                        value: true,
-                        message: "le montant payé est requis",
-                      },
-                    }),
-              }}
-              defaultValue=""
-              render={({ field, fieldState }) => (
-                <Box className="flex-1">
+
+            {/**bottom bar */}
+            <Box className="flex flex-col justify-center gap-4">
+              <Box className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+                <Controller
+                  name="paidAmount"
+                  control={control}
+                  rules={{
+                    validate: validatePrix,
+                  }}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <Box className="flex-1">
+                      <TextField
+                        {...field}
+                        disabled={isFullyPaid}
+                        id="paidAmount"
+                        label="Montant payé"
+                        variant="outlined"
+                        type="number"
+                        fullWidth
+                      />
+                      <FormHelperText error={!!fieldState.error}>
+                        {fieldState.error?.message}
+                      </FormHelperText>
+                    </Box>
+                  )}
+                />
+                <Controller
+                  name="fullyPaid"
+                  control={control}
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      className="w-max block"
+                      control={<Checkbox {...field} />}
+                      label={
+                        <Typography variant="body2">
+                          Entièrement payé
+                        </Typography>
+                      }
+                    />
+                  )}
+                />
+              </Box>
+              <Controller
+                name="note"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
                   <TextField
                     {...field}
-                    disabled={isFullyPaid}
-                    id="paidAmount"
-                    label="Montant payé"
+                    id="large-text"
+                    label="Note"
+                    multiline
+                    rows={4}
                     variant="outlined"
-                    type="number"
                     fullWidth
                   />
-                  <FormHelperText error={!!fieldState.error}>
-                    {fieldState.error?.message}
-                  </FormHelperText>
-                </Box>
-              )}
-            />
-            <Controller
-              name="fullyPaid"
-              control={control}
-              defaultValue={false}
-              render={({ field }) => (
-                <FormControlLabel
-                  className="w-max block"
-                  control={<Checkbox {...field} />}
-                  label={
-                    <Typography variant="body2">Entièrement payé</Typography>
-                  }
-                />
-              )}
-            />
-          </Box>
-          <Controller
-            name="note"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                id="large-text"
-                label="Note"
-                multiline
-                rows={4}
-                variant="outlined"
-                fullWidth
+                )}
               />
-            )}
-          />
-          <Box className="flex mt-4">
-            <Button
-              type="submit"
-              variant="contained"
-              className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
-            >
-              Enregistrer
-            </Button>
+              <Box className="flex mt-4">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
+                >
+                  Enregistrer
+                </Button>
+              </Box>
+            </Box>
           </Box>
         </Box>
       </FormControl>

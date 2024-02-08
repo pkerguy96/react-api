@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 const getGlobalById = <T>(
-  Tname: T,
+  _Tname: T,
   queryKey: string[],
   service: any,
   opts: object | undefined,

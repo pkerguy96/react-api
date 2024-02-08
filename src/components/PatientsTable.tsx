@@ -162,7 +162,7 @@ const PatientsTable = () => {
       </Tooltip>
     ),
     selectableRowsHideCheckboxes: true,
-    onRowClick: (s: any, m: any, e: any) => {
+    onRowClick: (s: any, _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-patient-info") ||
         e.target.classList.contains("btn-patient-info")
