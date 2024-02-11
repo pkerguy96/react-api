@@ -22,9 +22,10 @@ import AddOrdonance from "./pages/AddOrdonance";
 import DicomPageViewer from "./pages/DicomPageViewer";
 import ReglementPage from "./pages/ReglementPage";
 
-import PaymentDetailsPage from "./pages/PaymentDetailsPage";
 import DicomPage from "./pages/DicomPage";
 import AddFile from "./pages/AddFile";
+import ForgotPassword from "./pages/ForgotPassword";
+import ChangePassword from "./pages/ChangePassword";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <App />,
+      },
+      {
+        path: "réinitialisation-mot-de-passe",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "reset/:token?",
+        element: <ChangePassword />,
       },
     ],
   },

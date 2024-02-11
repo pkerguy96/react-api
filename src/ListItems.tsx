@@ -7,7 +7,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 
 import PeopleIcon from "@mui/icons-material/People";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 /* newly added  */
 import DateRangeSharpIcon from "@mui/icons-material/DateRangeSharp";
 

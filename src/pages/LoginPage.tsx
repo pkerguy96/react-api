@@ -13,6 +13,7 @@ import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
 import isUserLoggedIn from "../utils/loginChecker";
 import { FormHelperText } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import addGlobal from "../hooks/addGlobal";
 import { AuthData, AuthServiceClient } from "../services/AuthService";
 
@@ -151,9 +152,9 @@ export default function SignIn() {
           )}
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <RouterLink to="réinitialisation-mot-de-passe">
                 Mot de passe oublié ?
-              </Link>
+              </RouterLink>
             </Grid>
           </Grid>
         </Box>
