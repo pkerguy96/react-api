@@ -5,20 +5,22 @@ import { useRef } from "react";
 import { AxiosError } from "axios";
 import addGlobal from "../hooks/addGlobal";
 import { ResetPasswordServiceClient, UserMail } from "../services/AuthService";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
 const ForgotPassword = () => {
   const addmutation = addGlobal({} as UserMail, ResetPasswordServiceClient);
+  const { showSnackbar } = useSnackbarStore();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const email = emailInputRef?.current!.value;
       if (!email) {
-        console.log("Email is required.");
+        alert("E-mail est requis");
         return;
       }
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(email)) {
-        console.log("Invalid email format");
+        alert("Format d'email invalide");
 
         return;
       }
@@ -27,22 +29,31 @@ const ForgotPassword = () => {
         { email: email },
         {
           onSuccess: (data: any) => {
-            console.log(data);
+            showSnackbar(
+              "Veuillez vérifier votre courrier électronique pour le courrier de récupération",
+              "success"
+            );
           },
           onError: (error: any) => {
             const message =
               error instanceof AxiosError
                 ? error.response?.data?.message
                 : error.message;
-            console.log(message);
+            showSnackbar(message, "error");
           },
         }
       );
-    } catch (error) {}
+    } catch (error: any) {
+      const message =
+        error instanceof AxiosError
+          ? error.response?.data?.message
+          : error.message;
+      showSnackbar(message, "error");
+    }
   };
   return (
-    <Box className="w-full h-screen  flex flex-col md:flex p-4 gap-2 justify-center items-center	">
-      <h1 className="text-base font-medium">Forgot Password?</h1>
+    <Box className="w-full   flex flex-col md:flex p-4 gap-2 justify-center items-center	">
+      <h1 className="text-base font-medium">Mot de passe oublié?</h1>
       <h3 className="text-base font-light">
         Entrez votre e-mail enregistré ci-dessous pour recevoir les instructions
         de réinitialisation du mot de passe
@@ -67,7 +78,7 @@ const ForgotPassword = () => {
             className="w-80"
           />
           <Button type="submit" className="w-80" variant="contained">
-            Continue
+            Continuer
           </Button>
         </Box>
       </Box>
