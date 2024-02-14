@@ -30,7 +30,6 @@ const RevenueKpi = () => {
     }
   );
   if (isLoading) return <LoadingSpinner />;
-  console.log(newdata);
 
   const options = {
     responsive: true,

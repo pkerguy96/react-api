@@ -19,7 +19,7 @@ const PatientAgeGroupKpi = () => {
     { staleTime: 360000 }
   );
   if (isLoading) return <LoadingSpinner />;
-  console.log(age);
+
   const options = {
     layout: {
       padding: {

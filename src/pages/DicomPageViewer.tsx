@@ -53,7 +53,17 @@ import axios from "axios";
 
 const DicomPageViewer = () => {
   const { id } = useParams();
-  const iframeSrc = `http://127.0.0.1:8000/file-upload/${id}?iframe=true`;
+  const data = localStorage.getItem("user_login");
+
+  let Userid;
+  if (data) {
+    const parsedData = JSON.parse(data);
+    // Now you can use the parsedData
+    Userid = parsedData.user.id;
+  } else {
+    console.log("Data not found in localStorage");
+  }
+  const iframeSrc = `http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true`;
 
   return (
     <Paper id="paperContainer" className="fullscreen-container flex flex-col">

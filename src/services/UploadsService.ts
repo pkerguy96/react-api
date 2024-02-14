@@ -15,4 +15,5 @@ export interface ClusterData {
 }
 export const UploadServiceApiClient = new APIClient<any>("/Filesupload");
 const ShowUploadsServiceApiClient = new APIClient<any>("/uploadsInfo");
+export const DeleteUploadServiceClient = new APIClient<any>("/Filesupload");
 export default ShowUploadsServiceApiClient;

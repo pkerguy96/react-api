@@ -6,7 +6,7 @@ import CanceledAppointmentsKpi from "../components/Kpis/CanceledAppointmentsKpi"
 import PatientAgeGroupKpi from "../components/Kpis/PatientAgeGroupKpi";
 import TotalpatientsKpi from "../components/Kpis/TotalpatientsKpi";
 import AppointmentsTableKpi from "../components/Kpis/AppointmentsTableKpi";
-import SvglinechartKpi from "../components/Kpis/SvgLinechartKpi";
+
 import getGlobal from "../hooks/getGlobal";
 import {
   CanceledAppointments,
@@ -19,6 +19,7 @@ import {
   CACHE_KEY_MonthlyAppointments,
 } from "../constants";
 import LoadingSpinner from "../components/LoadingSpinner";
+import LinechartKPI from "../components/Kpis/LinechartKPI";
 
 const DashboardKpiPage = () => {
   const { data, isLoading } = getGlobal(
@@ -34,7 +35,37 @@ const DashboardKpiPage = () => {
     { staleTime: 300000 }
   );
   if (isLoading || isLoading1) return <LoadingSpinner />;
-
+  const labels = [
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+  ];
+  const dataset = {
+    labels,
+    datasets: [
+      {
+        label: "Rendez-vous",
+        data: data,
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+  const dataset1 = {
+    labels,
+    datasets: [
+      {
+        label: "Rendez-vous annulés",
+        data: data1,
+        borderColor: "#db2777",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
@@ -52,12 +83,14 @@ const DashboardKpiPage = () => {
           </div>
         </Box>
         <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-3">
-          <TotalAppointmentsKpi className="-mb-8" />
-          <SvglinechartKpi data={[...data]} color="#ffffff" size={3} />
+          <TotalAppointmentsKpi className="-mb-2" />
+
+          <LinechartKPI dataset={dataset} />
         </Box>
         <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-3">
           <CanceledAppointmentsKpi className="-mb-8" />
-          <SvglinechartKpi data={[...data1]} color="#db2777" size={3} />
+
+          <LinechartKPI dataset={dataset1} />
         </Box>
       </div>
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
@@ -87,6 +120,7 @@ const DashboardKpiPage = () => {
           <AppointmentsTableKpi />
         </Box>
       </Box>
+      <Box className="flex w-full "></Box>
     </div>
   );
 };

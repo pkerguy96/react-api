@@ -22,7 +22,7 @@ const ConfirmDialog = () => {
 
   return (
     <Dialog open={Boolean(onSubmit)} onClose={close} maxWidth="sm" fullWidth>
-      <DialogTitle>Confirm the action</DialogTitle>
+      <DialogTitle>Confirmez l'action</DialogTitle>
       <Box position="absolute" top={0} right={0}>
         <IconButton onClick={close}>
           <Close />
@@ -33,7 +33,7 @@ const ConfirmDialog = () => {
       </DialogContent>
       <DialogActions>
         <Button color="primary" variant="contained" onClick={close}>
-          Cancel
+          Annuler
         </Button>
         <Button
           color="error"
@@ -45,7 +45,7 @@ const ConfirmDialog = () => {
             close();
           }}
         >
-          Confirm
+          Confirmer
         </Button>
       </DialogActions>
     </Dialog>

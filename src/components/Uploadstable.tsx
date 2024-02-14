@@ -5,14 +5,24 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import getGlobal from "../hooks/getGlobal";
 import { CACHE_KEY_UploadInfo } from "../constants";
-import { ClusterData } from "../services/UploadsService";
+import {
+  ClusterData,
+  DeleteUploadServiceClient,
+} from "../services/UploadsService";
 import LoadingSpinner from "./LoadingSpinner";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
 import ShowUploadsServiceApiClient from "../services/UploadsService";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import getUrls from "../hooks/getUrls";
+import deleteItem from "../hooks/deleteItem";
+import { confirmDialog } from "./ConfirmDialog";
+import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Uploadstable = () => {
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarStore();
   const navigate = useNavigate();
   const { data, isLoading } = getGlobal(
     {} as ClusterData,
@@ -96,27 +106,6 @@ const Uploadstable = () => {
         customBodyRender: (data: any) => {
           return (
             <>
-              <button
-                className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-                title="Modifier"
-              >
-                <DeleteOutlineIcon
-                  color="error"
-                  className="pointer-events-none"
-                  fill="currentColor"
-                />
-              </button>
-              <button
-                onClick={() => download(data.urls)}
-                className="btn-ordonance-download text-gray-950 hover:text-blue-700 cursor-pointer"
-                title="Modifier"
-              >
-                <DownloadForOfflineOutlinedIcon
-                  className="pointer-events-none"
-                  fill="currentColor"
-                />
-              </button>
-
               {data.mime === "application/dicom" ? (
                 <button
                   className="btn-ordonance-see text-gray-950 hover:text-blue-700 cursor-pointer"
@@ -128,6 +117,27 @@ const Uploadstable = () => {
                   />
                 </button>
               ) : null}
+              <button
+                onClick={() => download(data.urls)}
+                className="btn-ordonance-download text-gray-950 hover:text-blue-700 cursor-pointer"
+                title="Modifier"
+              >
+                <DownloadForOfflineOutlinedIcon
+                  className="pointer-events-none"
+                  fill="currentColor"
+                />
+              </button>
+
+              <button
+                className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+                title="Modifier"
+              >
+                <DeleteOutlineIcon
+                  color="error"
+                  className="pointer-events-none"
+                  fill="currentColor"
+                />
+              </button>
             </>
           );
         },
@@ -166,7 +176,18 @@ const Uploadstable = () => {
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")
       ) {
-        // api
+        confirmDialog(
+          "Voulez-vous vraiment supprimer ce fichier?",
+          async () => {
+            const response = await deleteItem(s[0], DeleteUploadServiceClient);
+            if (response) {
+              queryClient.invalidateQueries(CACHE_KEY_UploadInfo);
+              showSnackbar("le fichier a été supprimé avec succès", "success");
+            } else {
+              showSnackbar("La suppression du fichier a échoué", "error");
+            }
+          }
+        );
       } else if (
         e.target.querySelector(".btn-ordonance-download") ||
         e.target.classList.contains("btn-ordonance-download")
