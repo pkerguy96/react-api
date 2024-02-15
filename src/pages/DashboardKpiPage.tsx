@@ -83,7 +83,7 @@ const DashboardKpiPage = () => {
           </div>
         </Box>
         <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-3">
-          <TotalAppointmentsKpi className="-mb-2" />
+          <TotalAppointmentsKpi className="-mb-8" />
 
           <LinechartKPI dataset={dataset} />
         </Box>

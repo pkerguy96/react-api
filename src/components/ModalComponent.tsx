@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axiosInstance from "../services/Http";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const style = {
   position: "absolute" as "absolute",
@@ -21,6 +22,7 @@ interface ModalComponentProps {
   onClose: () => void;
 }
 const ModalComponent = ({ open, onClose }: ModalComponentProps) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const logOut = async () => {
     try {
@@ -29,6 +31,7 @@ const ModalComponent = ({ open, onClose }: ModalComponentProps) => {
       );
       if (response.status === 200) {
         localStorage.clear();
+        queryClient.clear();
         navigate("/");
       }
     } catch (error) {
