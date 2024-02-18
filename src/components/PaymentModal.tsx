@@ -207,7 +207,10 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
                             Payment {j + 1}
                           </span>
                           <span className="text-gray-500 text-sm text-center w-1/3">
-                            {payment.amount_paid} MAD
+                            {payment.amount_paid === null
+                              ? "0.00"
+                              : payment.amount_paid}{" "}
+                            MAD
                           </span>
                           <span className="text-gray-500 text-sm text-end w-1/3">
                             {payment.date}

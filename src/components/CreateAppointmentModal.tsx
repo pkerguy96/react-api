@@ -25,6 +25,7 @@ import addGlobal from "../hooks/addGlobal";
 import appointmentAPIClient from "../services/AppointmentService";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
+import { useNavigate } from "react-router";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -49,6 +50,7 @@ interface DataSend {
 }
 const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
   const { showSnackbar } = useSnackbarStore();
+  const navigate = useNavigate();
   const Addmutation = addGlobal({} as DataSend, appointmentAPIClient);
   const [selectedDateTime, setSelectedDateTime] = useState(moment());
   const noteRef = useRef<HTMLInputElement>(null);
@@ -103,6 +105,7 @@ const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
     Addmutation.mutateAsync(formData, {
       onSuccess: () => {
         showSnackbar("Le rendez-vous a été créé", "success");
+        navigate("/dashboard");
       },
       onError: (error: any) => {
         const message =
@@ -153,11 +156,15 @@ const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
             fullWidth
           />
           <Box className="flex justify-between flex-row mt-5 content-center">
-            <Button variant="outlined" sx={{ marginRight: "30px" }}>
-              Cancel
+            <Button
+              variant="outlined"
+              sx={{ marginRight: "30px" }}
+              onClick={() => navigate("/dashboard")}
+            >
+              Passer
             </Button>
             <Button onClick={onsubmit} variant="contained">
-              Confirm
+              Confirmer
             </Button>
           </Box>
         </Box>
