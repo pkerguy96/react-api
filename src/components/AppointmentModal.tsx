@@ -96,6 +96,7 @@ const AppointmentModal: React.FC<ModalComponentProps> = ({
       note: note,
     };
     try {
+      //TODO: this;
       const apiclient = new APIClient<Appointments>("/Appointment");
       const response = await apiclient.Postall(formData);
 

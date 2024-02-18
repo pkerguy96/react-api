@@ -43,6 +43,11 @@ const DashboardKpiPage = () => {
     "Mai",
     "Juin",
     "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
   ];
   const dataset = {
     labels,
@@ -83,12 +88,12 @@ const DashboardKpiPage = () => {
           </div>
         </Box>
         <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-3">
-          <TotalAppointmentsKpi className="-mb-8" />
+          <TotalAppointmentsKpi className="mb-0" />
 
           <LinechartKPI dataset={dataset} />
         </Box>
         <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-3">
-          <CanceledAppointmentsKpi className="-mb-8" />
+          <CanceledAppointmentsKpi className="mb-0" />
 
           <LinechartKPI dataset={dataset1} />
         </Box>

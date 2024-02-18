@@ -32,8 +32,18 @@ import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import updateItem from "../hooks/updateItem";
 import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
 import addGlobal from "../hooks/addGlobal";
+import CreateAppointmentModal from "../components/CreateAppointmentModal";
 
 const AddOrdonanceUpdated = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarStore();
 
@@ -53,6 +63,7 @@ const AddOrdonanceUpdated = () => {
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
   const [name, setName] = useState("");
+  const [fromOperation, setFromOperation] = useState(false);
   const [optionsArray, setOptionsArray] = useState(null);
   const [iserror, setIsError] = useState(false);
 
@@ -78,6 +89,7 @@ const AddOrdonanceUpdated = () => {
       if (specifiedPatient && id && !ordonanceID) {
         console.log("only id ");
         setValue("patient", specifiedPatient);
+        setFromOperation(true);
       } else if (specifiedPatient) {
         console.log("dazt lakhra");
 
@@ -129,19 +141,27 @@ const AddOrdonanceUpdated = () => {
         medicine: data.drugs,
         date: data.date,
       };
+      console.log(ordonanceID);
 
       let response;
       try {
-        if (isAddMode) {
+        if (isAddMode || fromOperation) {
+          console.log("add mode");
+
           response = await createUser(formData);
         } else {
+          console.log("edit mode");
+
           await editUser(formData, parseInt(ordonanceID));
         }
         queryClient.invalidateQueries({ queryKey: ["ordonance"] });
-        if (id) {
+        if (ordonanceID) {
           navigate(`/OrdonanceDetails/${ordonanceID}`);
-        } else {
-          navigate(`/OrdonanceDetails/${response?.data?.id}`);
+        } else if (isAddMode || fromOperation) {
+          if (response?.data?.id) {
+            navigate(`/OrdonanceDetails/${response.data.id}`);
+            console.log(response.data.id);
+          }
         }
       } catch (error) {
         const message =
@@ -184,14 +204,14 @@ const AddOrdonanceUpdated = () => {
       }
     );
   };
-  const handleOpenModal = (index: number) => {
+  /*   const handleOpenModal = (index: number) => {
     const current = drugs[index];
     setDrug({
       id: current.id,
       name: current.name,
       note: current.note || "",
     });
-  };
+  }; */
   const handleNoteChange = (id, value) => {
     setDrugs((prevDrugs) =>
       prevDrugs.map((drug) =>
@@ -374,7 +394,15 @@ const AddOrdonanceUpdated = () => {
               </Table>
             </TableContainer>
           </Box>
-          <Box className="flex mt-4">
+          <Box className="flex flex-col sm:flex-row gap-4 justify-between mt-4">
+            <Button
+              type="button"
+              variant="contained"
+              className="w-full md:w-max !px-10 !py-3 !bg-gray-200 !text-black !font-semibold"
+              onClick={handleOpenModal}
+            >
+              Passer
+            </Button>
             <Button
               type="submit"
               variant="contained"
@@ -385,6 +413,11 @@ const AddOrdonanceUpdated = () => {
           </Box>
         </Box>
       </Box>
+      <CreateAppointmentModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        id={id}
+      />
     </Paper>
   );
 };

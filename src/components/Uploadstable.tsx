@@ -14,7 +14,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
 import ShowUploadsServiceApiClient from "../services/UploadsService";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import getUrls from "../hooks/getUrls";
+
 import deleteItem from "../hooks/deleteItem";
 import { confirmDialog } from "./ConfirmDialog";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
@@ -164,7 +164,7 @@ const Uploadstable = () => {
         </IconButton>
       </Tooltip>
     ),
-    onRowClick: async (s: any, m: any, e: any) => {
+    onRowClick: async (s: any, _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-see") ||
         e.target.classList.contains("btn-ordonance-see")

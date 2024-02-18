@@ -117,7 +117,7 @@ const AppointmentsTableKpi = () => {
       ) {
         // api
         confirmDialog(
-          "Voulez-vous vraiment supprimer le ordonance ?",
+          "Voulez-vous vraiment supprimer le rendez-vous ?",
           async () => {
             try {
               const deletionSuccessful = await deleteItem(

@@ -1,4 +1,4 @@
-import { Box, Button, Paper, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import lettersvg from "/letter.jpg";
 import { useRef } from "react";
 
@@ -28,7 +28,7 @@ const ForgotPassword = () => {
       await addmutation.mutateAsync(
         { email: email },
         {
-          onSuccess: (data: any) => {
+          onSuccess: () => {
             showSnackbar(
               "Veuillez vérifier votre courrier électronique pour le courrier de récupération",
               "success"

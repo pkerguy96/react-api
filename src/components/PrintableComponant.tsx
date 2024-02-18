@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import getGlobal from "../hooks/getGlobal";
+
 import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
 
 import LoadingSpinner from "./LoadingSpinner";
@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import PrintIcon from "@mui/icons-material/Print";
 import { Box } from "@mui/material";
 import { CACHE_KEY_Ordonance } from "../constants";
+import getGlobalById from "../hooks/getGlobalById";
 function $tempkate(opts: any) {
   const { lang, dir, size, margin, css, page } = opts;
   return `<!DOCTYPE html><html lang="${lang}"dir="${dir}"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible"content="IE=edge"/><meta name="viewport"content="width=device-width, initial-scale=1.0"/><style>@page{size:${size.page};margin:${margin}}#page{width:100%}#head{height:${size.head}}#foot{height:${size.foot}}</style>${css}</head><body><table id="page"><thead><tr><td><div id="head"></div></td></tr></thead><tbody><tr><td><main id="main">${page}</main></td></tr></tbody><tfoot><tr><td><div id=foot></div></td></tr></tfoot></table></body></html>`;
@@ -48,36 +49,21 @@ const PrintableComponant = () => {
     return <div>No ID specified.</div>;
   }
 
-  const { data, isLoading } = getGlobal(
+  const { data, isLoading } = getGlobalById(
     {} as Ordonance,
-    [CACHE_KEY_Ordonance[0]],
+    [CACHE_KEY_Ordonance, id],
     ordonanceApiClient,
-    undefined
+    undefined,
+    parseInt(id)
   );
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  //TODO: FACTORE THIS
-  const filteredOrdonance = data?.find((ordonance: any) => {
-    return ordonance.id === parseInt(id, 10);
-  });
-
-  const FormattedDate = filteredOrdonance?.date.split("-");
+  const FormattedDate = data?.date.split("-");
 
   return (
     <>
-      <Box className="flex  mb-2 justify-end w-full ">
-        <Button
-          className="mt-4"
-          variant="outlined"
-          size="large"
-          startIcon={<PrintIcon />}
-          onClick={() => Print("#page")}
-        >
-          Print
-        </Button>
-      </Box>
       <div className="w-full flex flex-col gap-4 bg-white rounded-sm p-4 relative z-[1]">
         <div className="absolute w-full h-full inset-0 flex items-center justify-center p-48 z-[-1] opacity-5">
           <svg
@@ -150,22 +136,19 @@ const PrintableComponant = () => {
               {FormattedDate[2]}
             </p>
             <p className="font-semibold">
-              Nom & Prenom: {filteredOrdonance?.patient.nom}{" "}
-              {filteredOrdonance?.patient.prenom}
+              Nom & Prenom: {data?.patient.nom} {data?.patient.prenom}
             </p>
           </div>
           <div className="w-full flex flex-col gap-4 my-10">
             <div className="w-full flex flex-col gap-2">
-              {filteredOrdonance?.ordonance_details.map(
-                (details: any, index: number) => (
-                  <div key={index}>
-                    <h3 className="font-bold">
-                      {index + 1}- {details.medicine_name}
-                    </h3>
-                    <p className="ms-4">{details.note}</p>
-                  </div>
-                )
-              )}
+              {data?.ordonance_details.map((details: any, index: number) => (
+                <div key={index}>
+                  <h3 className="font-bold">
+                    {index + 1}- {details.medicine_name}
+                  </h3>
+                  <p className="ms-4">{details.note}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -253,22 +236,19 @@ const PrintableComponant = () => {
               {FormattedDate[2]}
             </p>
             <p className="font-semibold">
-              Nom & Prenom: {filteredOrdonance?.patient.nom}{" "}
-              {filteredOrdonance?.patient.prenom}
+              Nom & Prenom: {data?.patient.nom} {data?.patient.prenom}
             </p>
           </div>
           <div className="w-full flex flex-col gap-4">
             <div className="w-full flex flex-col gap-2">
-              {filteredOrdonance?.ordonance_details.map(
-                (details: any, index: number) => (
-                  <div key={index}>
-                    <h3 className="font-bold">
-                      {index + 1}- {details.medicine_name}
-                    </h3>
-                    <p className="ms-4">{details.note}</p>
-                  </div>
-                )
-              )}
+              {data?.ordonance_details.map((details: any, index: number) => (
+                <div key={index}>
+                  <h3 className="font-bold">
+                    {index + 1}- {details.medicine_name}
+                  </h3>
+                  <p className="ms-4">{details.note}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -281,6 +261,18 @@ const PrintableComponant = () => {
           <p className="font-semibold">XXXXX@XXXXX.XX</p>
         </div>
       </div>
+      <Box className="flex flex-col gap-4 sm:flex-row justify-end  mt-2 w-full ">
+        <Button
+          className="mt-4"
+          variant="contained"
+          size="large"
+          color="primary"
+          startIcon={<PrintIcon />}
+          onClick={() => Print("#page")}
+        >
+          Print
+        </Button>
+      </Box>
     </>
   );
 };

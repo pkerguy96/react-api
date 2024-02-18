@@ -63,7 +63,8 @@ const DicomPageViewer = () => {
   } else {
     console.log("Data not found in localStorage");
   }
-  const iframeSrc = `http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true`;
+  /* http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true */
+  const iframeSrc = ` http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true `;
 
   return (
     <Paper id="paperContainer" className="fullscreen-container flex flex-col">

@@ -198,11 +198,15 @@ const PatientOperation = () => {
             >
               Veuillez sélectionner les dents que vous souhaitez opérer
             </Typography>
-            <Link to={`/Patients/Details/${id}`}>
-              <p className="text-md font-mono font-bold text-[#1976d2] cursor-pointer ">
-                Historique des opérations
-              </p>
-            </Link>
+            <Button
+              component={Link}
+              to={`/Patients/Details/${id}`}
+              variant="contained"
+              color="primary"
+              size="small"
+            >
+              Historique des opérations
+            </Button>
           </Box>
 
           <ButtonGroup

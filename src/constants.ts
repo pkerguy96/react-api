@@ -1,7 +1,7 @@
-export const CACHE_KEY_PATIENTS: string[] = ["patients"];
+export const CACHE_KEY_PATIENTS = ["patients"];
 export const CACHE_KEY_NURSES = ["nurses"];
 export const CACHE_KEY_APPOINTMENTS = ["appointments"];
-export const CACHE_KEY_Ordonance = ["ordonance"];
+export const CACHE_KEY_Ordonance = "ordonance";
 export const CACHE_KEY_Operation = ["operation"];
 export const CACHE_KEY_PatientDetails = "patientdetails";
 export const CACHE_KEY_OperationDetail = "operationdetail";
