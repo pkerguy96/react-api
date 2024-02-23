@@ -162,7 +162,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">
+        <List component="nav" className="flex flex-col h-full">
           {mainListItems}
           <Divider sx={{ my: 1 }} />
           <SecondaryListItems

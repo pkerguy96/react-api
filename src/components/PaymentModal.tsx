@@ -12,7 +12,7 @@ import { getOperationname } from "../utils/helperFunctions";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { CACHE_KEY_OperationDetail } from "../constants";
+import { CACHE_KEY_Operation, CACHE_KEY_OperationDetail } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
 import operationDetailsApiClient, {
   OperationDetail,
@@ -63,6 +63,7 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
       setTotalCost(cost);
     }
   }, [data]);
+  //TODO: remove only operation with the specify id
 
   if (isLoading) return <LoadingSpinner />;
   const onSubmit = async (data: FormData) => {
@@ -82,6 +83,7 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
                 CACHE_KEY_OperationDetail,
                 operationID.toString(),
               ]);
+              queryClient.invalidateQueries(CACHE_KEY_Operation);
 
               setFetchedOperations((prevData) => [
                 ...prevData,

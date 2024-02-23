@@ -20,7 +20,6 @@ const isUserLoggedIn = async (navigate: NavigateFunction) => {
       navigate("/");
     }
   } catch (error) {
-    localStorage.removeItem("user_login");
     navigate("/");
   }
 };

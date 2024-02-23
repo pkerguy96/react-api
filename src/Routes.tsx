@@ -26,6 +26,8 @@ import DicomPage from "./pages/DicomPage";
 import AddFile from "./pages/AddFile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword";
+import SettingsPage from "./pages/SettingsPage";
+import KpiSettings from "./components/Settings/KpiSettings";
 
 const router = createBrowserRouter([
   {
@@ -124,6 +126,16 @@ const router = createBrowserRouter([
       {
         path: "Addfile",
         element: <AddFile />,
+      },
+      {
+        path: "Settings",
+        element: <SettingsPage />,
+        children: [
+          {
+            path: "Kpis",
+            element: <KpiSettings />,
+          },
+        ],
       },
     ],
   },

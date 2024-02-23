@@ -58,7 +58,7 @@ const ReglementTable = () => {
       date: Paymentinfo.date,
       prix: `${Paymentinfo.total_cost} MAD`,
       amount_paid: `${Paymentinfo.totalPaid.toFixed(2)} MAD`,
-      ispaid: Paymentinfo.isPaid ? "true" : "false",
+      ispaid: Boolean(Paymentinfo.isPaid) ? "true" : "false",
     };
   });
 
@@ -114,9 +114,11 @@ const ReglementTable = () => {
         sort: true,
         customBodyRender: (
           _value: any,
-          tableMeta: { rowData: string[] },
+          tableMeta: { rowData: string[]; currentTableData: string[] },
           _updateValue: any
         ) => {
+          console.log(tableMeta.rowData[1]);
+
           const color = tableMeta.rowData[1] === "true" ? "success" : "error";
 
           return (

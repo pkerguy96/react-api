@@ -14,6 +14,7 @@ import appointmentAPIClient, {
 } from "../services/AppointmentService";
 import { CACHE_KEY_APPOINTMENTS } from "../constants";
 import LoadingSpinner from "./LoadingSpinner";
+import frLocale from "@fullcalendar/core/locales/fr";
 const AppointmentsCalendar = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
@@ -98,6 +99,7 @@ const AppointmentsCalendar = () => {
         slotDuration="00:30:00"
         slotMinTime="08:00:00"
         allDaySlot={false}
+        locales={[frLocale]}
       />
       <AppointmentConfirmation
         data={confirmationData}

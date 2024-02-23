@@ -10,7 +10,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import { Link } from "react-router-dom";
 /* newly added  */
 import DateRangeSharpIcon from "@mui/icons-material/DateRangeSharp";
-
+import SettingsIcon from "@mui/icons-material/Settings";
 import BadgeIcon from "@mui/icons-material/Badge";
 import ContentPasteSearchOutlinedIcon from "@mui/icons-material/ContentPasteSearchOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
@@ -94,6 +94,15 @@ export function SecondaryListItems({}: Props) {
             <Inventory2OutlinedIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary="Stock" />
+        </ListItemButton>
+      </Link>
+
+      <Link to="/Settings" className="no-underline mt-auto">
+        <ListItemButton>
+          <ListItemIcon>
+            <SettingsIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
         </ListItemButton>
       </Link>
     </React.Fragment>

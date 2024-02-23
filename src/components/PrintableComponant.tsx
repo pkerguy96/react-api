@@ -51,7 +51,7 @@ const PrintableComponant = () => {
 
   const { data, isLoading } = getGlobalById(
     {} as Ordonance,
-    [CACHE_KEY_Ordonance, id],
+    [CACHE_KEY_Ordonance[0], id],
     ordonanceApiClient,
     undefined,
     parseInt(id)

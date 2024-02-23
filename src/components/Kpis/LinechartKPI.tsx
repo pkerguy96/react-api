@@ -28,10 +28,12 @@ export const options = {
   },
   scales: {
     x: {
-      display: false, // Hide x-axis
+      display: false,
+      beginAtZero: true,
     },
     y: {
-      display: false, // Hide y-axis
+      display: false,
+      beginAtZero: true,
     },
   },
 };
