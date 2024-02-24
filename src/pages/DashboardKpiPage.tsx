@@ -35,26 +35,14 @@ const DashboardKpiPage = () => {
     { staleTime: 300000 }
   );
   if (isLoading || isLoading1) return <LoadingSpinner />;
-  const labels = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ];
+  Object;
+  const labels = Object.keys(data);
   const dataset = {
     labels,
     datasets: [
       {
         label: "Rendez-vous",
-        data: data,
+        data: Object.values(data),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
@@ -65,7 +53,7 @@ const DashboardKpiPage = () => {
     datasets: [
       {
         label: "Rendez-vous annulés",
-        data: data1,
+        data: Object.values(data1),
         borderColor: "#db2777",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },

@@ -40,32 +40,19 @@ const RevenueKpi = () => {
     },
   };
 
-  const labels = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ];
+  const labels = Object.keys(newdata[0]);
 
   const data = {
     labels,
     datasets: [
       {
         label: "Le mois dernier",
-        data: [...newdata[1]],
+        data: Object.values(newdata[0]),
         backgroundColor: "#f2edfd",
       },
       {
         label: "Le mois en cours",
-        data: [...newdata[0]],
+        data: Object.values(newdata[1]),
         backgroundColor: "#6b37e7",
       },
     ],
