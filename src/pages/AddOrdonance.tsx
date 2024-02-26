@@ -69,10 +69,13 @@ const AddOrdonanceUpdated = () => {
 
   const navigate = useNavigate();
   const isAddMode = !id;
+  console.log(id, ordonanceID);
 
   let dataArray: Patient[] = [];
   let specifiedPatient;
-
+  const shouldShowSkipButton = () => {
+    return id; // Check if both id and ordonanceid are present
+  };
   if (
     patientsData &&
     typeof patientsData === "object" &&
@@ -91,8 +94,6 @@ const AddOrdonanceUpdated = () => {
         setValue("patient", specifiedPatient);
         setFromOperation(true);
       } else if (specifiedPatient) {
-        console.log("dazt lakhra");
-
         setOptionsArray(specifiedPatient);
         setValue("patient", specifiedPatient);
 
@@ -160,7 +161,6 @@ const AddOrdonanceUpdated = () => {
         } else if (isAddMode || fromOperation) {
           if (response?.data?.id) {
             navigate(`/OrdonanceDetails/${response.data.id}`);
-            console.log(response.data.id);
           }
         }
       } catch (error) {
@@ -395,14 +395,17 @@ const AddOrdonanceUpdated = () => {
             </TableContainer>
           </Box>
           <Box className="flex flex-col sm:flex-row gap-4 justify-between mt-4">
-            <Button
-              type="button"
-              variant="contained"
-              className="w-full md:w-max !px-10 !py-3 !bg-gray-200 !text-black !font-semibold"
-              onClick={handleOpenModal}
-            >
-              Passer
-            </Button>
+            {shouldShowSkipButton() && (
+              <Button
+                type="button"
+                variant="contained"
+                className="w-full md:w-max !px-10 !py-3 !bg-gray-200 !text-black !font-semibold"
+                onClick={handleOpenModal}
+              >
+                Passer
+              </Button>
+            )}
+
             <Button
               type="submit"
               variant="contained"
@@ -417,6 +420,7 @@ const AddOrdonanceUpdated = () => {
         open={isModalOpen}
         onClose={handleCloseModal}
         id={id}
+        operationid={ordonanceID}
       />
     </Paper>
   );

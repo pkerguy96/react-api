@@ -28,6 +28,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword";
 import SettingsPage from "./pages/SettingsPage";
 import KpiSettings from "./components/Settings/KpiSettings";
+import OperationPayementStatus from "./components/OperationPayementStatus";
 
 const router = createBrowserRouter([
   {
@@ -83,9 +84,13 @@ const router = createBrowserRouter([
         path: "AddOrdonance/:id?/:ordonance?",
         element: <AddOrdonance />,
       },
-      {
-        path: "AddOrdonance/:id?",
+      /*   {
+        path: "AddOrdonance/:id?/:operation_id?",
         element: <AddOrdonance />,
+      }, */
+      {
+        path: "PatientCheckout/:operationid?",
+        element: <OperationPayementStatus />,
       },
       {
         path: "OrdonanceDetails/:id",

@@ -14,4 +14,7 @@ export interface Operation {
   is_paid: boolean;
 }
 const operationApiClient = new APIClient<Operation>("/Operation");
+export const PayementVerificationApiClient = new APIClient<any>(
+  "PayementVerificationCheckout"
+);
 export default operationApiClient;

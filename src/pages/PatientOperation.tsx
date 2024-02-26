@@ -144,15 +144,14 @@ const PatientOperation = () => {
         ? 0
         : parseFloat(data?.paidAmount),
     };
-    console.log(validData);
 
     if (!validData.operations || validData.operations.length === 0) {
       setGlobalError("Veuillez ajouter au moins une opération.");
     } else {
       addMutation.mutateAsync(validData, {
-        onSuccess: () => {
+        onSuccess: (data) => {
           showSnackbar("Opération créée avec succès", "success");
-          navigate(`/AddOrdonance/${id}`);
+          navigate(`/AddOrdonance/${id}/${data?.operation_id}`);
         },
         onError: (error: any) => {
           const message =

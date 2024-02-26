@@ -1,7 +1,6 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   Box,
-  Button,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -14,24 +13,29 @@ import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutl
 
 const SettingsComponent = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [activeItem, setActiveItem] = useState<string | null>(null);
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value.toLowerCase());
   };
+  console.log(activeItem);
 
-  // Sample list of items with URLs
   const items = [
-    { name: "Kpi settings", url: "/Settings/Kpis" },
-    { name: "Ordonance settings", url: "/Settings/Ordonance" },
+    { name: "Paramètres des métriques", url: "/Settings/Kpis" },
+    { name: "Paramètres d'ordonnances", url: "" },
+    { name: "Paramètres des rôles", url: "/Settings" },
   ];
 
   return (
     <Paper className="p-4">
       <Box className="w-full h-full flex flex-col md:grid md:grid-cols-5 gap-4">
-        <Box className="col-span-2 flex flex-col gap-4">
-          <p className="font-semibold text-2xl">Settings</p>
-          <FormControl fullWidth sx={{ m: 1 }}>
-            <InputLabel htmlFor="outlined-adornment-Search">Search</InputLabel>
+        <Box className="col-span-2 flex flex-col gap-5">
+          <p className="font-semibold text-2xl text-center md:text-start">
+            Settings
+          </p>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="outlined-adornment-Search">
+              Recherche
+            </InputLabel>
             <OutlinedInput
               id="outlined-adornment-Search"
               className="!rounded-2xl"
@@ -40,36 +44,46 @@ const SettingsComponent = () => {
                   <SearchOutlinedIcon />
                 </InputAdornment>
               }
-              label="Search"
+              label="Recherche"
               value={searchQuery}
               onChange={handleSearchChange}
             />
           </FormControl>
-
-          {items
-            .filter((item) => item.name.toLowerCase().includes(searchQuery))
-            .map((item, index) => (
-              <Link
-                to={item.url}
-                className="no-underline "
-                key={index}
-                style={{
-                  display: "block",
-                }}
-              >
-                <div
+          <Box className="flex flex-col gap-6">
+            {items
+              .filter((item) => item.name.toLowerCase().includes(searchQuery))
+              .map((item, index) => (
+                <Link
+                  to={item.url}
+                  className={`no-underline `}
+                  key={index}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    color: "grey", // Set color for text
+                    display: "block",
                   }}
+                  onClick={() => setActiveItem(item.url)}
                 >
-                  <span>{item.name}</span>
-                  <ArrowForwardIosOutlinedIcon />
-                </div>
-              </Link>
-            ))}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      color: "grey", // Set color for text
+                    }}
+                  >
+                    <span
+                      className={`${
+                        activeItem === item.url
+                          ? " text-blue-600 !important"
+                          : "text-gray-500"
+                      } font-light text-md`}
+                    >
+                      {item.name}
+                    </span>
+                    <ArrowForwardIosOutlinedIcon />
+                  </div>
+                </Link>
+              ))}
+          </Box>
         </Box>
         <Box className="col-span-3">
           {/* This is where you render the nested routes */}

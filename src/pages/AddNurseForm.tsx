@@ -1,4 +1,3 @@
-//@ts-nocheck
 import {
   Paper,
   Box,
@@ -9,6 +8,8 @@ import {
   MenuItem,
   Button,
   Divider,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -20,6 +21,8 @@ import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
 export interface Nurse {
   nom: string;
+  recruitment_date: string;
+  termination_date: string;
   prenom: string;
   cin: string;
   date: string;
@@ -28,7 +31,8 @@ export interface Nurse {
   phone_number?: string;
   email: string;
   password: string;
-  agecalc: string;
+  agecalc?: string;
+  checkbox: boolean;
 }
 const AddNurseForm = () => {
   const { showSnackbar } = useSnackbarStore();
@@ -46,6 +50,12 @@ const AddNurseForm = () => {
       required: "Le champ Cin est requis.", // Customize the required error message for "nom" field
     },
     date: {
+      required: "Le champ Date est requis.", // Customize the required error message for "nom" field
+    },
+    recruitment_date: {
+      required: "Le champ Date est requis.", // Customize the required error message for "nom" field
+    },
+    termination_date: {
       required: "Le champ Date est requis.", // Customize the required error message for "nom" field
     },
     sex: {
@@ -68,6 +78,7 @@ const AddNurseForm = () => {
     handleSubmit,
     control,
     register,
+    watch,
     reset,
     formState: { errors },
   } = useForm<Nurse>({
@@ -82,11 +93,14 @@ const AddNurseForm = () => {
       email: "",
       password: "",
       agecalc: "",
+      checkbox: false,
+      recruitment_date: "",
+      termination_date: "",
     },
   });
   const addPatientMutation = useAddNurseMutation(() => {
-    /*  reset({
-       nom: "",
+    reset({
+      nom: "",
       prenom: "",
       cin: "",
       date: "",
@@ -96,10 +110,13 @@ const AddNurseForm = () => {
       email: "",
       password: "",
       agecalc: "",
-    }); */
+    });
   });
   const onSubmit: SubmitHandler<Nurse> = async (data) => {
     console.log(data);
+    if (data.termination_date < data.recruitment_date) {
+      alert("Date de résiliation est avant la date d'embauche");
+    }
     const { agecalc, ...newData } = data;
     try {
       await addPatientMutation.mutateAsync(newData);
@@ -121,6 +138,7 @@ const AddNurseForm = () => {
       setAge(age); // Set the 'age' field in the form with the calculated age
     },
   });
+
   return (
     <Paper className="p-4">
       <Box
@@ -317,6 +335,64 @@ const AddNurseForm = () => {
                 )}
               />
             </FormControl>
+          </Box>
+          <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <label htmlFor="recruitment_date" className="w-full md:w-[160px]">
+              Date d'embauche:
+            </label>
+            <FormControl className="w-full md:flex-1">
+              <Controller
+                name="recruitment_date"
+                control={control}
+                rules={{
+                  required: customErrorMessages.recruitment_date.required,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    type="date"
+                    {...field}
+                    id="recruitment_date"
+                    error={!!errors.recruitment_date}
+                    helperText={errors.recruitment_date?.message}
+                  />
+                )}
+              />
+            </FormControl>
+          </Box>
+          <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+            <Box className="w-full md:flex-1 flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+              <label htmlFor="termination_date" className="w-full md:w-[160px]">
+                Date de résiliation:
+              </label>
+              <FormControl className="w-full md:flex-1">
+                <Controller
+                  name="termination_date"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      type="date"
+                      {...field}
+                      id="termination_date"
+                      disabled={watch("checkbox")}
+                      error={!!errors.termination_date}
+                      helperText={errors.termination_date?.message}
+                    />
+                  )}
+                />
+              </FormControl>
+            </Box>
+            <Box className="w-full md:w-[300px] flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
+              <FormControlLabel
+                control={
+                  <Controller
+                    name="checkbox"
+                    control={control}
+                    render={({ field }) => <Checkbox {...field} />}
+                  />
+                }
+                label="Non spécifié"
+              />
+            </Box>
           </Box>
           <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
             <label htmlFor="Email" className="w-full md:w-[160px]">

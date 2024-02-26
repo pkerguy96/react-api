@@ -8,18 +8,48 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
+import addGlobal from "../../hooks/addGlobal";
+import {
+  SettingsApiClient,
+  SettingsData,
+} from "../../services/SettingsService";
+import { useSnackbarStore } from "../../zustand/useSnackbarStore";
+import { AxiosError } from "axios";
 
 const KpiSettings = () => {
-  const [selected, setSelected] = useState(""); // Initialize with a default value
+  const { showSnackbar } = useSnackbarStore();
+  const addmutation = addGlobal(
+    {} as SettingsData,
+    SettingsApiClient,
+    undefined
+  );
+  const [selected, setSelected] = useState("");
   const selectRef = useRef(null);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     setSelected(event.target.value as string);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(selected);
+    if (selected == "") {
+      alert("veuillez sélectionner une option");
+    }
+    const formData = {
+      period: selected,
+    };
+    await addmutation.mutateAsync(formData, {
+      onSuccess: () => {
+        showSnackbar("La préférence a été modifiée", "success");
+      },
+      onError: (error: any) => {
+        const message =
+          error instanceof AxiosError
+            ? error.response?.data?.message
+            : error.message;
+        showSnackbar(message, "error");
+      },
+    });
   };
 
   return (
@@ -29,24 +59,21 @@ const KpiSettings = () => {
       onSubmit={handleSubmit}
     >
       <p className="font-light text-gray-600 text-md md:text-xl text-center">
-        Please select kpis duration
+        Sélectionnez la durée des métriques
       </p>
       <FormControl variant="standard" className="w-full h-full">
-        <InputLabel id="demo-simple-select-standard-label">Period</InputLabel>
+        <InputLabel id="demo-simple-select-standard-label">Période</InputLabel>
         <Select
           labelId="demo-simple-select-standard-label"
           id="demo-simple-select-standard"
           label="Period"
-          value={selected} // Set the value prop to the selected state
+          value={selected}
           onChange={handleChange}
           ref={selectRef}
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Monthly</MenuItem>
-          <MenuItem value={20}>Weekly</MenuItem>
-          <MenuItem value={30}>Daily</MenuItem>
+          <MenuItem value={"year"}>Année</MenuItem>
+          <MenuItem value={"month"}>Mois</MenuItem>
+          <MenuItem value={"week"}>Semaine</MenuItem>
         </Select>
       </FormControl>
       <Box className="flex mt-4">

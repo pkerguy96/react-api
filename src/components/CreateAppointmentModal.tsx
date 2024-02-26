@@ -19,13 +19,15 @@ import { useRef, useState } from "react";
 import getGlobalById from "../hooks/getGlobalById";
 
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
-import { CACHE_KEY_PATIENTS } from "../constants";
+import { CACHE_KEY_Operation, CACHE_KEY_PATIENTS } from "../constants";
 import LoadingSpinner from "./LoadingSpinner";
 import addGlobal from "../hooks/addGlobal";
 import appointmentAPIClient from "../services/AppointmentService";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router";
+import { redirect, useNavigate } from "react-router";
+import OperationPayementStatus from "./OperationPayementStatus";
+import { PayementVerificationApiClient } from "../services/OperationService";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -41,6 +43,7 @@ interface ModalComponentProps {
   open: boolean;
   onClose: () => void;
   id: string;
+  operationid: string;
 }
 interface DataSend {
   patient_id: number; // Ensure patient_id is defined as a number
@@ -48,11 +51,31 @@ interface DataSend {
   date: string;
   note?: string;
 }
-const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
+const CreateAppointmentModal = ({
+  open,
+  onClose,
+  id,
+  operationid,
+}: ModalComponentProps) => {
+  const [selectedDateTime, setSelectedDateTime] = useState(moment());
   const { showSnackbar } = useSnackbarStore();
+  const { data: data1, isLoading: isloading1 } = getGlobalById(
+    {} as any,
+    [CACHE_KEY_Operation[0], operationid],
+    PayementVerificationApiClient,
+    undefined,
+    parseInt(operationid)
+  );
+  const { data, isLoading } = getGlobalById(
+    {} as OnlyPatientData,
+    [CACHE_KEY_PATIENTS[0], id],
+    patientAPIClient,
+    undefined,
+    parseInt(id)
+  );
   const navigate = useNavigate();
   const Addmutation = addGlobal({} as DataSend, appointmentAPIClient);
-  const [selectedDateTime, setSelectedDateTime] = useState(moment());
+
   const noteRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const dateTimePickerRef = useRef(null);
@@ -61,15 +84,19 @@ const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
     onClose();
     return null;
   }
-  const { data, isLoading } = getGlobalById(
-    {} as OnlyPatientData,
-    [CACHE_KEY_PATIENTS[0], id],
-    patientAPIClient,
-    undefined,
-    parseInt(id)
-  );
-  if (isLoading) return <LoadingSpinner />;
 
+  if (isLoading || isloading1) return <LoadingSpinner />;
+  const redirectTo = () => {
+    if (data1[0]) {
+      navigate(`/dashboard`);
+      showSnackbar(
+        "Le traitement du patient est terminé avec paiement complet.",
+        "success"
+      );
+    } else {
+      return navigate(`/PatientCheckout/${operationid}`);
+    }
+  };
   const handleDateTimeChange = (
     value: Moment | null,
     _context: PickerChangeHandlerContext<DateTimeValidationError>
@@ -158,10 +185,11 @@ const CreateAppointmentModal = ({ open, onClose, id }: ModalComponentProps) => {
           <Box className="flex justify-between flex-row mt-5 content-center">
             <Button
               variant="outlined"
-              sx={{ marginRight: "30px" }}
-              onClick={() => navigate("/dashboard")}
+              onClick={() => {
+                redirectTo();
+              }}
             >
-              Passer
+              <p className="text-sm">Fin du traitement</p>
             </Button>
             <Button onClick={onsubmit} variant="contained">
               Confirmer
