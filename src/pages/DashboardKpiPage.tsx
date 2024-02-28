@@ -20,6 +20,7 @@ import {
 } from "../constants";
 import LoadingSpinner from "../components/LoadingSpinner";
 import LinechartKPI from "../components/Kpis/LinechartKPI";
+import CashierKpi from "../components/Kpis/CashierKpi";
 
 const DashboardKpiPage = () => {
   const { data, isLoading } = getGlobal(
@@ -62,27 +63,16 @@ const DashboardKpiPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
-        <Box className="w-full items-center shadow-md p-6 lg:col-span-6 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 text-gray-950 flex flex-wrap gap-4">
-          <img src={maledoc} width="100" alt="Maledoc SVG" />
-          <div className="flex flex-col flex-1 gap-1">
-            <h1 className="text-xl font-semibold">
-              Good Evening, <span className="text-[#5019d2]">Aymen Elkor</span>
-            </h1>
-            <p className="text-base">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
-              iste cum iusto ipsam dolor illum quos doloremque tempore incidunt
-              velit!
-            </p>
-          </div>
+        <Box className="w-full  shadow-md  lg:col-span-4 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 text-gray-950 ">
+          <CashierKpi />
         </Box>
-        <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-3">
-          <TotalAppointmentsKpi className="mb-0" />
+        <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-4">
+          <TotalAppointmentsKpi />
 
           <LinechartKPI dataset={dataset} />
         </Box>
-        <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-3">
-          <CanceledAppointmentsKpi className="mb-0" />
-
+        <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-4 ">
+          <CanceledAppointmentsKpi />
           <LinechartKPI dataset={dataset1} />
         </Box>
       </div>

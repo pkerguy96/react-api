@@ -36,6 +36,27 @@ import CreateAppointmentModal from "../components/CreateAppointmentModal";
 
 const AddOrdonanceUpdated = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [drugs, setDrugs] = useState([]);
+  const [drug, setDrug] = useState({});
+  const [name, setName] = useState("");
+  const [fromOperation, setFromOperation] = useState(false);
+  const [optionsArray, setOptionsArray] = useState(null);
+  const [iserror, setIsError] = useState(false);
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarStore();
+  const Addmutation = addGlobal({} as Ordonance, ordonanceApiClient);
+  const useUpdateOrdonance = updateItem<Ordonance>(
+    {} as Ordonance,
+    ordonanceApiClient
+  );
+  const { data: patientsData, isLoading } = getGlobal(
+    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
+    [CACHE_KEY_PATIENTS[0]], // query
+    patientAPIClient, // service
+    undefined // opts
+  );
+  const { id, ordonance: ordonanceID } = useParams();
+  const navigate = useNavigate();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -44,38 +65,15 @@ const AddOrdonanceUpdated = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const queryClient = useQueryClient();
-  const { showSnackbar } = useSnackbarStore();
-
-  const Addmutation = addGlobal({} as Ordonance, ordonanceApiClient);
-  const useUpdateOrdonance = updateItem<Ordonance>(
-    {} as Ordonance,
-    ordonanceApiClient
-  );
-
-  const { data: patientsData, isLoading } = getGlobal(
-    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
-    [CACHE_KEY_PATIENTS[0]], // query
-    patientAPIClient, // service
-    undefined // opts
-  );
-  const { id, ordonance: ordonanceID } = useParams();
-  const [drugs, setDrugs] = useState([]);
-  const [drug, setDrug] = useState({});
-  const [name, setName] = useState("");
-  const [fromOperation, setFromOperation] = useState(false);
-  const [optionsArray, setOptionsArray] = useState(null);
-  const [iserror, setIsError] = useState(false);
-
-  const navigate = useNavigate();
+  const shouldShowSkipButton = () => {
+    return id;
+  };
+  const shouldShowModal = id || ordonanceID;
   const isAddMode = !id;
-  console.log(id, ordonanceID);
 
   let dataArray: Patient[] = [];
   let specifiedPatient;
-  const shouldShowSkipButton = () => {
-    return id; // Check if both id and ordonanceid are present
-  };
+
   if (
     patientsData &&
     typeof patientsData === "object" &&
@@ -90,7 +88,6 @@ const AddOrdonanceUpdated = () => {
       );
 
       if (specifiedPatient && id && !ordonanceID) {
-        console.log("only id ");
         setValue("patient", specifiedPatient);
         setFromOperation(true);
       } else if (specifiedPatient) {
@@ -142,17 +139,12 @@ const AddOrdonanceUpdated = () => {
         medicine: data.drugs,
         date: data.date,
       };
-      console.log(ordonanceID);
 
       let response;
       try {
         if (isAddMode || fromOperation) {
-          console.log("add mode");
-
           response = await createUser(formData);
         } else {
-          console.log("edit mode");
-
           await editUser(formData, parseInt(ordonanceID));
         }
         queryClient.invalidateQueries({ queryKey: ["ordonance"] });
@@ -204,14 +196,7 @@ const AddOrdonanceUpdated = () => {
       }
     );
   };
-  /*   const handleOpenModal = (index: number) => {
-    const current = drugs[index];
-    setDrug({
-      id: current.id,
-      name: current.name,
-      note: current.note || "",
-    });
-  }; */
+
   const handleNoteChange = (id, value) => {
     setDrugs((prevDrugs) =>
       prevDrugs.map((drug) =>
@@ -416,12 +401,14 @@ const AddOrdonanceUpdated = () => {
           </Box>
         </Box>
       </Box>
-      <CreateAppointmentModal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        id={id}
-        operationid={ordonanceID}
-      />
+      {shouldShowModal && (
+        <CreateAppointmentModal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          id={id}
+          operationid={ordonanceID}
+        />
+      )}
     </Paper>
   );
 };

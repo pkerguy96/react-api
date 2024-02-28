@@ -29,6 +29,7 @@ const RevenueKpi = () => {
       staleTime: 3600000, // 1 hour
     }
   );
+
   if (isLoading) return <LoadingSpinner />;
 
   const options = {
@@ -40,6 +41,7 @@ const RevenueKpi = () => {
     },
   };
 
+  console.log(Object.values(newdata[0]), Object.values(newdata[1]));
   const labels = Object.keys(newdata[0]);
 
   const data = {

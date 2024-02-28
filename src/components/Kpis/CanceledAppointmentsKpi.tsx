@@ -15,7 +15,7 @@ const CanceledAppointmentsKpi = ({ className }: { className?: string }) => {
   );
   if (isLoading) return <LoadingSpinner />;
   return (
-    <div className={`p-6 pb-2 flex flex-col flex-1 gap-1 ${className}`}>
+    <div className={`p-6  flex flex-col flex-1 gap-1 ${className}`}>
       <h1 className="text-base font-medium">Rendez-vous annulés</h1>
       <p className="text-4xl font-semibold text-pink-600">{data}</p>
     </div>

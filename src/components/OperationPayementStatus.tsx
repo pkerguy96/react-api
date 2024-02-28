@@ -1,16 +1,8 @@
-import { Close } from "@mui/icons-material";
-import {
-  Modal,
-  Box,
-  Typography,
-  IconButton,
-  TextField,
-  Button,
-  Paper,
-} from "@mui/material";
+//@ts-nocheck
+import { Box, IconButton, TextField, Button, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import updateItem from "../hooks/updateItem";
 import operationApiClient, { Operation } from "../services/OperationService";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
@@ -28,7 +20,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 const OperationPayementStatus = () => {
   const { handleSubmit, control, setValue } = useForm<FormData>();
   const { operationid } = useParams();
-  console.log(operationid);
+
   const [fetchedoperations, setFetchedOperations] = useState<any[]>([]);
   const [totalCost, setTotalCost] = useState<number>(0);
   const addMutation = updateItem<Operation>(
@@ -37,6 +29,7 @@ const OperationPayementStatus = () => {
   );
   const { showSnackbar } = useSnackbarStore();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   if (!operationid) return null;
 
   const { data, isLoading, refetch } = getGlobalById(
@@ -60,7 +53,7 @@ const OperationPayementStatus = () => {
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: any) => {
     if (data) {
       if (totalpaid + Number(data.amount_paid) > totalCost) {
         showSnackbar("Total payment exceeds total cost.");
@@ -131,11 +124,11 @@ const OperationPayementStatus = () => {
   return (
     <Paper>
       <Box className="p-4 w-full flex gap-4 flex-col">
-        <Box className="flex justify-between">
-          <p className="flex font-bold text-2xl  text-red-400">
+        <Box className="flex  flex-col md:flex-row md:justify-between">
+          <p className="flex font-bold  mx-auto  text-md md:text-2xl md:mx-0 text-red-400">
             Avertissement de paiement
           </p>
-          <p className="flex font-bold text-2xl  text-red-400">
+          <p className="flex font-bold text-sm mx-auto  md:text-2xl md:mx-0 text-red-400">
             Paiement incomplet
           </p>
         </Box>
@@ -221,7 +214,6 @@ const OperationPayementStatus = () => {
               {outstandingAmount !== 0 && (
                 <Box className="flex items-center flex-wrap gap-2">
                   <Controller
-                    //@ts-ignore
                     defaultValue=""
                     name="amount_paid"
                     control={control}
@@ -255,11 +247,10 @@ const OperationPayementStatus = () => {
           </Box>
         </Box>
 
-        <Box className="flex justify-between flex-row mt-5 content-center">
-          <Button variant="outlined">
-            <p className="text-sm">Fin du traitement</p>
+        <Box className="flex justify-between flex-row mt-5 content-center ml-auto">
+          <Button variant="contained" onClick={() => navigate("/dashboard")}>
+            Terminer
           </Button>
-          <Button variant="contained">Confirmer</Button>
         </Box>
       </Box>
     </Paper>

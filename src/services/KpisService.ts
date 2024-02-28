@@ -34,6 +34,9 @@ export interface NewAppointments {
 export interface CanceledAppointments {
   data: number[];
 }
+export interface CashierNumber {
+  data: number;
+}
 export const AppointmentsKpiClient = new APIClient<appointmentsCount>(
   "/getAppointments"
 );
@@ -43,6 +46,9 @@ export const MonthlyAppointmentsKpiClient = new APIClient<NewAppointments>(
   "/getMonthlyAppointments"
 );
 export const TotalRevenueKpiClient = new APIClient<Revenue>("/getTotalRevenue");
+export const CashierNumberKpiClient = new APIClient<CashierNumber>(
+  "/OnlyCashierNumber"
+);
 export const AppointmentKpiClient = new APIClient<AppointmentKpiData>(
   "/appointmentKpipeak"
 );
@@ -52,6 +58,7 @@ export const TotalPatientKpiClient = new APIClient<TotalPatients>(
 export const PatientsAgeGroupKpiClient = new APIClient<AgeData>(
   "/calculateAgePercentage"
 );
+export const TotalcachierAmount = new APIClient<any>("/retrieveFromCashier");
 export const CanceledAppointmentsKpiClient =
   new APIClient<CanceledappointmentsCount>("/getCanceledAppointments");
 

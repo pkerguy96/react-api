@@ -59,20 +59,24 @@ const CreateAppointmentModal = ({
 }: ModalComponentProps) => {
   const [selectedDateTime, setSelectedDateTime] = useState(moment());
   const { showSnackbar } = useSnackbarStore();
-  const { data: data1, isLoading: isloading1 } = getGlobalById(
-    {} as any,
-    [CACHE_KEY_Operation[0], operationid],
-    PayementVerificationApiClient,
-    undefined,
-    parseInt(operationid)
-  );
-  const { data, isLoading } = getGlobalById(
-    {} as OnlyPatientData,
-    [CACHE_KEY_PATIENTS[0], id],
-    patientAPIClient,
-    undefined,
-    parseInt(id)
-  );
+  const { data: data1, isLoading: isloading1 } = operationid
+    ? getGlobalById(
+        {} as any,
+        [CACHE_KEY_Operation[0], operationid],
+        PayementVerificationApiClient,
+        undefined,
+        parseInt(operationid)
+      )
+    : { data: {}, isLoading: false };
+  const { data, isLoading } = id
+    ? getGlobalById(
+        {} as OnlyPatientData,
+        [CACHE_KEY_PATIENTS[0], id],
+        patientAPIClient,
+        undefined,
+        parseInt(id)
+      )
+    : { data: {}, isLoading: false };
   const navigate = useNavigate();
   const Addmutation = addGlobal({} as DataSend, appointmentAPIClient);
 
@@ -103,10 +107,6 @@ const CreateAppointmentModal = ({
   ) => {
     if (value !== null) {
       setSelectedDateTime(value);
-      console.log(
-        "Selected date and time:",
-        value.format("YYYY-MM-DDTHH:mm:ss")
-      );
     } else {
       return;
     }
