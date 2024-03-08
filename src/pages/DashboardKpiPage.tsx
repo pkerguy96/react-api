@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import maledoc from "/maldoc.svg";
+
 import RevenueKpi from "../components/Kpis/RevenueKpi";
 import TotalAppointmentsKpi from "../components/Kpis/TotalAppointmentsKpi";
 import CanceledAppointmentsKpi from "../components/Kpis/CanceledAppointmentsKpi";
@@ -22,7 +22,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import LinechartKPI from "../components/Kpis/LinechartKPI";
 import CashierKpi from "../components/Kpis/CashierKpi";
 
-const DashboardKpiPage = () => {
+const DashboardKpiPage = ({ onNext }: any) => {
   const { data, isLoading } = getGlobal(
     {} as NewAppointments,
     CACHE_KEY_MonthlyAppointments,
@@ -37,13 +37,13 @@ const DashboardKpiPage = () => {
   );
   if (isLoading || isLoading1) return <LoadingSpinner />;
   Object;
-  const labels = Object.keys(data);
+  const labels = data ? Object.keys(data) : [];
   const dataset = {
     labels,
     datasets: [
       {
         label: "Rendez-vous",
-        data: Object.values(data),
+        data: data ? Object.values(data1) : [],
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
@@ -54,7 +54,7 @@ const DashboardKpiPage = () => {
     datasets: [
       {
         label: "Rendez-vous annulés",
-        data: Object.values(data1),
+        data: data ? Object.values(data1) : [],
         borderColor: "#db2777",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
@@ -63,28 +63,28 @@ const DashboardKpiPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
-        <Box className="w-full  shadow-md  lg:col-span-4 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 text-gray-950 ">
+        <Box className="!w-full  shadow-md  lg:col-span-4 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 text-gray-950 ">
           <CashierKpi />
         </Box>
-        <Box className="w-full shadow-md text-white bg-[#6b37e7] lg:col-span-4">
+        <Box className="!w-full shadow-md text-white bg-[#6b37e7] lg:col-span-4">
           <TotalAppointmentsKpi />
 
           <LinechartKPI dataset={dataset} />
         </Box>
-        <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-4 ">
+        <Box className="!w-full shadow-md bg-[#eff0f1] text-gray-950 lg:col-span-4 ">
           <CanceledAppointmentsKpi />
           <LinechartKPI dataset={dataset1} />
         </Box>
       </div>
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="flex flex-col gap-6 lg:col-span-9">
-          <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 flex flex-col">
+          <Box className="!w-full shadow-md bg-[#eff0f1] text-gray-950 flex flex-col">
             <h1 className="text-xl font-semibold p-6">Graphique des revenus</h1>
             <RevenueKpi />
           </Box>
         </div>
         <div className="flex flex-col gap-6 lg:col-span-3">
-          <Box className="w-full shadow-md bg-[#eff0f1] text-gray-950 flex flex-col">
+          <Box className="!w-full shadow-md bg-[#eff0f1] text-gray-950 flex flex-col">
             <h1 className="text-xl font-semibold p-6">
               Groupe d’âge des patients
             </h1>

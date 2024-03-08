@@ -27,7 +27,7 @@ const SettingsComponent = () => {
 
   return (
     <Paper className="p-4">
-      <Box className="w-full h-full flex flex-col md:grid md:grid-cols-5 gap-4">
+      <Box className="w-full flex flex-col md:grid md:grid-cols-5 gap-4">
         <Box className="col-span-2 flex flex-col gap-5">
           <p className="font-semibold text-2xl text-center md:text-start">
             Settings

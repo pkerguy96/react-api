@@ -37,16 +37,8 @@ export const options = {
     },
   },
 };
-interface Dataset {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    borderColor: string;
-    backgroundColor: string;
-  }[];
-}
-const LinechartKPI: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
+
+const LinechartKPI: React.FC<{ dataset: any }> = ({ dataset }) => {
   return <Line options={options} data={dataset} />;
 };
 

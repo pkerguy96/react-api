@@ -50,6 +50,7 @@ const ReglementTable = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+  console.log("data", data);
 
   const formattedData = data?.map((Paymentinfo: CustomPaymentInfo) => {
     return {
@@ -61,11 +62,15 @@ const ReglementTable = () => {
       ispaid: Boolean(Paymentinfo.isPaid) ? "true" : "false",
     };
   });
+  console.log("formated data", formattedData);
 
   const columns = [
     {
       name: "id",
       label: "#",
+      options: {
+        display: "none",
+      },
     },
     {
       name: "ispaid",
@@ -117,9 +122,8 @@ const ReglementTable = () => {
           tableMeta: { rowData: string[]; currentTableData: string[] },
           _updateValue: any
         ) => {
-          console.log(tableMeta.rowData[1]);
-
           const color = tableMeta.rowData[1] === "true" ? "success" : "error";
+          console.log("color", color);
 
           return (
             <Chip
@@ -140,7 +144,7 @@ const ReglementTable = () => {
         customBodyRender: () => (
           <button
             className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-            title="Modifier"
+            title="Supprimer"
           >
             <DeleteOutlineIcon
               color="error"

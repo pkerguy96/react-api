@@ -29,6 +29,8 @@ import ChangePassword from "./pages/ChangePassword";
 import SettingsPage from "./pages/SettingsPage";
 import KpiSettings from "./components/Settings/KpiSettings";
 import OperationPayementStatus from "./components/OperationPayementStatus";
+import OperationParentPage from "./pages/OperationTimeline/OperationParentPage";
+import DebtPage from "./pages/DebtPage";
 
 const router = createBrowserRouter([
   {
@@ -67,7 +69,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "Operate/:id/:age?",
-            element: <PatientOperation />,
+            element: <OperationParentPage />,
           },
           {
             path: "Details/:id",
@@ -81,7 +83,7 @@ const router = createBrowserRouter([
         element: <OrdonnancePage />,
       },
       {
-        path: "AddOrdonance/:id?/:ordonance?",
+        path: "AddOrdonance/:id?/:ordonanceID?/:operation_id?",
         element: <AddOrdonance />,
       },
       /*   {
@@ -132,6 +134,11 @@ const router = createBrowserRouter([
         path: "Addfile",
         element: <AddFile />,
       },
+      {
+        path: "Creance",
+        element: <DebtPage />,
+      },
+
       {
         path: "Settings",
         element: <SettingsPage />,

@@ -41,20 +41,19 @@ const RevenueKpi = () => {
     },
   };
 
-  console.log(Object.values(newdata[0]), Object.values(newdata[1]));
-  const labels = Object.keys(newdata[0]);
+  const labels = newdata ? Object.keys(newdata[0]) : [];
 
   const data = {
     labels,
     datasets: [
       {
         label: "Le mois dernier",
-        data: Object.values(newdata[0]),
+        data: newdata ? Object.values(newdata[0]) : [],
         backgroundColor: "#f2edfd",
       },
       {
         label: "Le mois en cours",
-        data: Object.values(newdata[1]),
+        data: newdata ? Object.values(newdata[1]) : [],
         backgroundColor: "#6b37e7",
       },
     ],

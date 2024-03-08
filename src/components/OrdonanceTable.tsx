@@ -88,7 +88,7 @@ const OrdonanceTable = () => {
             </button>
             <button
               className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-              title="Modifier"
+              title="Supprimer"
             >
               <DeleteOutlineIcon
                 color="error"
@@ -128,7 +128,9 @@ const OrdonanceTable = () => {
         e.target.querySelector(".btn-ordonance-edit") ||
         e.target.classList.contains("btn-ordonance-edit")
       ) {
-        navigate(`/AddOrdonance/${s[1]}/${s[0]}`);
+        console.log(s);
+
+        navigate(`/AddOrdonance?ordonanceID=${s[0]}&id=${s[1]}`);
       } else if (
         e.target.querySelector(".btn-ordonance-delete") ||
         e.target.classList.contains("btn-ordonance-delete")

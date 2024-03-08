@@ -442,7 +442,7 @@ const AddNurseForm = () => {
             <Button
               type="submit"
               variant="contained"
-              className="w-full md:w-max !px-10 !py-3 rounded-lg !ms-auto"
+              className="w-full md:w-max !px-10 !py-3 rounded-lg !mx-auto"
             >
               Enregistrer
             </Button>

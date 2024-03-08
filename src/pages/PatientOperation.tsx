@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense, lazy } from "react";
 import { useNavigate, useParams } from "react-router";
 import "../styles.css";
 import { Patient } from "./AddPatientForm";
@@ -38,6 +38,7 @@ import { Link } from "react-router-dom";
 import addGlobal from "../hooks/addGlobal";
 import operationApiClient, { Operation } from "../services/OperationService";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import useGlobalStore from "../zustand/useGlobalStore";
 
 const getColor = (colors) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -45,7 +46,9 @@ const getColor = (colors) => {
   return "#" + randomColor;
 };
 
-const PatientOperation = () => {
+const PatientOperation = ({ onNext }) => {
+  const setIds = useGlobalStore((state) => state.setIds);
+  const resetIds = useGlobalStore((state) => state.resetIds);
   const addMutation = addGlobal({} as Operation, operationApiClient);
   const { data, isLoading } = getGlobal(
     {} as OnlyPatientData,
@@ -53,7 +56,7 @@ const PatientOperation = () => {
     patientAPIClient,
     undefined
   );
-
+  const [iscomponantLoaded, setIscomponantLoaded] = useState(false);
   const { id, age } = useParams<{ id: string; age: string }>();
   const { showSnackbar } = useSnackbarStore();
   const navigate = useNavigate();
@@ -93,7 +96,7 @@ const PatientOperation = () => {
         return accumulator + currentValue.price;
       }, 0);
       if (totalPrice <= 0) {
-        return setGlobalError("le prix doit etre un nombre positive.");
+        return showSnackbar("le prix doit etre un nombre positive.", "error");
       }
       if (totalPrice < value) {
         return "le montant payé ne doit pas dépasser le prix";
@@ -102,7 +105,9 @@ const PatientOperation = () => {
       return true;
     };
   }, [globalData]);
-
+  useEffect(() => {
+    resetIds();
+  }, []);
   useEffect(() => {
     if (data && id && age) {
       const foundPatient = (data as Patient[]).find(
@@ -146,12 +151,17 @@ const PatientOperation = () => {
     };
 
     if (!validData.operations || validData.operations.length === 0) {
-      setGlobalError("Veuillez ajouter au moins une opération.");
+      showSnackbar("Veuillez ajouter au moins une opération.", "error");
     } else {
       addMutation.mutateAsync(validData, {
         onSuccess: (data) => {
           showSnackbar("Opération créée avec succès", "success");
-          navigate(`/AddOrdonance/${id}/${data?.operation_id}`);
+          onNext();
+          setIds(specificPatient?.id, undefined, data?.operation_id);
+
+          /*    navigate(
+            `/AddOrdonance/?id=${id}&operation_id=${data?.operation_id}`
+          ); */
         },
         onError: (error: any) => {
           const message =
@@ -336,6 +346,11 @@ const PatientOperation = () => {
                         getColor(globalData.map((e) => e.color))
                       );
                       setValue("operation", ""); // Update the value in React Hook Form state
+                    } else {
+                      showSnackbar(
+                        "Veuillez sélectionner des dents avant d'ajouter une opération",
+                        "error"
+                      );
                     }
                   }}
                 >
@@ -510,12 +525,6 @@ const PatientOperation = () => {
           </Box>
         </Box>
       </FormControl>
-
-      {globalerror && (
-        <Alert className="mt-2 flex justify-center" severity="error">
-          {globalerror}
-        </Alert>
-      )}
     </Paper>
   );
 };

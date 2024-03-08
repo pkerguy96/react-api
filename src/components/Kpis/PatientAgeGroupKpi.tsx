@@ -33,7 +33,10 @@ const PatientAgeGroupKpi = () => {
     datasets: [
       {
         label: "Nombre des patients",
-        data: age?.map((item: Agegroup) => item.count),
+        data:
+          age.length > 0
+            ? age?.map((item: Agegroup) => item.count)
+            : [0, 0, 0, 0, 0],
         backgroundColor: [
           "#170087",
           "#005dcd",

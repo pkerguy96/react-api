@@ -24,6 +24,7 @@ const AdminProfile = () => {
   };
   const HandleLogout = () => {
     setIsModalOpen(true);
+
     handleClose();
   };
 

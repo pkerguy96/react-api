@@ -16,7 +16,7 @@ import ContentPasteSearchOutlinedIcon from "@mui/icons-material/ContentPasteSear
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
-
+import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
 export const mainListItems = (
   <React.Fragment>
     <Link to="/dashboard" className="no-underline">
@@ -43,12 +43,21 @@ export const mainListItems = (
         <ListItemText primary="Patients" />
       </ListItemButton>
     </Link>
+
     <Link to="/Ordonnance" className="no-underline">
       <ListItemButton>
         <ListItemIcon>
           <MedicationLiquidOutlinedIcon color="primary" />
         </ListItemIcon>
         <ListItemText primary="Ordonnance" />
+      </ListItemButton>
+    </Link>
+    <Link to="/Creance" className="no-underline">
+      <ListItemButton>
+        <ListItemIcon>
+          <AccountBalanceOutlinedIcon color="primary" />
+        </ListItemIcon>
+        <ListItemText primary="Créance" />
       </ListItemButton>
     </Link>
     <Link to="/Reglement" className="no-underline">

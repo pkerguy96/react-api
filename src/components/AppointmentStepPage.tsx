@@ -1,73 +1,39 @@
-import { Close } from "@mui/icons-material";
-import {
-  Modal,
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Paper, Box, Typography, TextField, Button } from "@mui/material";
 import {
   LocalizationProvider,
   DateTimePicker,
   DateTimeValidationError,
 } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { PickerChangeHandlerContext } from "@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types";
 import moment, { Moment } from "moment";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import { CACHE_KEY_PATIENTS } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
-
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
-import { CACHE_KEY_Operation, CACHE_KEY_PATIENTS } from "../constants";
-import LoadingSpinner from "./LoadingSpinner";
+import { useNavigate } from "react-router";
 import addGlobal from "../hooks/addGlobal";
 import appointmentAPIClient from "../services/AppointmentService";
+import { PickerChangeHandlerContext } from "@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types";
+import LoadingSpinner from "./LoadingSpinner";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
-import { redirect, useNavigate } from "react-router";
-import OperationPayementStatus from "./OperationPayementStatus";
-import { PayementVerificationApiClient } from "../services/OperationService";
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-
-  bgcolor: "background.paper",
-  border: "1px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-interface ModalComponentProps {
-  open: boolean;
-  onClose: () => void;
-  id: string;
-  operationid: string;
-}
+import useGlobalStore from "../zustand/useGlobalStore";
 interface DataSend {
   patient_id: number; // Ensure patient_id is defined as a number
   title?: string; // Optional string property
   date: string;
   note?: string;
 }
-const CreateAppointmentModal = ({
-  open,
-  onClose,
-  id,
-  operationid,
-}: ModalComponentProps) => {
+const AppointmentStepPage = ({ onNext }: any) => {
   const [selectedDateTime, setSelectedDateTime] = useState(moment());
+  const navigate = useNavigate();
   const { showSnackbar } = useSnackbarStore();
-  const { data: data1, isLoading: isloading1 } = operationid
-    ? getGlobalById(
-        {} as any,
-        [CACHE_KEY_Operation[0], operationid],
-        PayementVerificationApiClient,
-        undefined,
-        parseInt(operationid)
-      )
-    : { data: {}, isLoading: false };
+  const { id, operationId, ordonanceId } = useGlobalStore();
+  const noteRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const dateTimePickerRef = useRef(null);
+  console.log(id, operationId, ordonanceId);
+
   const { data, isLoading } = id
     ? getGlobalById(
         {} as OnlyPatientData,
@@ -77,30 +43,9 @@ const CreateAppointmentModal = ({
         parseInt(id)
       )
     : { data: {}, isLoading: false };
-  const navigate = useNavigate();
   const Addmutation = addGlobal({} as DataSend, appointmentAPIClient);
+  if (isLoading) return <LoadingSpinner />;
 
-  const noteRef = useRef<HTMLInputElement>(null);
-  const titleRef = useRef<HTMLInputElement>(null);
-  const dateTimePickerRef = useRef(null);
-
-  if (!id) {
-    onClose();
-    return null;
-  }
-
-  if (isLoading || isloading1) return <LoadingSpinner />;
-  const redirectTo = () => {
-    if (data1[0]) {
-      navigate(`/dashboard`);
-      showSnackbar(
-        "Le traitement du patient est terminé avec paiement complet.",
-        "success"
-      );
-    } else {
-      return navigate(`/PatientCheckout/${operationid}`);
-    }
-  };
   const handleDateTimeChange = (
     value: Moment | null,
     _context: PickerChangeHandlerContext<DateTimeValidationError>
@@ -132,7 +77,7 @@ const CreateAppointmentModal = ({
     Addmutation.mutateAsync(formData, {
       onSuccess: () => {
         showSnackbar("Le rendez-vous a été créé", "success");
-        navigate("/dashboard");
+        onNext();
       },
       onError: (error: any) => {
         const message =
@@ -145,15 +90,12 @@ const CreateAppointmentModal = ({
   };
   return (
     <div>
-      <Modal open={open} onClose={onClose}>
-        <Box sx={style} className="w-[300px] md:w-[400px] flex gap-4 flex-col">
+      <Paper className="!p-6 w-full flex flex-col gap-4">
+        <Box className="flex gap-4 flex-col">
           <Box className="flex justify-between">
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Ajouter un rendez-vous ?
             </Typography>
-            <IconButton onClick={onClose}>
-              <Close />
-            </IconButton>
           </Box>
 
           <TextField
@@ -186,19 +128,19 @@ const CreateAppointmentModal = ({
             <Button
               variant="outlined"
               onClick={() => {
-                redirectTo();
+                onNext();
               }}
             >
-              <p className="text-sm">Fin du traitement</p>
+              <p className="text-sm">Skip</p>
             </Button>
             <Button onClick={onsubmit} variant="contained">
               Confirmer
             </Button>
           </Box>
         </Box>
-      </Modal>
+      </Paper>
     </div>
   );
 };
 
-export default CreateAppointmentModal;
+export default AppointmentStepPage;

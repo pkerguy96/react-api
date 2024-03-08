@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 import { items } from "../services/Medicines.json";
 import AddIcon from "@mui/icons-material/Add";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Controller, useForm } from "react-hook-form";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Patient } from "./AddPatientForm";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { AxiosError } from "axios";
 
 import Table from "@mui/material/Table";
@@ -33,9 +33,14 @@ import updateItem from "../hooks/updateItem";
 import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
 import addGlobal from "../hooks/addGlobal";
 import CreateAppointmentModal from "../components/CreateAppointmentModal";
+import useGlobalStore from "../zustand/useGlobalStore";
 
-const AddOrdonanceUpdated = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const AddOrdonanceUpdated = ({ onNext }: any) => {
+  const {
+    id: zuId,
+    ordonanceId: zuOrdonanceid,
+    operationId: zuOperationid,
+  } = useGlobalStore();
   const [drugs, setDrugs] = useState([]);
   const [drug, setDrug] = useState({});
   const [name, setName] = useState("");
@@ -55,21 +60,27 @@ const AddOrdonanceUpdated = () => {
     patientAPIClient, // service
     undefined // opts
   );
-  const { id, ordonance: ordonanceID } = useParams();
+  const { data: data1, isLoading: isloading1 } = zuOrdonanceid
+    ? getGlobalById(
+        {} as any,
+        [CACHE_KEY_Operation[0], zuOrdonanceid],
+        PayementVerificationApiClient,
+        undefined,
+        parseInt(zuOrdonanceid)
+      )
+    : { data: {}, isLoading: false };
+
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+
+  // Accessing query parameters
+  const id = queryParams.get("id");
+  const ordonanceID = queryParams.get("ordonanceID");
+  const operation_id = queryParams.get("operation_id");
+
   const navigate = useNavigate();
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-  const shouldShowSkipButton = () => {
-    return id;
-  };
-  const shouldShowModal = id || ordonanceID;
-  const isAddMode = !id;
+  const isAddMode = !id && !zuId;
 
   let dataArray: Patient[] = [];
   let specifiedPatient;
@@ -83,11 +94,11 @@ const AddOrdonanceUpdated = () => {
   }
   useEffect(() => {
     if (!isAddMode) {
-      specifiedPatient = patientsData?.find(
-        (patients) => patients.id === parseInt(id)
-      );
+      specifiedPatient = id
+        ? patientsData?.find((patient) => patient.id === parseInt(id))
+        : patientsData?.find((patient) => patient.id === parseInt(zuId));
 
-      if (specifiedPatient && id && !ordonanceID) {
+      if (specifiedPatient && (zuId || id) && !ordonanceID) {
         setValue("patient", specifiedPatient);
         setFromOperation(true);
       } else if (specifiedPatient) {
@@ -112,7 +123,7 @@ const AddOrdonanceUpdated = () => {
         }
       }
     }
-  }, [patientsData, id]);
+  }, [patientsData, id, zuId]);
 
   const {
     handleSubmit,
@@ -124,10 +135,20 @@ const AddOrdonanceUpdated = () => {
       date: new Date().toISOString().split("T")[0],
     },
   });
-  if (isLoading) {
+  if (isLoading || isloading1) {
     return <LoadingSpinner />;
   }
-
+  const redirectTo = () => {
+    if (data1[0]) {
+      navigate(`/dashboard`);
+      showSnackbar(
+        "Le traitement du patient est terminé avec paiement complet.",
+        "success"
+      );
+    } else {
+      return navigate(`/PatientCheckout/${zuOperationid}`);
+    }
+  };
   const onSubmit = async (data: any) => {
     data.drugs = drugs;
 
@@ -350,7 +371,7 @@ const AddOrdonanceUpdated = () => {
               <Table sx={{ minWidth: 480 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Medicine name</TableCell>
+                    <TableCell>Nom du médicament</TableCell>
                     <TableCell>Note</TableCell>
                   </TableRow>
                 </TableHead>
@@ -380,17 +401,16 @@ const AddOrdonanceUpdated = () => {
             </TableContainer>
           </Box>
           <Box className="flex flex-col sm:flex-row gap-4 justify-between mt-4">
-            {shouldShowSkipButton() && (
+            {fromOperation && (
               <Button
-                type="button"
-                variant="contained"
-                className="w-full md:w-max !px-10 !py-3 !bg-gray-200 !text-black !font-semibold"
-                onClick={handleOpenModal}
+                variant="outlined"
+                onClick={() => {
+                  redirectTo();
+                }}
               >
-                Passer
+                <p className="text-sm">Fin du traitement</p>
               </Button>
             )}
-
             <Button
               type="submit"
               variant="contained"
@@ -401,14 +421,6 @@ const AddOrdonanceUpdated = () => {
           </Box>
         </Box>
       </Box>
-      {shouldShowModal && (
-        <CreateAppointmentModal
-          open={isModalOpen}
-          onClose={handleCloseModal}
-          id={id}
-          operationid={ordonanceID}
-        />
-      )}
     </Paper>
   );
 };
