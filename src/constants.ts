@@ -15,6 +15,7 @@ export const CACHE_KEY_Cachier = ["Cachier"];
 export const CACHE_KEY_CachierNumber = ["CachierNumber"];
 export const CACHE_KEY_totalPatients = ["totalPatients"];
 export const CACHE_KEY_AppointmentsKpi = ["AppointmentsKpi"];
+
 export const CACHE_KEY_MonthlyAppointments = ["MonthlyAppointments"];
 export const CACHE_KEY_CanceledMonthlyAppointments = [
   "CanceledMonthlyAppointments",

@@ -37,6 +37,19 @@ export interface CanceledAppointments {
 export interface CashierNumber {
   data: number;
 }
+export interface OperationDataDebt {
+  data?: any;
+  name: string;
+  date: string;
+  total_cost: number;
+  operation_type: string[];
+  total_amount_paid: number;
+  amount_due: number;
+}
+
+export interface DebtApiResponse {
+  data: OperationDataDebt[];
+}
 export const AppointmentsKpiClient = new APIClient<appointmentsCount>(
   "/getAppointments"
 );
@@ -46,6 +59,9 @@ export const MonthlyAppointmentsKpiClient = new APIClient<NewAppointments>(
   "/getMonthlyAppointments"
 );
 export const TotalRevenueKpiClient = new APIClient<Revenue>("/getTotalRevenue");
+export const PatientsDebtKpiClient = new APIClient<OperationDataDebt>(
+  "/PatientsDebt"
+);
 export const CashierNumberKpiClient = new APIClient<CashierNumber>(
   "/OnlyCashierNumber"
 );

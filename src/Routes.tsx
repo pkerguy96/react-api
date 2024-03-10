@@ -31,6 +31,7 @@ import KpiSettings from "./components/Settings/KpiSettings";
 import OperationPayementStatus from "./components/OperationPayementStatus";
 import OperationParentPage from "./pages/OperationTimeline/OperationParentPage";
 import DebtPage from "./pages/DebtPage";
+import OperationsListSettings from "./components/Settings/OperationsListSettings";
 
 const router = createBrowserRouter([
   {
@@ -146,6 +147,10 @@ const router = createBrowserRouter([
           {
             path: "Kpis",
             element: <KpiSettings />,
+          },
+          {
+            path: "Operations",
+            element: <OperationsListSettings />,
           },
         ],
       },

@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import {
@@ -10,22 +9,58 @@ import {
   TextField,
 } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import DebtTableComponant from "../components/DebtTableComponant";
+import addGlobal from "../hooks/addGlobal";
+import {
+  OperationDataDebt,
+  PatientsDebtKpiClient,
+} from "../services/KpisService";
+interface SentDebtData {
+  date: string;
+  date2: string;
+}
 const DebtPage = () => {
+  const [data, setData] = useState<OperationDataDebt[]>([]);
+  console.log("data", data);
+
+  const addMutation = addGlobal(
+    {} as SentDebtData,
+    PatientsDebtKpiClient,
+    undefined
+  );
   const {
     handleSubmit,
     control,
     getValues,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: any) => {
+    setData([]);
+
+    await addMutation.mutateAsync(
+      { date: data.date, date2: data.date2 },
+      {
+        onSuccess: (response: any) => {
+          console.log(data);
+          const transformedData = response?.data?.map((item: any) => ({
+            name: item.name,
+            date: item.date,
+            operation_type: item.operation_type.join(", "),
+            total_cost: `${item.total_cost} MAD`,
+            total_amount_paid: `${item.total_amount_paid} MAD`,
+            amount_due: `${item.amount_due} MAD`,
+          }));
+          setData(transformedData);
+        },
+      }
+    );
   };
 
   return (
     <Paper className="p-4">
       <Box
         component="form"
-        className="w-full flex flex-col gap-2"
+        className="w-full flex flex-col gap-4"
         autoComplete="off"
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -38,8 +73,8 @@ const DebtPage = () => {
           className="gap-2 mb-4"
           variant="middle"
         />
-        <Box className="w-full flex  flex-col md:flex-row gap-4 items-center">
-          <Box className="flex flex-row items-center gap-4">
+        <Box className="w-full flex  flex-col md:flex-row gap-4 md:items-center">
+          <Box className="flex  md:flex-row items-center gap-4">
             <label htmlFor="date">Start date:</label>
             <FormControl className="w-full md:flex-1">
               <Controller
@@ -100,6 +135,7 @@ const DebtPage = () => {
             </Button>
           </Box>
         </Box>
+        <DebtTableComponant data={data} />
       </Box>
     </Paper>
   );

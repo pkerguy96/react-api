@@ -21,7 +21,7 @@ const SettingsComponent = () => {
 
   const items = [
     { name: "Paramètres des métriques", url: "/Settings/Kpis" },
-    { name: "Paramètres d'ordonnances", url: "" },
+    { name: "Paramètres d'ordonnances", url: "/Settings/Operations" },
     { name: "Paramètres des rôles", url: "/Settings" },
   ];
 
