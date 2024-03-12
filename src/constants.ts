@@ -12,6 +12,7 @@ export const CACHE_KEY_RevenueKpi = ["RevenueKpi"];
 export const CACHE_KEY_CanceledApppointments = ["CanceledApppointments"];
 export const CACHE_KEY_Agegroup = ["PatientsAgeGroup"];
 export const CACHE_KEY_Cachier = ["Cachier"];
+export const CACHE_KEY_OperationPref = ["OperationPref"];
 export const CACHE_KEY_CachierNumber = ["CachierNumber"];
 export const CACHE_KEY_totalPatients = ["totalPatients"];
 export const CACHE_KEY_AppointmentsKpi = ["AppointmentsKpi"];

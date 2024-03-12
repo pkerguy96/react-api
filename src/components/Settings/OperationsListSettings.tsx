@@ -10,15 +10,38 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { AddoperationPreference } from "../../hooks/AddoperationPreference";
+import {
+  OperationPreference,
+  OperationsPrefApiClient,
+} from "../../services/SettingsService";
+import getGlobal from "../../hooks/getGlobal";
+import { CACHE_KEY_OperationPref } from "../../constants";
 const OperationsListSettings = () => {
-  const [operations, Setoperations] = useState([]);
-  const { control, handleSubmit } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
+  const { data } = getGlobal(
+    {} as OperationPreference,
+    CACHE_KEY_OperationPref,
+    OperationsPrefApiClient,
+    undefined
+  );
+  const { control, handleSubmit, reset } = useForm<OperationPreference>();
+  const addOperationMutation = AddoperationPreference(() => {
+    reset({
+      name: "",
+      price: 0.0,
+      code: "",
+    });
+  });
+  const onSubmit = async (data: OperationPreference) => {
+    const zbi = await addOperationMutation.mutateAsync({
+      name: data.name,
+      price: data.price,
+      code: data.code,
+    });
+    console.log(zbi);
   };
   return (
     <Box
@@ -39,10 +62,11 @@ const OperationsListSettings = () => {
           </label>
           <FormControl className="w-full md:flex-1">
             <Controller
-              name="operation"
+              defaultValue=""
+              name="name"
               control={control}
               render={({ field }) => (
-                <TextField {...field} id="operation" label="operation" />
+                <TextField {...field} id="name" label="name" />
               )}
             />
           </FormControl>
@@ -53,10 +77,12 @@ const OperationsListSettings = () => {
           </label>
           <FormControl className="w-full md:flex-1">
             <Controller
+              //@ts-ignore
+              defaultValue={0.0}
               name="price"
               control={control}
               render={({ field }) => (
-                <TextField {...field} id="price" label="price" />
+                <TextField {...field} id="price" type="number" label="price" />
               )}
             />
           </FormControl>
@@ -68,6 +94,7 @@ const OperationsListSettings = () => {
           <FormControl className="w-full md:flex-1">
             <Controller
               name="code"
+              defaultValue=""
               control={control}
               render={({ field }) => (
                 <TextField {...field} id="code" label="code" />
@@ -102,20 +129,22 @@ const OperationsListSettings = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow key={""}>
-              <TableCell>Calories</TableCell>
-              <TableCell>Fat&nbsp;(g)</TableCell>
-              <TableCell>Fat&nbsp;(g)</TableCell>
-              <TableCell className="w-20">
-                <Button
-                  className="w-max mx-auto"
-                  variant="outlined"
-                  color="error"
-                >
-                  <DeleteOutlineIcon />
-                </Button>
-              </TableCell>
-            </TableRow>
+            {data?.map((operation: OperationPreference, index: number) => (
+              <TableRow key={index}>
+                <TableCell>{operation.name}</TableCell>
+                <TableCell>{operation.code}</TableCell>
+                <TableCell>{operation.price}</TableCell>
+                <TableCell className="w-20">
+                  <Button
+                    className="w-max mx-auto"
+                    variant="outlined"
+                    color="error"
+                  >
+                    <DeleteOutlineIcon />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
