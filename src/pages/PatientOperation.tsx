@@ -39,6 +39,7 @@ import addGlobal from "../hooks/addGlobal";
 import operationApiClient, { Operation } from "../services/OperationService";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import useGlobalStore from "../zustand/useGlobalStore";
+import { useGlobalOperationPreference } from "../hooks/getOperationPrefs";
 
 const getColor = (colors) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -56,6 +57,8 @@ const PatientOperation = ({ onNext }) => {
     patientAPIClient,
     undefined
   );
+  const { data: OperationList, isLoading: isloading2 } =
+    useGlobalOperationPreference();
   const [iscomponantLoaded, setIscomponantLoaded] = useState(false);
   const { id, age } = useParams<{ id: string; age: string }>();
   const { showSnackbar } = useSnackbarStore();
@@ -74,12 +77,18 @@ const PatientOperation = ({ onNext }) => {
 
   const getItemName = useMemo(() => {
     return (value) => {
-      const item = listOperationsArray.find((item) => item.value === value);
+      const item = OperationList.find((item) => item.code === value);
 
-      return item ? item.label : "Unknown Item";
+      return item ? item.name : "Unknown Item";
     };
-  }, [listOperationsArray]);
+  }, [OperationList]);
+  const getItemPrice = useMemo(() => {
+    return (value) => {
+      const item = OperationList.find((item) => item.code === value);
 
+      return item ? item.price : "Unknown price";
+    };
+  }, [OperationList]);
   const teethColor = useMemo(() => {
     return (key) => {
       var color = "transparent";
@@ -158,10 +167,6 @@ const PatientOperation = ({ onNext }) => {
           showSnackbar("Opération créée avec succès", "success");
           onNext();
           setIds(specificPatient?.id, undefined, data?.operation_id);
-
-          /*    navigate(
-            `/AddOrdonance/?id=${id}&operation_id=${data?.operation_id}`
-          ); */
         },
         onError: (error: any) => {
           const message =
@@ -307,11 +312,12 @@ const PatientOperation = ({ onNext }) => {
                           id="select-type-helper"
                           label="Type"
                         >
-                          {listOperationsArray.map((item) => (
-                            <MenuItem key={item.value} value={item.value}>
-                              {item.label}
-                            </MenuItem>
-                          ))}
+                          {!isloading2 &&
+                            OperationList.map((item) => (
+                              <MenuItem key={item.id} value={item.code}>
+                                {item.name}
+                              </MenuItem>
+                            ))}
                         </Select>
                         <FormHelperText error={!!fieldState.error}>
                           {fieldState.error?.message}
@@ -339,6 +345,7 @@ const PatientOperation = ({ onNext }) => {
                           color: globalCurrentColor,
                           teeth: globalTeeth,
                           operation: selectedOperation,
+                          price: getItemPrice(selectedOperation),
                         },
                       ]);
                       setGlobalTeeth([]);
@@ -390,7 +397,6 @@ const PatientOperation = ({ onNext }) => {
                             name={`operations[${item.id}]`}
                             control={control}
                             defaultValue={""}
-                            rules={{ required: "Montant payé est requis" }}
                             render={({ field, fieldState }) => (
                               <TextField
                                 {...field}

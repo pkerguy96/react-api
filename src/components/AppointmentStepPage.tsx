@@ -3,6 +3,7 @@ import {
   LocalizationProvider,
   DateTimePicker,
   DateTimeValidationError,
+  PickerChangeHandlerContext,
 } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment, { Moment } from "moment";
@@ -10,10 +11,10 @@ import React, { useRef, useState } from "react";
 import { CACHE_KEY_PATIENTS } from "../constants";
 import getGlobalById from "../hooks/getGlobalById";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
-import { useNavigate } from "react-router";
+
 import addGlobal from "../hooks/addGlobal";
 import appointmentAPIClient from "../services/AppointmentService";
-import { PickerChangeHandlerContext } from "@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types";
+
 import LoadingSpinner from "./LoadingSpinner";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
@@ -26,7 +27,7 @@ interface DataSend {
 }
 const AppointmentStepPage = ({ onNext }: any) => {
   const [selectedDateTime, setSelectedDateTime] = useState(moment());
-  const navigate = useNavigate();
+
   const { showSnackbar } = useSnackbarStore();
   const { id, operationId, ordonanceId } = useGlobalStore();
   const noteRef = useRef<HTMLInputElement>(null);

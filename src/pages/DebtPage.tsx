@@ -53,7 +53,7 @@ const DebtPage = () => {
           setData(transformedData);
         },
       }
-    );
+    ); 
   };
 
   return (

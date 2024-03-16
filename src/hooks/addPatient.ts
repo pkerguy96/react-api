@@ -6,7 +6,7 @@ const apiclient = new APIClient<Patient>("/Patient");
 interface Patientscontext {
   previousPatients: Patient[];
 }
-
+//TODO : modify inptu date mm/yy to french
 export const useAddPatientMutation = (onAdd: () => void) => {
   const queryClient = useQueryClient();
   return useMutation<Patient, Error, Patient, Patientscontext>({

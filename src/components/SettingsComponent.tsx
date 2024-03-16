@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import {
   Box,
+  Drawer,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -14,6 +15,7 @@ import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutl
 const SettingsComponent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeItem, setActiveItem] = useState<string | null>(null);
+
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value.toLowerCase());
   };
@@ -32,6 +34,7 @@ const SettingsComponent = () => {
           <p className="font-semibold text-2xl text-center md:text-start">
             Settings
           </p>
+
           <FormControl fullWidth>
             <InputLabel htmlFor="outlined-adornment-Search">
               Recherche

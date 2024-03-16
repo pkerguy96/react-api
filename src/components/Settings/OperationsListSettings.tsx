@@ -10,23 +10,22 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+
 import { Controller, useForm } from "react-hook-form";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AddoperationPreference } from "../../hooks/AddoperationPreference";
 import {
+  DeleteOperationsPrefApiClient,
   OperationPreference,
-  OperationsPrefApiClient,
 } from "../../services/SettingsService";
-import getGlobal from "../../hooks/getGlobal";
-import { CACHE_KEY_OperationPref } from "../../constants";
+
+import deleteItem from "../../hooks/deleteItem";
+import { useSnackbarStore } from "../../zustand/useSnackbarStore";
+import { useGlobalOperationPreference } from "../../hooks/getOperationPrefs";
+import LoadingSpinner from "../LoadingSpinner";
 const OperationsListSettings = () => {
-  const { data } = getGlobal(
-    {} as OperationPreference,
-    CACHE_KEY_OperationPref,
-    OperationsPrefApiClient,
-    undefined
-  );
+  const { showSnackbar } = useSnackbarStore();
+  const { data, refetch, isLoading } = useGlobalOperationPreference();
   const { control, handleSubmit, reset } = useForm<OperationPreference>();
   const addOperationMutation = AddoperationPreference(() => {
     reset({
@@ -36,13 +35,27 @@ const OperationsListSettings = () => {
     });
   });
   const onSubmit = async (data: OperationPreference) => {
-    const zbi = await addOperationMutation.mutateAsync({
+    const response = await addOperationMutation.mutateAsync({
       name: data.name,
       price: data.price,
       code: data.code,
     });
-    console.log(zbi);
+    if (response) {
+      showSnackbar("L'Opération a été créé'", "success");
+    } else {
+      showSnackbar("La création d'Opération a échoué", "error");
+    }
   };
+  const onDelete = async (key: number) => {
+    const response = await deleteItem(key, DeleteOperationsPrefApiClient);
+    if (response) {
+      refetch();
+      showSnackbar("La suppression d'Opération a réussi", "success");
+    } else {
+      showSnackbar("La suppression d'Opération a échoué", "error");
+    }
+  };
+  if (isLoading) return <LoadingSpinner />;
   return (
     <Box
       className="flex flex-col w-full h-full p-4 gap-4"
@@ -50,15 +63,15 @@ const OperationsListSettings = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <p className="font-light text-gray-600 text-md md:text-xl text-center">
-        Add Operation
+        Ajouter une opération
       </p>
       <p className=" text-start font-thin  text-sm md:text-lg">
-        Enter the operation details.
+        Entrez les détails de l'opération.
       </p>
       <Box className=" flex flex-col md:flex-row gap-4 flex-wrap ">
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center ">
           <label htmlFor="nom" className="w-full md:w-[160px]">
-            operation:
+            Opération:
           </label>
           <FormControl className="w-full md:flex-1">
             <Controller
@@ -66,14 +79,14 @@ const OperationsListSettings = () => {
               name="name"
               control={control}
               render={({ field }) => (
-                <TextField {...field} id="name" label="name" />
+                <TextField {...field} id="name" label="Opération" />
               )}
             />
           </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
           <label htmlFor="nom" className="w-full md:w-[160px]">
-            price:
+            Prix:
           </label>
           <FormControl className="w-full md:flex-1">
             <Controller
@@ -82,14 +95,14 @@ const OperationsListSettings = () => {
               name="price"
               control={control}
               render={({ field }) => (
-                <TextField {...field} id="price" type="number" label="price" />
+                <TextField {...field} id="price" type="number" label="Prix" />
               )}
             />
           </FormControl>
         </Box>
         <Box className="w-full flex flex-col gap-2 md:flex-row md:flex-wrap items-center">
           <label htmlFor="nom" className="w-full md:w-[160px]">
-            code:
+            Code:
           </label>
           <FormControl className="w-full md:flex-1">
             <Controller
@@ -97,7 +110,7 @@ const OperationsListSettings = () => {
               defaultValue=""
               control={control}
               render={({ field }) => (
-                <TextField {...field} id="code" label="code" />
+                <TextField {...field} id="code" label="Code" />
               )}
             />
           </FormControl>
@@ -108,7 +121,7 @@ const OperationsListSettings = () => {
             variant="contained"
             className="w-full md:w-max !px-8 !py-2 rounded-lg "
           >
-            Add
+            Ajouter
           </Button>
         </Box>
       </Box>
@@ -117,13 +130,13 @@ const OperationsListSettings = () => {
           <TableHead>
             <TableRow className="bg-gray-300 !rounded-2xl	sticky top-0 z-10">
               <TableCell>
-                <strong>Operation name</strong>
+                <strong>Nom de l'opération</strong>
               </TableCell>
               <TableCell>
-                <strong>code</strong>
+                <strong>Code</strong>
               </TableCell>
               <TableCell>
-                <strong>Price</strong>
+                <strong>Prix</strong>
               </TableCell>
               <TableCell className="w-20" />
             </TableRow>
@@ -136,9 +149,11 @@ const OperationsListSettings = () => {
                 <TableCell>{operation.price}</TableCell>
                 <TableCell className="w-20">
                   <Button
+                    onClick={() => onDelete(operation.id!)}
                     className="w-max mx-auto"
                     variant="outlined"
                     color="error"
+                    disabled={operation.id === undefined}
                   >
                     <DeleteOutlineIcon />
                   </Button>
