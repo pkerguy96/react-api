@@ -278,7 +278,7 @@ const AddNurseForm = () => {
               <Controller
                 name="sex"
                 control={control}
-                rules={{ required: customErrorMessages.sex.required }} // Add any validation rules as needed
+                rules={{ required: customErrorMessages.sex.required }}
                 render={({ field }) => (
                   <Select
                     {...field}

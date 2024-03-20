@@ -32,6 +32,7 @@ import OperationPayementStatus from "./components/OperationPayementStatus";
 import OperationParentPage from "./pages/OperationTimeline/OperationParentPage";
 import DebtPage from "./pages/DebtPage";
 import OperationsListSettings from "./components/Settings/OperationsListSettings";
+import RolesSettings from "./components/Settings/RolesSettings";
 
 const router = createBrowserRouter([
   {
@@ -151,6 +152,10 @@ const router = createBrowserRouter([
           {
             path: "Operations",
             element: <OperationsListSettings />,
+          },
+          {
+            path: "Roles",
+            element: <RolesSettings />,
           },
         ],
       },
