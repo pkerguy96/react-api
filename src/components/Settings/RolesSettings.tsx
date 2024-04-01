@@ -8,10 +8,22 @@ import {
   TextField,
   Checkbox,
   FormControlLabel,
+  FormHelperText,
 } from "@mui/material";
 import { useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
+import getGlobal from "../../hooks/getGlobal";
+import {
+  NurseRole,
+  NurseRoleResponse,
+  Role,
+  RoleApiClient,
+  RoleNursesClient,
+  RoleResponse,
+} from "../../services/RolesService";
+import { CACHE_KEY_NurseRole, CACHE_KEY_Role } from "../../constants";
+import LoadingSpinner from "../LoadingSpinner";
 const patient = [
   { name: "access_patient", display: "Accès complet" },
   { name: "insert_patient", display: "Ajouter un patient" },
@@ -47,32 +59,36 @@ const document = [
 ];
 
 const RolesSettings = () => {
-  const { control, handleSubmit } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { data, isLoading } = getGlobal(
+    {} as RoleResponse,
+    CACHE_KEY_Role,
+    RoleApiClient,
+    undefined
+  );
+  const { data: data2, isLoading: isLoading2 } = getGlobal(
+    {} as NurseRoleResponse,
+    CACHE_KEY_NurseRole,
+    RoleNursesClient,
+    undefined
+  );
+  if (isLoading || isLoading2) return <LoadingSpinner />;
 
   const onSubmit = (data: any) => {
-    const { nurse, role, ...rest } = data;
+    const { nurse, role, ...permissions } = data;
+    console.log(permissions);
+
     console.log({
       nurse,
       role,
-      rest: Object.entries(rest)
+      permissions: Object.entries(permissions)
         .filter((e) => e[1])
         .map((e) => e[0]),
     });
-
-    /* const checkedPatients = patients.filter((item) => data[item]);
-    console.log("Checked patients:", checkedPatients);
-
-    const checkedOrdonance = ordonance.filter((item) => data[item]);
-    console.log("Checked ordonance:", checkedOrdonance);
-
-    const checkedCreance = creance.filter((item) => data[item]);
-    console.log("Checked creance:", checkedCreance);
-
-    const checkedDebt = debt.filter((item) => data[item]);
-    console.log("Checked debt:", checkedDebt);
-
-    const checkedDocument = document.filter((item) => data[item]);
-    console.log("Checked document:", checkedDocument); */
   };
   return (
     <Box
@@ -92,6 +108,7 @@ const RolesSettings = () => {
           <Controller
             name="nurse"
             control={control}
+            rules={{ required: "Infirmière est requise" }}
             defaultValue=""
             render={({ field }) => (
               <Select
@@ -99,10 +116,13 @@ const RolesSettings = () => {
                 labelId="nurse-label"
                 id="nurse-select"
                 label="Infirmière"
+                error={!!errors.nurse}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {data2.map((nurse: NurseRole) => (
+                  <MenuItem value={nurse.id} key={nurse.id}>
+                    {nurse.name}
+                  </MenuItem>
+                ))}
               </Select>
             )}
           />
@@ -117,6 +137,7 @@ const RolesSettings = () => {
           <Controller
             name="role"
             control={control}
+            rules={{ required: "Rôle est requise" }}
             defaultValue=""
             render={({ field }) => (
               <Select
@@ -124,10 +145,13 @@ const RolesSettings = () => {
                 labelId="role-label"
                 id="role-select"
                 label="Rôle"
+                error={!!errors.role}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {data?.map((role: Role) => (
+                  <MenuItem value={role.id} key={role.id}>
+                    {role.name}
+                  </MenuItem>
+                ))}
               </Select>
             )}
           />
