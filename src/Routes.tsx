@@ -11,7 +11,6 @@ import DashboardKpiPage from "./pages/DashboardKpiPage";
 
 import PatientsPage from "./pages/PatientsPage";
 import AddNurseForm from "./pages/AddNurseForm";
-import PatientOperation from "./pages/PatientOperation";
 import NursePage from "./pages/NursePage";
 import PatientDetails from "./pages/PatientDetails";
 import AppointmentPage from "./pages/AppointmentPage";
@@ -32,6 +31,7 @@ import OperationPayementStatus from "./components/OperationPayementStatus";
 import OperationParentPage from "./pages/OperationTimeline/OperationParentPage";
 import DebtPage from "./pages/DebtPage";
 import OperationsListSettings from "./components/Settings/OperationsListSettings";
+import PermissionsSettings from "./components/Settings/PermissionsSettings";
 import RolesSettings from "./components/Settings/RolesSettings";
 
 const router = createBrowserRouter([
@@ -140,7 +140,7 @@ const router = createBrowserRouter([
         path: "Creance",
         element: <DebtPage />,
       },
-
+      //TODO: translate this to french
       {
         path: "Settings",
         element: <SettingsPage />,
@@ -156,6 +156,10 @@ const router = createBrowserRouter([
           {
             path: "Roles",
             element: <RolesSettings />,
+          },
+          {
+            path: "Autorisations",
+            element: <PermissionsSettings />,
           },
         ],
       },

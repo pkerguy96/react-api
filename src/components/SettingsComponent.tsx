@@ -15,6 +15,7 @@ import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutl
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 import MedicationLiquidOutlinedIcon from "@mui/icons-material/MedicationLiquidOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import LocalPoliceOutlinedIcon from "@mui/icons-material/LocalPoliceOutlined";
 /*  */
 const SettingsComponent = () => {
   const location = useLocation();
@@ -23,7 +24,6 @@ const SettingsComponent = () => {
     location.pathname
   );
   const [isHovered, setIsHovered] = useState(false);
-  console.log(isHovered);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value.toLowerCase());
@@ -41,8 +41,13 @@ const SettingsComponent = () => {
       icon: MedicationLiquidOutlinedIcon,
     },
     {
-      name: "Paramètres des rôles",
+      name: "Gestion des rôles",
       url: "/Settings/Roles",
+      icon: LocalPoliceOutlinedIcon,
+    },
+    {
+      name: " Gestion des Autorisations",
+      url: "/Settings/Autorisations",
       icon: AdminPanelSettingsOutlinedIcon,
     },
   ];
