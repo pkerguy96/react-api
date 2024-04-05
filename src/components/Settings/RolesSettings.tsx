@@ -11,11 +11,12 @@ import {
   TextField,
 } from "@mui/material";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import addGlobal from "../../hooks/addGlobal";
 import {
   CreateRole,
   CreateRoleApiClient,
+  DeleteRoleApiClient,
   UserRoleData,
   getUsersWithRolesClient,
 } from "../../services/RolesService";
@@ -25,6 +26,7 @@ import getGlobal from "../../hooks/getGlobal";
 import { CACHE_KEY_UsersRolePermission } from "../../constants";
 import LoadingSpinner from "../LoadingSpinner";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import deleteItem from "../../hooks/deleteItem";
 const RolesSettings = () => {
   const useref = useRef<HTMLInputElement>(null);
   const Addmutation = addGlobal({} as CreateRole, CreateRoleApiClient);
@@ -36,10 +38,8 @@ const RolesSettings = () => {
   );
   const { showSnackbar } = useSnackbarStore();
 
-  if (isLoading) return <LoadingSpinner />;
   const onSubmit = async () => {
     const value = useref?.current?.value;
-    console.log(value);
 
     if (value) {
       await Addmutation.mutateAsync(
@@ -62,6 +62,21 @@ const RolesSettings = () => {
       showSnackbar("fill the form first", "error");
     }
   };
+  const deleteRole = useCallback(async ($id: number) => {
+    const roledelte = await deleteItem($id, DeleteRoleApiClient);
+    if (roledelte) {
+      showSnackbar("Le rôle a été supprimé.", "info");
+      refetch();
+    } else {
+      showSnackbar(
+        "Oups, quelque chose s'est mal passé.",
+
+        "error"
+      );
+    }
+  }, []);
+
+  if (isLoading) return <LoadingSpinner />;
   return (
     <Box className="flex flex-col w-full h-full p-4 gap-4" component="form">
       <p className="font-light text-gray-600 text-md md:text-xl text-center">
@@ -116,7 +131,6 @@ const RolesSettings = () => {
               <TableRow key={index}>
                 <TableCell>{role.rolename}</TableCell>
                 <TableCell>
-                  {" "}
                   {role.patients.map((patient, patientIndex) => (
                     <span key={patientIndex}>
                       {patient.nom}
@@ -127,7 +141,7 @@ const RolesSettings = () => {
                 <TableCell>{role.created_at}</TableCell>
                 <TableCell className="w-20">
                   <Button
-                    /*  onClick={() => onDelete(role.id!)} */
+                    onClick={() => deleteRole(role.id!)}
                     className="w-max mx-auto"
                     variant="outlined"
                     color="error"

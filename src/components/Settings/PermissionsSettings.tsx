@@ -28,6 +28,7 @@ import addGlobal from "../../hooks/addGlobal";
 import { useSnackbarStore } from "../../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
+
 //TODO: change constants location here
 const patient = [
   { name: "access_patient", display: "Accès complet" },
@@ -97,6 +98,14 @@ const PermissionsSettings = () => {
       };
       await getPermissionsMutation.mutateAsync(mutationData, {
         onSuccess(data: any) {
+          [patient, ordonance, creance, debt, document].forEach(
+            (permissionArray) => {
+              permissionArray.forEach((permission) => {
+                setValue(permission.name, false);
+              });
+            }
+          );
+
           data?.data?.forEach((permission: any) => setValue(permission, true));
         },
         onError(error: any) {

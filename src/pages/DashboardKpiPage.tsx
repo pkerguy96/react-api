@@ -21,8 +21,13 @@ import {
 import LoadingSpinner from "../components/LoadingSpinner";
 import LinechartKPI from "../components/Kpis/LinechartKPI";
 import CashierKpi from "../components/Kpis/CashierKpi";
+import useUserRoles from "../zustand/UseRoles";
 
 const DashboardKpiPage = ({ onNext }: any) => {
+  const { can } = useUserRoles();
+  const hasPermission = can("insert_ordonance");
+  console.log(hasPermission);
+
   const { data, isLoading } = getGlobal(
     {} as NewAppointments,
     CACHE_KEY_MonthlyAppointments,
@@ -76,6 +81,7 @@ const DashboardKpiPage = ({ onNext }: any) => {
           <LinechartKPI dataset={dataset1} />
         </Box>
       </div>
+
       <div className="grid grid-rows-1 grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="flex flex-col gap-6 lg:col-span-9">
           <Box className="!w-full shadow-md bg-[#eff0f1] text-gray-950 flex flex-col">

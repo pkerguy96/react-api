@@ -41,6 +41,9 @@ export interface UserRoleData {
 interface Patient {
   nom: string;
 }
+interface roleid {
+  id: number;
+}
 export const RoleApiClient = new APIClient<RoleResponse>("/getRoles");
 export const RoleNursesClient = new APIClient<NurseRoleResponse>(
   "/RolesNursesList"
@@ -48,6 +51,7 @@ export const RoleNursesClient = new APIClient<NurseRoleResponse>(
 export const getUsersWithRolesClient = new APIClient<UserRoleData>(
   "/getUsersViaRoles"
 );
+export const DeleteRoleApiClient = new APIClient<roleid>("/deleteRole");
 export const AddRolesApiClient = new APIClient<AddRoles>("/grantAccess");
 export const CreateRoleApiClient = new APIClient<CreateRole>("/createRole");
 export const getRolespermissionsApiClient = new APIClient<any>(
