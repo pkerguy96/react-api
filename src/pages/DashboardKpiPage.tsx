@@ -24,9 +24,9 @@ import CashierKpi from "../components/Kpis/CashierKpi";
 import useUserRoles from "../zustand/UseRoles";
 
 const DashboardKpiPage = ({ onNext }: any) => {
-  const { can } = useUserRoles();
-  const hasPermission = can("insert_ordonance");
-  console.log(hasPermission);
+  /*  const { can } = useUserRoles();
+  const hasPermission = can("insert_ordonance"); */
+  /*  console.log(hasPermission); */
 
   const { data, isLoading } = getGlobal(
     {} as NewAppointments,

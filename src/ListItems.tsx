@@ -17,65 +17,95 @@ import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
 import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
-export const mainListItems = (
-  <React.Fragment>
-    <Link to="/dashboard" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <DashboardIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Accueille" />
-      </ListItemButton>
-    </Link>
-    <Link to="/Appointments" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <DateRangeSharpIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Rendez-vous" />
-      </ListItemButton>
-    </Link>
-    <Link to="/Patients" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <PeopleIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Patients" />
-      </ListItemButton>
-    </Link>
+import useUserRoles from "./zustand/UseRoles";
+import { PermissionListpatient } from "./constants";
 
-    <Link to="/Ordonnance" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <MedicationLiquidOutlinedIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Ordonnance" />
-      </ListItemButton>
-    </Link>
-    <Link to="/Creance" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <AccountBalanceOutlinedIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Créance" />
-      </ListItemButton>
-    </Link>
-    <Link to="/Reglement" className="no-underline">
-      <ListItemButton>
-        <ListItemIcon>
-          <RequestQuoteOutlinedIcon color="primary" />
-        </ListItemIcon>
-        <ListItemText primary="Règlement" />
-      </ListItemButton>
-    </Link>
-  </React.Fragment>
-);
+export const MainListItems = () => {
+  const { can } = useUserRoles();
+
+  return (
+    <React.Fragment>
+      <Link to="/dashboard" className="no-underline">
+        <ListItemButton>
+          <ListItemIcon>
+            <DashboardIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary="Accueille" />
+        </ListItemButton>
+      </Link>
+
+      <Link to="/Appointments" className="no-underline">
+        <ListItemButton>
+          <ListItemIcon>
+            <DateRangeSharpIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary="Rendez-vous" />
+        </ListItemButton>
+      </Link>
+
+      {can([
+        "Super-Admin",
+        "access_patient",
+        "insert_patient",
+        "update_patient",
+        "delete_patient",
+        "detail_patient",
+      ]) && (
+        <Link to="/Patients" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <PeopleIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Patients" />
+          </ListItemButton>
+        </Link>
+      )}
+      {can([
+        "Super-Admin",
+        "access_ordonance",
+        "insert_ordonance",
+        "update_ordonance",
+        "delete_ordonance",
+      ]) && (
+        <Link to="/Ordonnance" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <MedicationLiquidOutlinedIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Ordonnance" />
+          </ListItemButton>
+        </Link>
+      )}
+      {can(["Super-Admin", "access_creance", "search_creance"]) && (
+        <Link to="/Creance" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <AccountBalanceOutlinedIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Créance" />
+          </ListItemButton>
+        </Link>
+      )}
+      {can(["Super-Admin", "access_debt", "insert_debt", "delete_debt"]) && (
+        <Link to="/Reglement" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <RequestQuoteOutlinedIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Règlement" />
+          </ListItemButton>
+        </Link>
+      )}
+    </React.Fragment>
+  );
+};
 interface Props {
   toggle: boolean;
   isSideBarOpen: boolean;
   handleClick: () => void;
 }
 export function SecondaryListItems({}: Props) {
+  const { can } = useUserRoles();
   return (
     <React.Fragment>
       <Link to="/Nurses" className="no-underline">
@@ -88,15 +118,23 @@ export function SecondaryListItems({}: Props) {
       </Link>
 
       <Divider />
-
-      <Link to="/Files" className="no-underline">
-        <ListItemButton>
-          <ListItemIcon>
-            <ContentPasteSearchOutlinedIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText primary="Documents" />
-        </ListItemButton>
-      </Link>
+      {can([
+        "Super-Admin",
+        "access_document",
+        "insert_document",
+        "delete_document",
+        "download_document",
+        "detail_document",
+      ]) && (
+        <Link to="/Files" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <ContentPasteSearchOutlinedIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Documents" />
+          </ListItemButton>
+        </Link>
+      )}
       <Link to="/Stock" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
@@ -116,4 +154,5 @@ export function SecondaryListItems({}: Props) {
       </Link>
     </React.Fragment>
   );
+  //TODO: add general roles here
 }

@@ -22,47 +22,20 @@ import {
   RoleResponse,
   getRolespermissionsApiClient,
 } from "../../services/RolesService";
-import { CACHE_KEY_NurseRole, CACHE_KEY_Role } from "../../constants";
+import {
+  CACHE_KEY_NurseRole,
+  CACHE_KEY_Role,
+  PermissionListcreance,
+  PermissionListdebt,
+  PermissionListdocument,
+  PermissionListordonance,
+  PermissionListpatient,
+} from "../../constants";
 import LoadingSpinner from "../LoadingSpinner";
 import addGlobal from "../../hooks/addGlobal";
 import { useSnackbarStore } from "../../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
-
-//TODO: change constants location here
-const patient = [
-  { name: "access_patient", display: "Accès complet" },
-  { name: "insert_patient", display: "Ajouter un patient" },
-  { name: "update_patient", display: "Modifier un patient" },
-  { name: "delete_patient", display: "Supprimer un patient" },
-  { name: "detail_patient", display: "Détails du patient" },
-];
-
-const ordonance = [
-  { name: "access_ordonance", display: "Accès complet" },
-  { name: "insert_ordonance", display: "Ajouter une ordonnance" },
-  { name: "update_ordonance", display: "Modifier une ordonnance" },
-  { name: "delete_ordonance", display: "Supprimer une ordonnance" },
-];
-
-const creance = [
-  { name: "access_creance", display: "Accès complet" },
-  { name: "search_creance", display: "Rechercher" },
-];
-
-const debt = [
-  { name: "access_debt", display: "Accès complet" },
-  { name: "insert_debt", display: "Ajouter un paiement" },
-  { name: "delete_debt", display: "Supprimer un paiement" },
-];
-
-const document = [
-  { name: "access_document", display: "Accès complet" },
-  { name: "insert_document", display: "Ajouter un document" },
-  { name: "delete_document", display: "Supprimer un document" },
-  { name: "download_document", display: "Télécharger un document" },
-  { name: "detail_document", display: "Voir un document" },
-];
 
 const PermissionsSettings = () => {
   const {
@@ -98,13 +71,17 @@ const PermissionsSettings = () => {
       };
       await getPermissionsMutation.mutateAsync(mutationData, {
         onSuccess(data: any) {
-          [patient, ordonance, creance, debt, document].forEach(
-            (permissionArray) => {
-              permissionArray.forEach((permission) => {
-                setValue(permission.name, false);
-              });
-            }
-          );
+          [
+            PermissionListpatient,
+            PermissionListordonance,
+            PermissionListcreance,
+            PermissionListdebt,
+            PermissionListdocument,
+          ].forEach((permissionArray) => {
+            permissionArray.forEach((permission) => {
+              setValue(permission.name, false);
+            });
+          });
 
           data?.data?.forEach((permission: any) => setValue(permission, true));
         },
@@ -229,7 +206,7 @@ const PermissionsSettings = () => {
         <Box className="w-full grid grid-rows-1 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <Box className="flex flex-col flex-wrap">
             <label htmlFor="nom">Patient:</label>
-            {patient.map((item, index) => (
+            {PermissionListpatient.map((item, index) => (
               <Controller
                 key={index}
                 name={item.name}
@@ -246,7 +223,7 @@ const PermissionsSettings = () => {
           </Box>
           <Box className="flex flex-col flex-wrap">
             <label htmlFor="nom">Document:</label>
-            {document.map((item, index) => (
+            {PermissionListdocument.map((item, index) => (
               <Controller
                 key={index}
                 name={item.name}
@@ -263,7 +240,7 @@ const PermissionsSettings = () => {
           </Box>
           <Box className="flex flex-col flex-wrap">
             <label htmlFor="nom">Ordonnance:</label>
-            {ordonance.map((item, index) => (
+            {PermissionListordonance.map((item, index) => (
               <Controller
                 key={index}
                 name={item.name}
@@ -280,7 +257,7 @@ const PermissionsSettings = () => {
           </Box>
           <Box className="flex flex-col flex-wrap">
             <label htmlFor="nom">Dette:</label>
-            {debt.map((item, index) => (
+            {PermissionListdebt.map((item, index) => (
               <Controller
                 key={index}
                 name={item.name}
@@ -297,7 +274,7 @@ const PermissionsSettings = () => {
           </Box>
           <Box className="flex flex-col flex-wrap">
             <label htmlFor="nom">Créance:</label>
-            {creance.map((item, index) => (
+            {PermissionListcreance.map((item, index) => (
               <Controller
                 key={index}
                 name={item.name}

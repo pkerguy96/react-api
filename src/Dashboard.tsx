@@ -15,7 +15,7 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, SecondaryListItems } from "./ListItems";
+import { MainListItems, SecondaryListItems } from "./ListItems";
 
 import DashboardMenu from "./components/DashboardMenu";
 
@@ -163,7 +163,7 @@ export default function Dashboard(Props: React.PropsWithChildren) {
         </Toolbar>
         <Divider />
         <List component="nav" className="flex flex-col h-full">
-          {mainListItems}
+          <MainListItems />
           <Divider sx={{ my: 1 }} />
           <SecondaryListItems
             toggle={openListMenu}

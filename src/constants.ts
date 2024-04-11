@@ -27,6 +27,40 @@ export const CACHE_KEY_CanceledMonthlyAppointments = [
 ];
 export const CACHE_KEY_Url = "urllist";
 
+export const PermissionListpatient = [
+  { name: "access_patient", display: "Accès complet" },
+  { name: "insert_patient", display: "Ajouter un patient" },
+  { name: "update_patient", display: "Modifier un patient" },
+  { name: "delete_patient", display: "Supprimer un patient" },
+  { name: "detail_patient", display: "Détails du patient" },
+];
+
+export const PermissionListordonance = [
+  { name: "access_ordonance", display: "Accès complet" },
+  { name: "insert_ordonance", display: "Ajouter une ordonnance" },
+  { name: "update_ordonance", display: "Modifier une ordonnance" },
+  { name: "delete_ordonance", display: "Supprimer une ordonnance" },
+];
+
+export const PermissionListcreance = [
+  { name: "access_creance", display: "Accès complet" },
+  { name: "search_creance", display: "Rechercher" },
+];
+
+export const PermissionListdebt = [
+  { name: "access_debt", display: "Accès complet" },
+  { name: "insert_debt", display: "Ajouter un paiement" },
+  { name: "delete_debt", display: "Supprimer un paiement" },
+];
+
+export const PermissionListdocument = [
+  { name: "access_document", display: "Accès complet" },
+  { name: "insert_document", display: "Ajouter un document" },
+  { name: "delete_document", display: "Supprimer un document" },
+  { name: "download_document", display: "Télécharger un document" },
+  { name: "detail_document", display: "Voir un document" },
+];
+
 export const listOperationsArray = [
   { value: 10, label: "Blanchiment" },
   { value: 20, label: "Extraction" },
