@@ -33,6 +33,9 @@ export class APIClient<T> {
       .get<ApiResponse<T>>(this.endpoint)
       .then((res) => res.data.data);
   };
+  getone = () => {
+    return axiosInstance.get<T>(this.endpoint).then((res) => res);
+  };
   getById = (id: number) => {
     const endpointWithId = `${this.endpoint}/${id}`;
     return axiosInstance

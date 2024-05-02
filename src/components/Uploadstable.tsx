@@ -19,10 +19,12 @@ import deleteItem from "../hooks/deleteItem";
 import { confirmDialog } from "./ConfirmDialog";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { useQueryClient } from "@tanstack/react-query";
+import useUserRoles from "../zustand/UseRoles";
 
 const Uploadstable = () => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarStore();
+  const { can } = useUserRoles();
   const navigate = useNavigate();
   const { data, isLoading } = getGlobal(
     {} as ClusterData,
@@ -106,10 +108,11 @@ const Uploadstable = () => {
         customBodyRender: (data: any) => {
           return (
             <>
-              {data.mime === "application/dicom" ? (
+              {can(["Super-Admin", "access_document"]) &&
+              data.mime === "application/dicom" ? (
                 <button
                   className="btn-ordonance-see text-gray-950 hover:text-blue-700 cursor-pointer"
-                  title="Modifier"
+                  title="Voir"
                 >
                   <VisibilityOutlinedIcon
                     className="pointer-events-none"
@@ -117,27 +120,30 @@ const Uploadstable = () => {
                   />
                 </button>
               ) : null}
-              <button
-                onClick={() => download(data.urls)}
-                className="btn-ordonance-download text-gray-950 hover:text-blue-700 cursor-pointer"
-                title="Modifier"
-              >
-                <DownloadForOfflineOutlinedIcon
-                  className="pointer-events-none"
-                  fill="currentColor"
-                />
-              </button>
-
-              <button
-                className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-                title="Modifier"
-              >
-                <DeleteOutlineIcon
-                  color="error"
-                  className="pointer-events-none"
-                  fill="currentColor"
-                />
-              </button>
+              {can(["Super-Admin", "download_document"]) && (
+                <button
+                  onClick={() => download(data.urls)}
+                  className="btn-ordonance-download text-gray-950 hover:text-blue-700 cursor-pointer"
+                  title="Télécharger"
+                >
+                  <DownloadForOfflineOutlinedIcon
+                    className="pointer-events-none"
+                    fill="currentColor"
+                  />
+                </button>
+              )}
+              {can(["Super-Admin", "delete_document"]) && (
+                <button
+                  className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+                  title="Supprimer"
+                >
+                  <DeleteOutlineIcon
+                    color="error"
+                    className="pointer-events-none"
+                    fill="currentColor"
+                  />
+                </button>
+              )}
             </>
           );
         },
@@ -153,17 +159,18 @@ const Uploadstable = () => {
         noMatch: "Désolé, aucun fichier n'est dans nos données",
       },
     },
-    customToolbar: () => (
-      <Tooltip title="Nouveau fichier">
-        <IconButton
-          onClick={() => {
-            navigate(`/Addfile`);
-          }}
-        >
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
-    ),
+    customToolbar: () =>
+      can(["Super-Admin", "insert_document"]) && (
+        <Tooltip title="Nouveau fichier">
+          <IconButton
+            onClick={() => {
+              navigate(`/Addfile`);
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     onRowClick: async (s: any, _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-ordonance-see") ||

@@ -24,6 +24,9 @@
       transform: translateX(0);
     }
   }
+  .ct{
+    text-align: center !important;
+  }
   .animated-element {
     animation: slideIn 0.3s ease-in-out; /* Apply the 'slideIn' animation */
     @media (max-width: 768px) {

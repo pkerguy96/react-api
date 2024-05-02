@@ -14,6 +14,7 @@ import getGlobal from "../hooks/getGlobal";
 import operationApiClient, { Operation } from "../services/OperationService";
 import { CACHE_KEY_Operation } from "../constants";
 import deleteItem from "../hooks/deleteItem";
+import useUserRoles from "../zustand/UseRoles";
 
 interface CustomPaymentInfo {
   id: number;
@@ -38,6 +39,7 @@ const ReglementTable = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalOperationId, setModalOperationId] = useState<number | null>(null);
   const { showSnackbar } = useSnackbarStore();
+  const { can } = useUserRoles();
   const { data, isLoading } = getGlobal(
     {} as Operation,
     [CACHE_KEY_Operation[0]],
@@ -50,7 +52,6 @@ const ReglementTable = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
-  console.log("data", data);
 
   const formattedData = data?.map((Paymentinfo: CustomPaymentInfo) => {
     return {
@@ -62,7 +63,6 @@ const ReglementTable = () => {
       ispaid: Boolean(Paymentinfo.isPaid) ? "true" : "false",
     };
   });
-  console.log("formated data", formattedData);
 
   const columns = [
     {
@@ -123,7 +123,6 @@ const ReglementTable = () => {
           _updateValue: any
         ) => {
           const color = tableMeta.rowData[1] === "true" ? "success" : "error";
-          console.log("color", color);
 
           return (
             <Chip
@@ -141,18 +140,19 @@ const ReglementTable = () => {
       options: {
         filter: true,
         sort: true,
-        customBodyRender: () => (
-          <button
-            className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-            title="Supprimer"
-          >
-            <DeleteOutlineIcon
-              color="error"
-              className="pointer-events-none"
-              fill="currentColor"
-            />
-          </button>
-        ),
+        customBodyRender: () =>
+          can(["Super-Admin", "delete_debt"]) && (
+            <button
+              className="btn-ordonance-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+              title="Supprimer"
+            >
+              <DeleteOutlineIcon
+                color="error"
+                className="pointer-events-none"
+                fill="currentColor"
+              />
+            </button>
+          ),
       },
     },
   ];
@@ -203,23 +203,26 @@ const ReglementTable = () => {
     },
   };
   return (
-    <>
-      <Box className="relative">
-        <MUIDataTable
-          title={"Liste des Règlement"}
-          data={formattedData}
-          columns={columns}
-          options={options}
-        />
-      </Box>
-      {openModal && (
-        <PaymentModal
-          open={openModal}
-          onClose={handleCloseModal}
-          operationID={modalOperationId}
-        />
-      )}
-    </>
+    can(["Super-Admin", "access_debt"]) && (
+      <>
+        <Box className="relative">
+          <MUIDataTable
+            title={"Liste des Règlement"}
+            data={formattedData}
+            columns={columns}
+            options={options}
+          />
+        </Box>
+
+        {can(["Super-Admin", "insert_debt"]) && openModal && (
+          <PaymentModal
+            open={openModal}
+            onClose={handleCloseModal}
+            operationID={modalOperationId}
+          />
+        )}
+      </>
+    )
   );
 };
 

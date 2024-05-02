@@ -19,6 +19,9 @@ import { MainListItems, SecondaryListItems } from "./ListItems";
 
 import DashboardMenu from "./components/DashboardMenu";
 
+import LoadingSpinner from "./components/LoadingSpinner";
+import { Suspense } from "react";
+
 function Copyright(props: any) {
   return (
     <Typography
@@ -93,6 +96,9 @@ const Drawer = styled(MuiDrawer, {
 export default function Dashboard(Props: React.PropsWithChildren) {
   const [open, setOpen] = React.useState(false);
   const [openListMenu, setOpenListMenu] = React.useState(false);
+  const WaitingRoomMenuLazy = React.lazy(
+    () => import("./components/WaitingRoomMenu")
+  );
 
   const toggleListMenu = () => {
     setOpenListMenu(!openListMenu); // Fix the toggleListMenu function
@@ -135,6 +141,10 @@ export default function Dashboard(Props: React.PropsWithChildren) {
           >
             tableau de bord
           </Typography>
+          <Suspense fallback={<LoadingSpinner />}>
+            <WaitingRoomMenuLazy />
+          </Suspense>
+
           <IconButton color="inherit">
             <Badge badgeContent={0} color="secondary">
               <NotificationsIcon />

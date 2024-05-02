@@ -16,8 +16,11 @@ import deleteItem from "../hooks/deleteItem";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
+import useUserRoles from "../zustand/UseRoles";
 const PatientsTable = () => {
   const { showSnackbar } = useSnackbarStore();
+
+  const { can } = useUserRoles();
   const queryClient = useQueryClient();
   const { data, isLoading } = getGlobal(
     {} as OnlyPatientData, // Tname (you can use a placeholder object here)
@@ -113,28 +116,34 @@ const PatientsTable = () => {
         width: 200,
         customBodyRender: () => (
           <Box style={{ width: "90px" }}>
-            <button className="btn-patient-info text-gray-950 hover:text-blue-700 cursor-pointer">
-              <FolderCopyOutlinedIcon
-                className="pointer-events-none"
-                fill="currentColor"
-              />
-            </button>
-            <button className="btn-patient-edit text-gray-950 hover:text-blue-700 cursor-pointer">
-              <EditOutlinedIcon
-                className="pointer-events-none"
-                fill="currentColor"
-              />
-            </button>
-            <button
-              className="btn-patient-delete text-gray-950 hover:text-blue-700 cursor-pointer"
-              title="Modifier"
-            >
-              <DeleteOutlineIcon
-                color="error"
-                className="pointer-events-none"
-                fill="currentColor"
-              />
-            </button>
+            {can(["Super-Admin", "detail_patient"]) && (
+              <button className="btn-patient-info text-gray-950 hover:text-blue-700 cursor-pointer">
+                <FolderCopyOutlinedIcon
+                  className="pointer-events-none"
+                  fill="currentColor"
+                />
+              </button>
+            )}
+            {can(["Super-Admin", "update_patient"]) && (
+              <button className="btn-patient-edit text-gray-950 hover:text-blue-700 cursor-pointer">
+                <EditOutlinedIcon
+                  className="pointer-events-none"
+                  fill="currentColor"
+                />
+              </button>
+            )}
+            {can(["Super-Admin", "delete_patient"]) && (
+              <button
+                className="btn-patient-delete text-gray-950 hover:text-blue-700 cursor-pointer"
+                title="Modifier"
+              >
+                <DeleteOutlineIcon
+                  color="error"
+                  className="pointer-events-none"
+                  fill="currentColor"
+                />
+              </button>
+            )}
           </Box>
         ),
       },
@@ -150,18 +159,20 @@ const PatientsTable = () => {
         noMatch: "Désolé, aucun patient n'est dans nos données",
       },
     },
-    customToolbar: () => (
-      <Tooltip title="Nouveau patient">
-        <IconButton
-          onClick={() => {
-            navigate(`/AddPatient`);
-          }}
-        >
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
-    ),
+    customToolbar: () =>
+      can(["Super-Admin", "insert_patient"]) && (
+        <Tooltip title="Nouveau patient">
+          <IconButton
+            onClick={() => {
+              navigate(`/AddPatient`);
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     selectableRowsHideCheckboxes: true,
+    //TODO: only doctors will have perm for operations.
     onRowClick: (s: any, _m: any, e: any) => {
       if (
         e.target.querySelector(".btn-patient-info") ||
@@ -209,15 +220,16 @@ const PatientsTable = () => {
   };
 
   return (
-    <Box className="relative">
-      <MUIDataTable
-        title={"Liste des patients"}
-        data={data}
-        columns={columns}
-        options={options}
-      />
-    </Box>
+    can(["Super-Admin", "access_patient"]) && (
+      <Box className="relative">
+        <MUIDataTable
+          title={"Liste des patients"}
+          data={data}
+          columns={columns}
+          options={options}
+        />
+      </Box>
+    )
   );
 };
-
 export default PatientsTable;

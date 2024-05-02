@@ -18,7 +18,6 @@ import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
 import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
 import useUserRoles from "./zustand/UseRoles";
-import { PermissionListpatient } from "./constants";
 
 export const MainListItems = () => {
   const { can } = useUserRoles();
