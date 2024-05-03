@@ -21,7 +21,9 @@ import DashboardMenu from "./components/DashboardMenu";
 
 import LoadingSpinner from "./components/LoadingSpinner";
 import { Suspense } from "react";
-
+const WaitingRoomMenuLazy = React.lazy(
+  () => import("./components/WaitingRoomMenu")
+);
 function Copyright(props: any) {
   return (
     <Typography
@@ -96,9 +98,6 @@ const Drawer = styled(MuiDrawer, {
 export default function Dashboard(Props: React.PropsWithChildren) {
   const [open, setOpen] = React.useState(false);
   const [openListMenu, setOpenListMenu] = React.useState(false);
-  const WaitingRoomMenuLazy = React.lazy(
-    () => import("./components/WaitingRoomMenu")
-  );
 
   const toggleListMenu = () => {
     setOpenListMenu(!openListMenu); // Fix the toggleListMenu function

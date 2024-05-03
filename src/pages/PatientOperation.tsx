@@ -164,9 +164,9 @@ const PatientOperation = ({ onNext }) => {
     } else {
       addMutation.mutateAsync(validData, {
         onSuccess: (data) => {
+          setIds(specificPatient?.id, undefined, data?.operation_id);
           showSnackbar("Opération créée avec succès", "success");
           onNext();
-          setIds(specificPatient?.id, undefined, data?.operation_id);
         },
         onError: (error: any) => {
           const message =

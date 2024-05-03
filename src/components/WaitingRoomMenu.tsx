@@ -1,7 +1,7 @@
 import * as React from "react";
 import Menu from "@mui/material/Menu";
 import AlarmIcon from "@mui/icons-material/Alarm";
-import { Box, Button, IconButton, TextField } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
@@ -9,14 +9,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import getGlobal from "../hooks/getGlobal";
 import {
   WaitingroomCounter,
+  clearPatientCounterApiClient,
+  decrementPatientApiClient,
   incrementPatientApiClient,
   waitingRoomApiClient,
 } from "../services/WaitingroomService";
 import { CACHE_KEY_WaitingRoom } from "../constants";
-import addGlobal from "../hooks/addGlobal";
-import axiosInstance from "../services/Http";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function WaitingRoomMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -28,7 +30,8 @@ export default function WaitingRoomMenu() {
     setAnchorEl(null);
   };
   const queryClient = useQueryClient();
-  const { data } = getGlobal(
+
+  const { data, isLoading } = getGlobal(
     {} as WaitingroomCounter,
     [CACHE_KEY_WaitingRoom[0]],
     waitingRoomApiClient,
@@ -42,12 +45,41 @@ export default function WaitingRoomMenu() {
       if (response.status >= 200 && response.status < 300) {
         queryClient.invalidateQueries(CACHE_KEY_WaitingRoom);
       } else {
-        console.error("Error:", response.data.message);
+        console.log(response.data.message);
       }
     } catch (error) {
       console.log(error);
     }
   }, []);
+  const decrementPatient = useCallback(async () => {
+    try {
+      const response = await decrementPatientApiClient.getone();
+
+      if (response.status >= 200 && response.status < 300) {
+        queryClient.invalidateQueries(CACHE_KEY_WaitingRoom);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const resetPatientCounter = useCallback(async () => {
+    try {
+      const response = await clearPatientCounterApiClient.getone();
+
+      if (response.status >= 200 && response.status < 300) {
+        queryClient.invalidateQueries(CACHE_KEY_WaitingRoom);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
   return (
     <div>
       <IconButton
@@ -86,7 +118,12 @@ export default function WaitingRoomMenu() {
             <AddIcon />
           </IconButton>
           <span className=" justfont-bold !text-blue-500">{data}</span>
-          <IconButton color="inherit" size="small">
+          <IconButton
+            color="inherit"
+            size="small"
+            onClick={decrementPatient}
+            disabled={data[0] === 0}
+          >
             <RemoveIcon />
           </IconButton>
         </Box>
@@ -97,6 +134,7 @@ export default function WaitingRoomMenu() {
             size="small"
             color="error"
             endIcon={<DeleteIcon />}
+            onClick={resetPatientCounter}
           >
             Clear
           </Button>

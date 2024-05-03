@@ -14,6 +14,8 @@ export const waitingRoomApiClient = new APIClient<WaitingroomCounter>(
 export const incrementPatientApiClient = new APIClient<patientCounteractions>(
   "incrementPatient"
 );
-export const decrementPatientApiClient = new APIClient<WaitingroomCounter>(
-  "removePatient"
+export const decrementPatientApiClient = new APIClient<patientCounteractions>(
+  "decrementPatient"
 );
+export const clearPatientCounterApiClient =
+  new APIClient<patientCounteractions>("resetPatientCounter");

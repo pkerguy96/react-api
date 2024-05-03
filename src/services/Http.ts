@@ -54,6 +54,11 @@ export class APIClient<T> {
       .post<T>(this.endpoint, data, options)
       .then((res) => res.data);
   };
+  update = (id: number) => {
+    return axiosInstance
+      .patch<T>(`${this.endpoint}/${id}`)
+      .then((res) => res.data);
+  };
   UpdateAll = (data: T, id: number) => {
     return axiosInstance
       .patch<T>(`${this.endpoint}/${id}`, data)

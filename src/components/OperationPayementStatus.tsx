@@ -20,6 +20,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 const OperationPayementStatus = () => {
   const { handleSubmit, control, setValue } = useForm<FormData>();
   const { operationid } = useParams();
+  console.log(operationid);
 
   const [fetchedoperations, setFetchedOperations] = useState<any[]>([]);
   const [totalCost, setTotalCost] = useState<number>(0);
@@ -39,6 +40,7 @@ const OperationPayementStatus = () => {
     undefined,
     parseInt(operationid)
   );
+  console.log(data);
 
   useEffect(() => {
     if (data && data.payments) {

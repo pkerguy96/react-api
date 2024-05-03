@@ -27,13 +27,15 @@ import TableRow from "@mui/material/TableRow";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { useQueryClient } from "@tanstack/react-query";
 import getGlobal from "../hooks/getGlobal";
-import { CACHE_KEY_PATIENTS } from "../constants";
+import { CACHE_KEY_Operation, CACHE_KEY_PATIENTS } from "../constants";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import updateItem from "../hooks/updateItem";
 import ordonanceApiClient, { Ordonance } from "../services/OrdonanceService";
 import addGlobal from "../hooks/addGlobal";
 import CreateAppointmentModal from "../components/CreateAppointmentModal";
 import useGlobalStore from "../zustand/useGlobalStore";
+import { PayementVerificationApiClient } from "../services/OperationService";
+import getGlobalById from "../hooks/getGlobalById";
 
 const AddOrdonanceUpdated = ({ onNext }: any) => {
   const {
@@ -60,15 +62,18 @@ const AddOrdonanceUpdated = ({ onNext }: any) => {
     patientAPIClient, // service
     undefined // opts
   );
-  const { data: data1, isLoading: isloading1 } = zuOrdonanceid
+  console.log(zuOperationid);
+
+  const { data: data1, isLoading: isloading1 } = zuOperationid
     ? getGlobalById(
         {} as any,
-        [CACHE_KEY_Operation[0], zuOrdonanceid],
+        [CACHE_KEY_Operation[0], zuOperationid],
         PayementVerificationApiClient,
         undefined,
-        parseInt(zuOrdonanceid)
+        parseInt(zuOperationid)
       )
     : { data: {}, isLoading: false };
+  console.log(data1);
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);

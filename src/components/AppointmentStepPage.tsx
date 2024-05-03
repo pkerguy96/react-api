@@ -19,6 +19,10 @@ import LoadingSpinner from "./LoadingSpinner";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
 import useGlobalStore from "../zustand/useGlobalStore";
+import operationApiClient, {
+  finishtreatmentApiClient,
+  modifytreatmentApiClient,
+} from "../services/OperationService";
 interface DataSend {
   patient_id: number; // Ensure patient_id is defined as a number
   title?: string; // Optional string property
@@ -75,7 +79,8 @@ const AppointmentStepPage = ({ onNext }: any) => {
       date: selectedDateTime.format("YYYY-MM-DDTHH:mm:ss"),
       note: noteRef?.current?.value,
     };
-    Addmutation.mutateAsync(formData, {
+    await modifytreatmentApiClient.update(+operationId);
+    await Addmutation.mutateAsync(formData, {
       onSuccess: () => {
         showSnackbar("Le rendez-vous a été créé", "success");
         onNext();
@@ -88,6 +93,9 @@ const AppointmentStepPage = ({ onNext }: any) => {
         showSnackbar(message, "error");
       },
     });
+  };
+  const finishtreatment = async () => {
+    await finishtreatmentApiClient.update(+operationId);
   };
   return (
     <div>
@@ -128,8 +136,9 @@ const AppointmentStepPage = ({ onNext }: any) => {
           <Box className="flex justify-between flex-row mt-5 content-center">
             <Button
               variant="outlined"
-              onClick={() => {
-                onNext();
+              onClick={async () => {
+                await finishtreatment();
+                await onNext();
               }}
             >
               <p className="text-sm">Skip</p>
