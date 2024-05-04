@@ -7,6 +7,7 @@ export interface OperationPreference {
   name: string;
   code?: string;
   price: number;
+  operation_type?: string;
 }
 export interface DeleteOperationPreference {
   id: number;

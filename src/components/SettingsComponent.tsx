@@ -36,7 +36,7 @@ const SettingsComponent = () => {
       icon: AnalyticsOutlinedIcon,
     },
     {
-      name: "Paramètres d'ordonnances",
+      name: "Paramètres d'opérations",
       url: "/Settings/Operations",
       icon: MedicationLiquidOutlinedIcon,
     },

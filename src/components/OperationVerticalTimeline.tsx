@@ -10,7 +10,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { useMemo } from "react";
 
 import { Box } from "@mui/material";
-import { getOperationname } from "../utils/helperFunctions";
+
 interface OperationVerticalTimelineProps {
   Operations: Operation[]; // Updated type definition to represent an array of Operation objects
   isLoading: boolean;
@@ -50,15 +50,13 @@ const OperationVerticalTimeline = ({
                       <div className="flex gap-1">
                         <h6>{index + 1}.</h6>
                         <h4 className="vertical-timeline-element-subtitle">
-                          {getOperationname(operationType.operation_type)}
+                          {operationType.name}
                         </h4>
                       </div>
                       <div className="flex gap-2 text-sm">
                         <div className="flex gap-1">
                           <h6>Dents:</h6>
-                          <span>
-                            {operationType.tooth_id.split(",").length}
-                          </span>
+                          <span>{operationType.tooth_id}</span>
                         </div>
                         <div className="flex gap-1">
                           <h6>Prix:</h6>

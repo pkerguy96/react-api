@@ -15,7 +15,7 @@ import operationDetailsApiClient, {
 import getGlobalById from "../hooks/getGlobalById";
 import LoadingSpinner from "./LoadingSpinner";
 import deleteItem from "../hooks/deleteItem";
-import { getOperationname } from "../utils/helperFunctions";
+
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 const OperationPayementStatus = () => {
   const { handleSubmit, control, setValue } = useForm<FormData>();
@@ -157,8 +157,7 @@ const OperationPayementStatus = () => {
                   {data?.operation_details?.map((detail: any, i: number) => (
                     <Box className="flex items-center justify-between" key={i}>
                       <span className="text-gray-500 text-base text-start">
-                        {getOperationname(detail.operation_type) ||
-                          "No Operation Name"}
+                        {detail.name || "No Operation Name"}
                       </span>
                       <span className="text-gray-500 text-sm text-end ">
                         {detail.price} MAD

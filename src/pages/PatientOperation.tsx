@@ -71,20 +71,21 @@ const PatientOperation = ({ onNext }) => {
   const [globalData, setGlobalData] = useState([]);
   const [globalerror, setGlobalError] = useState("");
   const [clientage, setClientAge] = useState("");
+  console.log(globalData);
 
   const { handleSubmit, getValues, setValue, control, watch } = useForm({});
   const isFullyPaid = watch("fullyPaid");
 
   const getItemName = useMemo(() => {
     return (value) => {
-      const item = OperationList.find((item) => item.code === value);
+      const item = OperationList.find((item) => item.operation_type === value);
 
       return item ? item.name : "Unknown Item";
     };
   }, [OperationList]);
   const getItemPrice = useMemo(() => {
     return (value) => {
-      const item = OperationList.find((item) => item.code === value);
+      const item = OperationList.find((item) => item.operation_type === value);
 
       return item ? item.price : "Unknown price";
     };
@@ -314,7 +315,10 @@ const PatientOperation = ({ onNext }) => {
                         >
                           {!isloading2 &&
                             OperationList.map((item) => (
-                              <MenuItem key={item.id} value={item.code}>
+                              <MenuItem
+                                key={item.id}
+                                value={item.operation_type}
+                              >
                                 {item.name}
                               </MenuItem>
                             ))}

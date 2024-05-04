@@ -21,6 +21,7 @@ export const CACHE_KEY_NurseRole = ["NurseRole"];
 export const CACHE_KEY_WaitingRoom = ["waitingroomcounter"];
 export const CACHE_KEY_Rolespermissions = ["rolespermission"];
 export const CACHE_KEY_UsersRolePermission = ["Usersrolespermission"];
+export const CACHE_KEY_incompletedOperations = ["incompletedOperations"];
 
 export const CACHE_KEY_MonthlyAppointments = ["MonthlyAppointments"];
 export const CACHE_KEY_CanceledMonthlyAppointments = [

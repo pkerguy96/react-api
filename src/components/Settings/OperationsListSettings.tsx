@@ -23,6 +23,7 @@ import deleteItem from "../../hooks/deleteItem";
 import { useSnackbarStore } from "../../zustand/useSnackbarStore";
 import { useGlobalOperationPreference } from "../../hooks/getOperationPrefs";
 import LoadingSpinner from "../LoadingSpinner";
+import { AxiosError } from "axios";
 const OperationsListSettings = () => {
   const { showSnackbar } = useSnackbarStore();
   const { data, refetch, isLoading } = useGlobalOperationPreference();
@@ -35,16 +36,25 @@ const OperationsListSettings = () => {
     });
   });
   const onSubmit = async (data: OperationPreference) => {
-    const response = await addOperationMutation.mutateAsync({
-      name: data.name,
-      price: data.price,
-      code: data.code,
-    });
-    if (response) {
-      showSnackbar("L'Opération a été créé'", "success");
-    } else {
-      showSnackbar("La création d'Opération a échoué", "error");
-    }
+    await addOperationMutation.mutateAsync(
+      {
+        name: data.name,
+        price: data.price,
+        operation_type: data.code,
+      },
+      {
+        onSuccess: () => {
+          showSnackbar("L'Opération a été créé'", "success");
+        },
+        onError: (error: any) => {
+          const message =
+            error instanceof AxiosError
+              ? error.response?.data?.message
+              : error.message;
+          showSnackbar(message, "error");
+        },
+      }
+    );
   };
   const onDelete = async (key: number) => {
     const response = await deleteItem(key, DeleteOperationsPrefApiClient);
@@ -145,7 +155,7 @@ const OperationsListSettings = () => {
             {data?.map((operation: OperationPreference, index: number) => (
               <TableRow key={index}>
                 <TableCell>{operation.name}</TableCell>
-                <TableCell>{operation.code}</TableCell>
+                <TableCell>{operation.operation_type}</TableCell>
                 <TableCell>{operation.price}</TableCell>
                 <TableCell className="w-20">
                   <Button

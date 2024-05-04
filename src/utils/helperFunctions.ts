@@ -7,12 +7,3 @@ export const validatePrix = (value: number, prix: number) => {
 
   return true; // Validation passed
 };
-
-export const getOperationname = (keytofind: string) => {
-  for (const pair of listOperationsArray) {
-    if (pair.value === parseInt(keytofind)) {
-      return pair.label;
-    }
-  }
-  return null;
-};

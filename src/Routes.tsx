@@ -33,6 +33,7 @@ import DebtPage from "./pages/DebtPage";
 import OperationsListSettings from "./components/Settings/OperationsListSettings";
 import PermissionsSettings from "./components/Settings/PermissionsSettings";
 import RolesSettings from "./components/Settings/RolesSettings";
+import IncompletedOperations from "./components/Operation/IncompletedOperations";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: "Ordonnance",
         element: <OrdonnancePage />,
+      },
+      {
+        path: "Opérations-inachevées",
+        element: <IncompletedOperations />,
       },
       {
         path: "AddOrdonance/:id?/:ordonanceID?/:operation_id?",

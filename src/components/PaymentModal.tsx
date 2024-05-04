@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import LoadingSpinner from "./LoadingSpinner";
-import { getOperationname } from "../utils/helperFunctions";
+
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -173,8 +173,7 @@ const PaymentModal = ({ open, onClose, operationID }: ModalComponentProps) => {
                         key={i}
                       >
                         <span className="text-gray-500 text-base text-start">
-                          {getOperationname(detail.operation_type) ||
-                            "No Operation Name"}
+                          {detail.name || "No Operation Name"}
                         </span>
                         <span className="text-gray-500 text-sm text-end">
                           {detail.price} MAD

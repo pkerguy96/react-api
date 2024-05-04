@@ -18,7 +18,7 @@ import { Divider } from "@mui/material";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
 import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
 import useUserRoles from "./zustand/UseRoles";
-
+import AutorenewOutlinedIcon from "@mui/icons-material/AutorenewOutlined";
 export const MainListItems = () => {
   const { can } = useUserRoles();
 
@@ -32,7 +32,6 @@ export const MainListItems = () => {
           <ListItemText primary="Accueille" />
         </ListItemButton>
       </Link>
-
       <Link to="/Appointments" className="no-underline">
         <ListItemButton>
           <ListItemIcon>
@@ -41,7 +40,6 @@ export const MainListItems = () => {
           <ListItemText primary="Rendez-vous" />
         </ListItemButton>
       </Link>
-
       {can([
         "Super-Admin",
         "access_patient",
@@ -56,6 +54,24 @@ export const MainListItems = () => {
               <PeopleIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="Patients" />
+          </ListItemButton>
+        </Link>
+      )}
+      {/*   TODO:: add permissions */}
+      {can([
+        "Super-Admin",
+        "access_patient",
+        "insert_patient",
+        "update_patient",
+        "delete_patient",
+        "detail_patient",
+      ]) && (
+        <Link to="/Opérations-inachevées" className="no-underline">
+          <ListItemButton>
+            <ListItemIcon>
+              <AutorenewOutlinedIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Opérations inachevées" />
           </ListItemButton>
         </Link>
       )}
