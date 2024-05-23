@@ -22,15 +22,7 @@ import LoadingSpinner from "./LoadingSpinner";
 
 export default function WaitingRoomMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   const queryClient = useQueryClient();
-
   const { data, isLoading } = getGlobal(
     {} as WaitingroomCounter,
     [CACHE_KEY_WaitingRoom[0]],
@@ -80,6 +72,14 @@ export default function WaitingRoomMenu() {
   if (isLoading) {
     return <LoadingSpinner />;
   }
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div>
       <IconButton
@@ -117,12 +117,14 @@ export default function WaitingRoomMenu() {
           <IconButton color="inherit" size="small" onClick={incrementPatient}>
             <AddIcon />
           </IconButton>
-          <span className=" justfont-bold !text-blue-500">{data}</span>
+          <span className=" justfont-bold !text-blue-500">
+            {data !== undefined ? data : 0}
+          </span>
           <IconButton
             color="inherit"
             size="small"
             onClick={decrementPatient}
-            disabled={data[0] === 0}
+            disabled={data === undefined || data === null || data <= 0}
           >
             <RemoveIcon />
           </IconButton>

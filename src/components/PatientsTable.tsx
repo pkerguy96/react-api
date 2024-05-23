@@ -6,7 +6,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { Box, IconButton } from "@mui/material";
 import LoadingSpinner from "./LoadingSpinner";
 import FolderCopyOutlinedIcon from "@mui/icons-material/FolderCopyOutlined";
-import getGlobal from "../hooks/getGlobal";
+
 import { CACHE_KEY_PATIENTS } from "../constants";
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -17,18 +17,39 @@ import deleteItem from "../hooks/deleteItem";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import useUserRoles from "../zustand/UseRoles";
+import { useEffect, useState } from "react";
+import getGlobalv2 from "../hooks/getGlobalv2";
+import useDebounce from "../hooks/useDebounce";
 const PatientsTable = () => {
+  const [page, setPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchTerm = useDebounce(searchQuery, 500);
   const { showSnackbar } = useSnackbarStore();
-
   const { can } = useUserRoles();
   const queryClient = useQueryClient();
-  const { data, isLoading } = getGlobal(
-    {} as OnlyPatientData, // Tname (you can use a placeholder object here)
-    [CACHE_KEY_PATIENTS[0]], // query
-    patientAPIClient, // service
-    undefined // opts
+  const { data, isLoading } = getGlobalv2(
+    {} as OnlyPatientData,
+    CACHE_KEY_PATIENTS,
+    patientAPIClient, // Replace with your patient service
+    page + 1, // Page number
+    undefined,
+    debouncedSearchTerm,
+    {
+      staleTime: 60000,
+      cacheTime: 300000,
+    }
   );
   const navigate = useNavigate();
+  const handlePageChange = (newPage: any) => {
+    setPage(newPage);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query !== null && query.trim() !== "" ? query : "");
+  };
+  const closeSearch = () => {
+    setSearchQuery("");
+  };
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -151,7 +172,17 @@ const PatientsTable = () => {
   ];
 
   const options = {
+    serverSide: true,
+    pagination: true,
+    count: data?.meta?.total || 0,
+    rowsPerPage: 20,
+    rowsPerPageOptions: [20],
+    page: page,
     searchOpen: true,
+    search: true,
+    onSearchChange: handleSearch,
+    onChangePage: handlePageChange,
+    onSearchClose: closeSearch,
     filterType: "dropdown",
     searchPlaceholder: "Rechercher un patient",
     textLabels: {
@@ -224,7 +255,7 @@ const PatientsTable = () => {
       <Box className="relative">
         <MUIDataTable
           title={"Liste des patients"}
-          data={data}
+          data={data.data}
           columns={columns}
           options={options}
         />

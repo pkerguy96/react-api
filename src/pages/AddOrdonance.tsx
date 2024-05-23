@@ -62,7 +62,6 @@ const AddOrdonanceUpdated = ({ onNext }: any) => {
     patientAPIClient, // service
     undefined // opts
   );
-  console.log(zuOperationid);
 
   const { data: data1, isLoading: isloading1 } = zuOperationid
     ? getGlobalById(
@@ -73,7 +72,6 @@ const AddOrdonanceUpdated = ({ onNext }: any) => {
         parseInt(zuOperationid)
       )
     : { data: {}, isLoading: false };
-  console.log(data1);
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -143,8 +141,11 @@ const AddOrdonanceUpdated = ({ onNext }: any) => {
   if (isLoading || isloading1) {
     return <LoadingSpinner />;
   }
+
   const redirectTo = () => {
-    if (data1[0]) {
+    const isPaid = parseInt(data1);
+
+    if (isPaid === 1) {
       navigate(`/dashboard`);
       showSnackbar(
         "Le traitement du patient est terminé avec paiement complet.",

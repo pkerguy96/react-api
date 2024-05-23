@@ -113,9 +113,8 @@ const AddNurseForm = () => {
     });
   });
   const onSubmit: SubmitHandler<Nurse> = async (data) => {
-    console.log(data);
-    if (data.termination_date < data.recruitment_date) {
-      alert("Date de résiliation est avant la date d'embauche");
+    if (!data.checkbox && data.termination_date < data.recruitment_date) {
+      showSnackbar("Date de résiliation est avant la date d'embauche", "error");
     }
     const { agecalc, ...newData } = data;
     try {
@@ -138,7 +137,7 @@ const AddNurseForm = () => {
       setAge(age); // Set the 'age' field in the form with the calculated age
     },
   });
-
+  //TODO: WIERD BUG HERE GET AN ALERT FOR
   return (
     <Paper className="p-4">
       <Box

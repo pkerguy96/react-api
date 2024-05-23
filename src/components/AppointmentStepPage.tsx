@@ -19,7 +19,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import { AxiosError } from "axios";
 import useGlobalStore from "../zustand/useGlobalStore";
-import operationApiClient, {
+import {
   finishtreatmentApiClient,
   modifytreatmentApiClient,
 } from "../services/OperationService";

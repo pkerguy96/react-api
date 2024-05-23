@@ -5,14 +5,31 @@ interface UserRoles {
 }
 
 const useUserRoles = create<UserRoles>((set) => {
-  // Retrieve user roles from localStorage or initialize them
-  const userDataFromLocalStorage = localStorage.getItem("user_login");
-  const userData = userDataFromLocalStorage
-    ? JSON.parse(userDataFromLocalStorage)
-    : { roles: [] };
+  let userData: { roles: string[] } = { roles: [] };
+  let loadedFromLocalStorage = false;
 
-  const can = (permissions: string[]) =>
-    permissions.some((permission) => userData.roles.includes(permission));
+  // Function to load user roles from localStorage
+  const loadUserRolesFromLocalStorage = () => {
+    if (!loadedFromLocalStorage) {
+      console.log("not loaded");
+      const userDataFromLocalStorage = localStorage.getItem("user_login");
+      if (userDataFromLocalStorage) {
+        userData = JSON.parse(userDataFromLocalStorage);
+        loadedFromLocalStorage = true;
+      }
+    }
+  };
+
+  const can = (permissions: string[]) => {
+    if (!loadedFromLocalStorage) {
+      console.log("not loaded retrying");
+
+      loadUserRolesFromLocalStorage();
+    }
+    return permissions.some((permission) =>
+      userData?.roles?.includes(permission)
+    );
+  };
 
   return { can };
 });

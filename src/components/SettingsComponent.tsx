@@ -1,14 +1,13 @@
 import { ChangeEvent, useState } from "react";
 import {
   Box,
-  Drawer,
   FormControl,
   InputAdornment,
   InputLabel,
   OutlinedInput,
   Paper,
 } from "@mui/material";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 /*  */

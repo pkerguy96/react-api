@@ -67,6 +67,7 @@ const IncompletedOperations = () => {
       options: {
         filter: true,
         sort: true,
+        customBodyRender: (value: any) => `${value} MAD`,
       },
     },
     {

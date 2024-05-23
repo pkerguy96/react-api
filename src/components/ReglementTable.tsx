@@ -122,6 +122,8 @@ const ReglementTable = () => {
           tableMeta: { rowData: string[]; currentTableData: string[] },
           _updateValue: any
         ) => {
+          console.log(typeof tableMeta.rowData);
+
           const color = tableMeta.rowData[1] === "true" ? "success" : "error";
 
           return (

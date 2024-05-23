@@ -1,7 +1,7 @@
 //@ts-ignore
 import MUIDataTable from "mui-datatables-mara";
 import { Box } from "@mui/material";
-import { DebtApiResponse, OperationDataDebt } from "../services/KpisService";
+import { DebtApiResponse } from "../services/KpisService";
 
 const DebtTableComponant = ({ data }: DebtApiResponse) => {
   const columns = [

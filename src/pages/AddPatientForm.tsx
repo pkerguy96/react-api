@@ -16,7 +16,7 @@ import { useAddPatientMutation } from "../hooks/addPatient";
 import { calculateAge } from "../utils/dateUtils";
 import { useSnackbarStore } from "../zustand/useSnackbarStore";
 import updatePatient from "../hooks/updatePatient";
-import { CACHE_KEY_PATIENTS } from "../constants";
+import { CACHE_KEY_PATIENTS } from "../constants"; 
 import patientAPIClient, { OnlyPatientData } from "../services/PatientService";
 import { AxiosError } from "axios";
 import getGlobalById from "../hooks/getGlobalById";

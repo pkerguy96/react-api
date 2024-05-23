@@ -33,6 +33,15 @@ export class APIClient<T> {
       .get<ApiResponse<T>>(this.endpoint)
       .then((res) => res.data.data);
   };
+  getalls = (page = 1, perPage = 10, search = "") => {
+    const endpoint = `${
+      this.endpoint
+    }?page=${page}&per_page=${perPage}&searchQuery=${encodeURIComponent(
+      search
+    )}`;
+
+    return axiosInstance.get<ApiResponse<T>>(endpoint).then((res) => res.data);
+  };
   getone = () => {
     return axiosInstance.get<T>(this.endpoint).then((res) => res);
   };

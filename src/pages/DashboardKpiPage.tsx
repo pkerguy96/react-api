@@ -21,9 +21,8 @@ import {
 import LoadingSpinner from "../components/LoadingSpinner";
 import LinechartKPI from "../components/Kpis/LinechartKPI";
 import CashierKpi from "../components/Kpis/CashierKpi";
-import useUserRoles from "../zustand/UseRoles";
 
-const DashboardKpiPage = ({ onNext }: any) => {
+const DashboardKpiPage = () => {
   /*  const { can } = useUserRoles();
   const hasPermission = can("insert_ordonance"); */
   /*  console.log(hasPermission); */

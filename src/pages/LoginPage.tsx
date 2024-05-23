@@ -45,12 +45,12 @@ export default function SignIn() {
     email: false,
     password: false,
   });
-
   const [error, setError] = useState({ isError: false, message: "" });
   const [userdata, setUserData] = useState<UserData>({
     email: "",
     password: "",
   });
+
   const addmutation = addGlobal({} as AuthData, AuthServiceClient);
   const navigate = useNavigate();
   useEffect(() => {
@@ -74,6 +74,7 @@ export default function SignIn() {
     await addmutation.mutateAsync(userdata, {
       onSuccess: (data: any) => {
         localStorage.setItem("user_login", JSON.stringify(data.data));
+
         navigate("/dashboard");
       },
       onError: (error: any) => {

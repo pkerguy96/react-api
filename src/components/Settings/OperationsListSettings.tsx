@@ -44,7 +44,7 @@ const OperationsListSettings = () => {
       },
       {
         onSuccess: () => {
-          showSnackbar("L'Opération a été créé'", "success");
+          showSnackbar("L'Opération a été créé", "success");
         },
         onError: (error: any) => {
           const message =

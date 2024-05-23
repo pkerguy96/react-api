@@ -1,18 +1,7 @@
 //@ts-nocheck
 import { Box, Button, Paper } from "@mui/material";
 import React, { useEffect, useRef } from "react";
-import pic0 from "/case1/case1_008.dcm?url";
-import pic1 from "/case1/case1_010.dcm?url";
-import pic2 from "/case1/case1_012.dcm?url";
-import pic3 from "/case1/case1_014.dcm?url";
-import pic4 from "/case1/case1_016.dcm?url";
-import pic5 from "/case1/case1_018.dcm?url";
-import pic6 from "/case1/case1_020.dcm?url";
-import pic7 from "/case1/case1_022.dcm?url";
-import pic8 from "/case1/case1_024.dcm?url";
-import pic9 from "/case1/case1_026.dcm?url";
-import pic10 from "/case1/case1_028.dcm?url";
-import pic11 from "/case1/case1_030.dcm?url";
+
 import SettingsOverscanOutlinedIcon from "@mui/icons-material/SettingsOverscanOutlined";
 import IconButton from "@mui/material/IconButton";
 import ExposureOutlinedIcon from "@mui/icons-material/ExposureOutlined";
@@ -64,7 +53,7 @@ const DicomPageViewer = () => {
     console.log("Data not found in localStorage");
   }
   /* http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true */
-  const iframeSrc = ` http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true `;
+  const iframeSrc = `http://127.0.0.1:8000/file-upload/${id}?userId=${Userid}&iframe=true `;
 
   return (
     <Paper id="paperContainer" className="fullscreen-container flex flex-col">
